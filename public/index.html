@@ -28,10 +28,9 @@
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center transition-opacity duration-700">
         <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand mb-4"></div>
-        <p id="status-text" class="text-brand font-mono text-xs tracking-[0.2em] animate-pulse">CONNECTING TO SATELLITE...</p>
-        <div id="debug-log" class="mt-4 text-[10px] text-gray-500 font-mono text-left dir-ltr w-64 break-words"></div>
+        <p id="status-text" class="text-brand font-mono text-xs tracking-[0.2em] animate-pulse">ESTABLISHING UPLINK...</p>
     </div>
 
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
@@ -116,62 +115,69 @@
 
             init: async () => {
                 console.log("System Initializing...");
-
+                
                 app.supabase = supabase.createClient(
                     'https://yubvsehgmnudhcqwajae.supabase.co',
                     'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
                 );
 
-                // ============================================================
-                // 🛑 الحل الجذري لمشكلة الدوران (Loop)
-                // ============================================================
+                // =========================================================
+                // 🛑 المنطق المحسن (Anti-Loop Logic)
+                // =========================================================
                 
-                // 1. هل المستخدم قادم من جوجل للتو؟ (يوجد رمز # في الرابط)
-                const isRedirectingBack = window.location.hash && window.location.hash.includes('access_token');
-
-                if (isRedirectingBack) {
-                    console.log("🛑 Detected Google Return. Holding position...");
-                    document.getElementById('status-text').innerText = "DECRYPTING SECURITY TOKEN...";
-                    // هنا لا نفعل شيئاً! نترك Supabase يقوم بعمله تلقائياً
-                    // لأننا لو فحصنا الجلسة الآن ستكون فارغة
-                } else {
-                    // 2. فحص عادي (مستخدم يفتح الموقع في وقت لاحق)
+                // 1. فحص وجود رمز قادم من جوجل (#access_token)
+                // إذا كان موجوداً، نتوقف تماماً ولا نفعل شيئاً (ننتظر Supabase ليفك الشفرة)
+                if (window.location.hash && window.location.hash.includes('access_token')) {
+                    console.log("Detected Google Return. Processing Token...");
+                    document.getElementById('status-text').innerText = "PROCESSING SECURITY TOKEN...";
+                    // لا تقم بأي إعادة توجيه هنا! انتظر المستمع بالأسفل
+                } 
+                else {
+                    // 2. فحص عادي (زيارة طبيعية للموقع)
                     const { data: { session } } = await app.supabase.auth.getSession();
                     if (!session) {
-                        console.log("⛔ No session found. Redirecting to Login.");
-                        window.location.href = '/login.html'; // طرد
+                        // لا يوجد جلسة ولا يوجد رمز قادم من جوجل -> اطرد المستخدم
+                        console.log("No session. Redirecting.");
+                        window.location.href = '/login.html';
                         return;
                     }
                 }
 
-                // 3. الاستماع الدائم (هذا سيلتقط الدخول سواء كان فورياً أو بعد فك الشفرة)
+                // 3. المستمع الذكي (يلتقط الدخول سواء كان فورياً أو بعد فك شفرة جوجل)
                 app.supabase.auth.onAuthStateChange(async (event, session) => {
                     if (session) {
-                        console.log("✅ ACCESS GRANTED.");
+                        console.log("Access Granted.");
                         await app.handleLogin(session.user);
                         
-                        // إخفاء شاشة التحميل
+                        // إخفاء شاشة التحميل بنجاح
                         const loader = document.getElementById('loader-screen');
                         if(loader) {
                             loader.classList.add('opacity-0');
-                            setTimeout(() => loader.classList.add('hidden-view'), 500);
+                            setTimeout(() => {
+                                loader.classList.add('hidden-view');
+                            }, 700);
                         }
                     }
                 });
             },
 
-            // باقي الوظائف كما هي تماماً...
             navigate: (viewId) => {
-                ['view-rooms', 'view-space'].forEach(id => document.getElementById(id).classList.add('hidden-view'));
+                ['view-rooms', 'view-space'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden-view');
+                });
                 const target = document.getElementById(`view-${viewId}`);
                 if (target) target.classList.remove('hidden-view');
             },
 
             handleLogin: async (user) => {
                 if (app.currentUser) return;
+
                 let profile = { username: 'Operative', id: user.id };
                 try {
+                    // محاولة جلب الملف الشخصي
                     let { data } = await app.supabase.from('profiles').select('*').eq('id', user.id).single();
+                    
+                    // إذا لم يوجد، نقوم بإنشائه (تسجيل صامت)
                     if (!data) {
                         const newName = `Agent-${Math.floor(Math.random()*9000)+1000}`;
                         const { data: newData } = await app.supabase.from('profiles').insert([{
@@ -180,9 +186,12 @@
                         data = newData;
                     }
                     if(data) profile = data;
-                } catch (e) {}
+                } catch (e) { console.log("Silent DB fetch error"); }
+
                 app.currentUser = profile;
-                if(app.currentUser.username) document.getElementById('username-display').innerText = app.currentUser.username;
+                if(app.currentUser.username) {
+                    document.getElementById('username-display').innerText = app.currentUser.username;
+                }
             },
 
             logout: async () => {
@@ -202,6 +211,5 @@
 
         window.onload = app.init;
     </script>
-
 </body>
 </html>
