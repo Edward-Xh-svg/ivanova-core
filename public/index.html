@@ -13,42 +13,17 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    colors: { brand: '#66FCF1' },
-                    fontFamily: { sans: ['Cairo', 'sans-serif'], mono: ['monospace'] }
-                }
+                extend: { colors: { brand: '#66FCF1' }, fontFamily: { sans: ['Cairo', 'sans-serif'], mono: ['monospace'] } }
             }
         }
     </script>
 
     <style>
-        /* إعدادات عامة */
-        body {
-            background-color: #050505;
-            color: #e2e8f0;
-            overflow-x: hidden;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        /* اللوحة الزجاجية (Glassmorphism) */
-        .glass {
-            background: rgba(20, 20, 25, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* إخفاء العناصر */
+        body { background-color: #050505; color: #e2e8f0; overflow-x: hidden; font-family: 'Cairo', sans-serif; }
+        .glass { background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .hidden-view { display: none !important; }
-
-        /* أنميشن الظهور */
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* تخصيص شريط التمرير */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
@@ -58,33 +33,29 @@
 <body class="flex flex-col min-h-screen">
 
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(102,252,241,0.1),transparent_50%)]"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-900/20 rounded-full blur-[100px]"></div>
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(102,252,241,0.05),transparent_60%)]"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-900/10 rounded-full blur-[100px]"></div>
     </div>
 
     <nav class="fixed w-full z-50 top-0 p-4">
         <div class="max-w-7xl mx-auto glass rounded-xl px-6 py-3 flex justify-between items-center shadow-2xl">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('landing')">
+            <div class="flex items-center gap-3 cursor-pointer">
                 <img src="https://yubvsehgmnudhcqwajae.supabase.co/storage/v1/object/public/Ivanova%20logo/20260203_204854.png" class="w-8 h-8 object-contain">
                 <span class="font-[Rajdhani] font-bold text-xl tracking-widest text-white">IVANOVA</span>
             </div>
 
-            <div id="nav-menu" class="hidden items-center gap-6">
-                <button onclick="app.navigate('rooms')" class="text-sm font-bold hover:text-brand transition duration-300">غرف إيفانو</button>
-                <button onclick="app.navigate('space')" class="text-sm font-bold hover:text-brand transition duration-300">إيفانو سبيس</button>
+            <div id="nav-menu" class="flex items-center gap-6">
+                <button onclick="app.navigate('rooms')" class="text-sm font-bold hover:text-brand transition duration-300">القطاعات (Rooms)</button>
+                <button onclick="app.navigate('space')" class="text-sm font-bold hover:text-brand transition duration-300">المستودع (Space)</button>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="mailto:rel-achraf@ivanova.sbs" class="text-gray-400 hover:text-white text-xs border border-gray-700 px-3 py-1.5 rounded-lg transition flex items-center gap-2">
-                    <i class="fas fa-headset"></i> <span class="hidden md:inline">الدعم</span>
-                </a>
-
-                <div id="user-info" class="hidden text-left">
-                    <div id="username-display" class="text-brand font-bold text-sm font-mono dir-ltr">...</div>
+                <div id="user-info" class="text-left">
+                    <div id="username-display" class="text-brand font-bold text-sm font-mono dir-ltr">LOADING...</div>
                 </div>
 
-                <button id="auth-btn" onclick="app.login()" class="px-6 py-2 rounded-lg border border-brand text-brand hover:bg-brand hover:text-black transition-all text-xs font-bold shadow-[0_0_15px_rgba(102,252,241,0.2)]">
-                    دخول
+                <button id="auth-btn" onclick="app.logout()" class="px-6 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-bold">
+                    خروج
                 </button>
             </div>
         </div>
@@ -92,98 +63,65 @@
 
     <main class="relative z-10 pt-32 pb-10 px-6 flex-1 flex flex-col max-w-7xl mx-auto w-full">
 
-        <section id="view-landing" class="flex flex-col items-center fade-in">
-            <div class="text-center max-w-4xl mx-auto mb-16 mt-10">
-                <div class="inline-block px-4 py-1 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs mb-6 tracking-widest">
-                    SYSTEM ONLINE V1.0
-                </div>
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-                    الواقع <span class="text-brand">الاستراتيجي</span>
-                </h1>
-                <p class="text-gray-400 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-                    منظمة إيفانو هي دولة رقمية سيادية. 
-                    <br>من غرف العمليات الأيديولوجية إلى نظام بيئي للتطبيقات.
-                </p>
-                
-                <button onclick="app.login()" class="px-10 py-4 bg-white text-black font-bold rounded-xl hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all transform hover:scale-105 active:scale-95">
-                    <i class="fab fa-google mr-2"></i> تسجيل الدخول
-                </button>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6 w-full max-w-5xl">
-                <div class="glass p-8 rounded-2xl text-right border-r-4 border-brand hover:bg-white/5 transition duration-300">
-                    <i class="fas fa-network-wired text-3xl text-brand mb-4"></i>
-                    <h3 class="text-2xl font-bold text-white mb-2">غرف إيفانو</h3>
-                    <p class="text-gray-400 text-sm">مساحات عمل آمنة لإدارة المشاريع والتواصل المشفر.</p>
-                </div>
-                <div class="glass p-8 rounded-2xl text-right border-r-4 border-blue-500 hover:bg-white/5 transition duration-300">
-                    <i class="fas fa-cube text-3xl text-blue-500 mb-4"></i>
-                    <h3 class="text-2xl font-bold text-white mb-2">إيفانو سبيس</h3>
-                    <p class="text-gray-400 text-sm">المستودع اللامركزي للتطبيقات والأدوات الرقمية.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-rooms" class="hidden-view h-[70vh] flex gap-6 fade-in">
-            <aside class="w-80 glass rounded-2xl flex flex-col overflow-hidden">
+        <section id="view-rooms" class="h-[75vh] flex gap-6 fade-in">
+            <aside class="w-80 glass rounded-2xl flex flex-col overflow-hidden border-brand/20 shadow-[0_0_20px_rgba(102,252,241,0.05)]">
                 <div class="p-4 border-b border-gray-800 bg-black/40 flex justify-between items-center">
-                    <h3 class="font-bold text-white text-sm">قائمة الغرف</h3>
+                    <h3 class="font-bold text-white text-sm tracking-wide">القطاعات النشطة</h3>
                     <button onclick="app.createRoom()" class="text-brand hover:text-white transition"><i class="fas fa-plus"></i></button>
                 </div>
                 
                 <div class="flex-1 flex flex-col items-center justify-center text-center opacity-40">
-                    <i class="fas fa-folder-open text-4xl mb-4 text-gray-600"></i>
-                    <p class="text-xs text-gray-500">لا توجد غرف نشطة حالياً</p>
+                    <i class="fas fa-satellite-dish text-4xl mb-4 text-gray-700 animate-pulse"></i>
+                    <p class="text-xs text-gray-500">جاري مسح الشبكة...</p>
                 </div>
 
                 <div class="p-4 border-t border-gray-800">
                     <button onclick="app.createRoom()" class="w-full py-3 bg-brand/10 text-brand border border-brand/30 rounded hover:bg-brand hover:text-black transition text-xs font-bold">
-                        + إنشاء غرفة جديدة
+                        + تأسيس قطاع جديد
                     </button>
                 </div>
             </aside>
 
-            <div class="flex-1 glass rounded-2xl flex flex-col items-center justify-center text-center p-10">
-                <i class="fas fa-satellite-dish text-6xl text-gray-800 mb-6"></i>
-                <h2 class="text-2xl text-white font-bold mb-2">الشبكة متصلة</h2>
-                <p class="text-gray-500 text-sm">اختر غرفة من القائمة أو أنشئ واحدة للبدء.</p>
+            <div class="flex-1 glass rounded-2xl flex flex-col items-center justify-center text-center p-10 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                
+                <i class="fas fa-globe-americas text-6xl text-gray-800 mb-6 drop-shadow-lg"></i>
+                <h2 class="text-3xl text-white font-bold mb-2 font-[Rajdhani]">SYSTEM READY</h2>
+                <p class="text-gray-400 text-sm">أهلاً بك أيها القائد. اختر قطاعاً للبدء.</p>
             </div>
         </section>
 
         <section id="view-space" class="hidden-view h-full fade-in">
             <div class="flex justify-between items-end mb-8 border-b border-gray-800 pb-4">
                 <button onclick="app.uploadApp()" class="px-6 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-600 hover:text-white transition text-sm font-bold">
-                    <i class="fas fa-cloud-upload-alt ml-2"></i> رفع تطبيق
+                    <i class="fas fa-cloud-upload-alt ml-2"></i> رفع أداة
                 </button>
                 <div class="text-right">
                     <h2 class="text-3xl font-bold text-white">إيفانو سبيس</h2>
-                    <p class="text-gray-500 text-sm">المستودع الرقمي الرسمي</p>
+                    <p class="text-gray-500 text-sm">الاقتصاد الرقمي والموارد</p>
                 </div>
             </div>
 
-            <div class="flex flex-col items-center justify-center py-24 border-2 border-dashed border-gray-800 rounded-2xl bg-white/5">
+            <div class="flex flex-col items-center justify-center py-24 border-2 border-dashed border-gray-800 rounded-2xl bg-white/5 hover:border-brand/30 transition">
                 <div class="w-20 h-20 bg-gray-800/50 rounded-full flex items-center justify-center mb-4">
                     <i class="fas fa-box-open text-3xl text-gray-500"></i>
                 </div>
                 <h3 class="text-white font-bold text-lg mb-2">المستودع فارغ</h3>
-                <p class="text-gray-500 text-sm mb-6">كن أول من يرفع أداة إلى النظام.</p>
-                <button onclick="app.uploadApp()" class="text-brand text-xs underline hover:text-white">رفع الأداة الأولى</button>
+                <p class="text-gray-500 text-sm mb-6">لا توجد أدوات متاحة لرتبتك حالياً.</p>
             </div>
         </section>
 
     </main>
 
     <footer class="text-center py-6 text-gray-600 text-[10px] tracking-widest uppercase font-mono">
-        © 2026 Ivanova Strategic Systems. All Rights Reserved.
+        © 2026 Ivanova Strategic Systems. Secure Connection Established.
     </footer>
 
     <script>
-        // تعريف التطبيق
         const app = {
             supabase: null,
             currentUser: null,
 
-            // دالة التهيئة (تعمل عند بدء التشغيل)
             init: async () => {
                 console.log("System Initializing...");
                 
@@ -194,62 +132,39 @@
                         'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
                     );
 
-                    // 2. التحقق من الجلسة الحالية
+                    // 2. التحقق الأمني (Security Check)
                     const { data: { session } } = await app.supabase.auth.getSession();
-                    if (session) {
-                        await app.handleLogin(session.user);
+                    
+                    if (!session) {
+                        // إذا لم يكن مسجلاً، اطرده إلى صفحة الدخول
+                        window.location.href = '/'; 
+                        return;
                     }
+
+                    // إذا كان مسجلاً، اجلب بياناته
+                    await app.handleLogin(session.user);
+
                 } catch (e) {
-                    console.error("Supabase Connection Error:", e);
+                    console.error("Critical Error:", e);
                 }
             },
 
-            // دالة التنقل بين الصفحات (تعمل دائماً)
             navigate: (viewId) => {
-                console.log("Navigating to:", viewId);
-                
-                // حماية الصفحات الداخلية
-                if (!app.currentUser && viewId !== 'landing') {
-                    console.log("Access Denied: Please login.");
-                    return;
-                }
-
-                // إخفاء جميع الصفحات
-                ['view-landing', 'view-rooms', 'view-space'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.classList.add('hidden-view');
+                ['view-rooms', 'view-space'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden-view');
                 });
                 
-                // إظهار الصفحة المطلوبة
                 const target = document.getElementById(`view-${viewId}`);
                 if (target) target.classList.remove('hidden-view');
             },
 
-            // دالة تسجيل الدخول
-            login: async () => {
-                if (!app.supabase) {
-                    alert("جاري الاتصال بالخادم... يرجى الانتظار.");
-                    return;
-                }
-                
-                const { error } = await app.supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: { redirectTo: window.location.href }
-                });
-                
-                if (error) alert("خطأ في تسجيل الدخول: " + error.message);
-            },
-
-            // معالجة الدخول الناجح
             handleLogin: async (user) => {
-                let profile = { username: 'Operative', id: user.id }; // ملف مؤقت
+                let profile = { username: 'Operative', id: user.id };
                 
                 try {
-                    // محاولة جلب البيانات من قاعدة البيانات
                     let { data } = await app.supabase.from('profiles').select('*').eq('id', user.id).single();
-                    
                     if (!data) {
-                        // مستخدم جديد: إنشاء اسم رمزي
+                        // تسجيل مستخدم جديد في قاعدة البيانات بصمت
                         const newName = `Agent-${Math.floor(Math.random()*9000)+1000}`;
                         const { data: newData } = await app.supabase.from('profiles').insert([{
                             id: user.id, username: newName, avatar_url: user.user_metadata.avatar_url
@@ -258,56 +173,30 @@
                     }
                     if(data) profile = data;
                 } catch (e) {
-                    console.log("Database fetch warning:", e);
+                    console.log("Profile fetch warning:", e);
                 }
 
-                // تحديث حالة التطبيق
                 app.currentUser = profile;
-                app.updateUI(true);
-                app.navigate('rooms');
+                if(app.currentUser.username) {
+                    document.getElementById('username-display').innerText = app.currentUser.username;
+                }
             },
 
-            // تسجيل الخروج
             logout: async () => {
                 if (app.supabase) await app.supabase.auth.signOut();
-                window.location.reload();
+                window.location.href = '/'; // العودة لصفحة الدخول
             },
 
-            // تحديث واجهة المستخدم
-            updateUI: (isLoggedIn) => {
-                if (isLoggedIn) {
-                    // إظهار القوائم
-                    document.getElementById('nav-menu').classList.remove('hidden');
-                    document.getElementById('nav-menu').classList.add('flex');
-                    
-                    // إظهار معلومات المستخدم
-                    document.getElementById('user-info').classList.remove('hidden');
-                    if(app.currentUser && app.currentUser.username) {
-                        document.getElementById('username-display').innerText = app.currentUser.username;
-                    }
-                    
-                    // تغيير زر الدخول إلى خروج
-                    const btn = document.getElementById('auth-btn');
-                    btn.innerText = "خروج";
-                    btn.classList.add('border-red-500', 'text-red-500');
-                    btn.classList.remove('text-brand', 'border-brand');
-                    btn.onclick = app.logout;
-                }
-            },
-
-            // زر إنشاء غرفة
             createRoom: () => {
-                const name = prompt("أدخل اسم الغرفة الجديدة:");
-                if(name) alert(`تم تسجيل طلب إنشاء الغرفة "${name}". سيتم التفعيل قريباً.`);
+                const name = prompt("تعيين اسم للقطاع الجديد:");
+                if(name) alert(`تم إرسال إشارة إنشاء القطاع "${name}". بانتظار تصديق القيادة.`);
             },
 
-            // زر رفع تطبيق
             uploadApp: () => {
-                alert("بوابة الرفع قيد الصيانة حالياً. يرجى المحاولة لاحقاً.");
+                alert("نظام رفع الملفات: قيد التطوير.");
             }
         };
 
-        // تشغيل النظام عند تحميل الصفحة
         window.onload = app.init;
     </script>
 </body>
