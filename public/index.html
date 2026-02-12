@@ -122,43 +122,59 @@
                 );
 
                 // =========================================================
-                // 🛑 المنطق المحسن (Anti-Loop Logic)
+                // 🛑 المنطق المحسن (Anti-Loop Logic v2)
                 // =========================================================
                 
-                // 1. فحص وجود رمز قادم من جوجل (#access_token)
-                // إذا كان موجوداً، نتوقف تماماً ولا نفعل شيئاً (ننتظر Supabase ليفك الشفرة)
-                if (window.location.hash && window.location.hash.includes('access_token')) {
-                    console.log("Detected Google Return. Processing Token...");
-                    document.getElementById('status-text').innerText = "PROCESSING SECURITY TOKEN...";
-                    // لا تقم بأي إعادة توجيه هنا! انتظر المستمع بالأسفل
+                // البحث في مكانين: الهاش (#) والاستعلام (?)
+                const hash = window.location.hash;
+                const search = window.location.search;
+                
+                // هل توجد أي علامات تدل على العودة من جوجل؟
+                const isRedirectingBack = 
+                    (hash && (hash.includes('access_token') || hash.includes('type=recovery') || hash.includes('error='))) ||
+                    (search && (search.includes('code=') || search.includes('error=')));
+
+                if (isRedirectingBack) {
+                    // نعم، المستخدم قادم من جوجل
+                    console.log("🛑 Detected Google Return (PKCE or Implicit). Holding position...");
+                    document.getElementById('status-text').innerText = "VERIFYING SECURITY CODE...";
+                    // لا نفعل شيئاً! نترك Supabase يحلل الكود عبر onAuthStateChange
                 } 
                 else {
-                    // 2. فحص عادي (زيارة طبيعية للموقع)
+                    // 2. فحص عادي (زيارة طبيعية للموقع لا تحتوي على أكواد)
                     const { data: { session } } = await app.supabase.auth.getSession();
                     if (!session) {
                         // لا يوجد جلسة ولا يوجد رمز قادم من جوجل -> اطرد المستخدم
-                        console.log("No session. Redirecting.");
+                        console.log("⛔ No session found. Redirecting.");
                         window.location.href = '/login.html';
                         return;
+                    } else {
+                        // يوجد جلسة محفوظة، قم بتحميل البيانات
+                         await app.handleLogin(session.user);
+                         app.hideLoader();
                     }
                 }
 
                 // 3. المستمع الذكي (يلتقط الدخول سواء كان فورياً أو بعد فك شفرة جوجل)
                 app.supabase.auth.onAuthStateChange(async (event, session) => {
+                    console.log("Auth Event:", event);
                     if (session) {
                         console.log("Access Granted.");
                         await app.handleLogin(session.user);
-                        
-                        // إخفاء شاشة التحميل بنجاح
-                        const loader = document.getElementById('loader-screen');
-                        if(loader) {
-                            loader.classList.add('opacity-0');
-                            setTimeout(() => {
-                                loader.classList.add('hidden-view');
-                            }, 700);
-                        }
+                        app.hideLoader();
                     }
                 });
+            },
+            
+            // دالة إخفاء شاشة التحميل
+            hideLoader: () => {
+                const loader = document.getElementById('loader-screen');
+                if(loader && !loader.classList.contains('hidden-view')) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => {
+                        loader.classList.add('hidden-view');
+                    }, 700);
+                }
             },
 
             navigate: (viewId) => {
@@ -174,10 +190,7 @@
 
                 let profile = { username: 'Operative', id: user.id };
                 try {
-                    // محاولة جلب الملف الشخصي
                     let { data } = await app.supabase.from('profiles').select('*').eq('id', user.id).single();
-                    
-                    // إذا لم يوجد، نقوم بإنشائه (تسجيل صامت)
                     if (!data) {
                         const newName = `Agent-${Math.floor(Math.random()*9000)+1000}`;
                         const { data: newData } = await app.supabase.from('profiles').insert([{
