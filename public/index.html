@@ -110,82 +110,65 @@
     </footer>
 
     <script>
-        // دالة للمساعدة في التشخيص (تظهر النصوص على الشاشة)
-        function logDebug(msg) {
-            console.log(msg);
-            const el = document.getElementById('debug-log');
-            if(el) el.innerText += "> " + msg + "\n";
-            const status = document.getElementById('status-text');
-            if(status) status.innerText = msg;
-        }
-
         const app = {
             supabase: null,
             currentUser: null,
 
             init: async () => {
-                logDebug("System Booting...");
-                
-                try {
-                    app.supabase = supabase.createClient(
-                        'https://yubvsehgmnudhcqwajae.supabase.co',
-                        'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
-                    );
+                console.log("System Initializing...");
 
-                    // 1. هل الرابط يحتوي على "هاش" (#) من جوجل؟
-                    const isRedirectBack = window.location.hash && window.location.hash.includes('access_token');
-                    
-                    if (isRedirectBack) {
-                        logDebug("Detected Google Return. Processing...");
-                        // هنا لا نفعل شيئاً وننتظر onAuthStateChange ليقوم بعمله
-                    } else {
-                        // فحص عادي
-                        const { data: { session } } = await app.supabase.auth.getSession();
-                        if (!session) {
-                            logDebug("No session. Redirecting to Login...");
-                            setTimeout(() => { window.location.href = '/login.html'; }, 1000);
-                            return;
+                app.supabase = supabase.createClient(
+                    'https://yubvsehgmnudhcqwajae.supabase.co',
+                    'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
+                );
+
+                // ============================================================
+                // 🛑 الحل الجذري لمشكلة الدوران (Loop)
+                // ============================================================
+                
+                // 1. هل المستخدم قادم من جوجل للتو؟ (يوجد رمز # في الرابط)
+                const isRedirectingBack = window.location.hash && window.location.hash.includes('access_token');
+
+                if (isRedirectingBack) {
+                    console.log("🛑 Detected Google Return. Holding position...");
+                    document.getElementById('status-text').innerText = "DECRYPTING SECURITY TOKEN...";
+                    // هنا لا نفعل شيئاً! نترك Supabase يقوم بعمله تلقائياً
+                    // لأننا لو فحصنا الجلسة الآن ستكون فارغة
+                } else {
+                    // 2. فحص عادي (مستخدم يفتح الموقع في وقت لاحق)
+                    const { data: { session } } = await app.supabase.auth.getSession();
+                    if (!session) {
+                        console.log("⛔ No session found. Redirecting to Login.");
+                        window.location.href = '/login.html'; // طرد
+                        return;
+                    }
+                }
+
+                // 3. الاستماع الدائم (هذا سيلتقط الدخول سواء كان فورياً أو بعد فك الشفرة)
+                app.supabase.auth.onAuthStateChange(async (event, session) => {
+                    if (session) {
+                        console.log("✅ ACCESS GRANTED.");
+                        await app.handleLogin(session.user);
+                        
+                        // إخفاء شاشة التحميل
+                        const loader = document.getElementById('loader-screen');
+                        if(loader) {
+                            loader.classList.add('opacity-0');
+                            setTimeout(() => loader.classList.add('hidden-view'), 500);
                         }
                     }
-
-                    // 2. الاستماع لتغييرات الحالة (هذا هو الأهم)
-                    app.supabase.auth.onAuthStateChange(async (event, session) => {
-                        logDebug("Auth Event: " + event);
-                        
-                        if (session) {
-                            logDebug("User Authenticated!");
-                            await app.handleLogin(session.user);
-                            // إخفاء شاشة التحميل بنجاح
-                            setTimeout(() => {
-                                document.getElementById('loader-screen').classList.add('opacity-0');
-                                setTimeout(() => {
-                                    document.getElementById('loader-screen').classList.add('hidden-view');
-                                }, 500);
-                            }, 500);
-                        } else {
-                            // إذا لم يكن هناك جلسة، ولم نكن في مرحلة عودة من جوجل
-                            if (!window.location.hash.includes('access_token')) {
-                                window.location.href = '/login.html';
-                            }
-                        }
-                    });
-
-                } catch (e) {
-                    logDebug("Error: " + e.message);
-                }
+                });
             },
 
+            // باقي الوظائف كما هي تماماً...
             navigate: (viewId) => {
-                ['view-rooms', 'view-space'].forEach(id => {
-                    document.getElementById(id).classList.add('hidden-view');
-                });
+                ['view-rooms', 'view-space'].forEach(id => document.getElementById(id).classList.add('hidden-view'));
                 const target = document.getElementById(`view-${viewId}`);
                 if (target) target.classList.remove('hidden-view');
             },
 
             handleLogin: async (user) => {
-                if (app.currentUser) return; // منع التكرار
-
+                if (app.currentUser) return;
                 let profile = { username: 'Operative', id: user.id };
                 try {
                     let { data } = await app.supabase.from('profiles').select('*').eq('id', user.id).single();
@@ -197,12 +180,9 @@
                         data = newData;
                     }
                     if(data) profile = data;
-                } catch (e) { console.log("Silent DB error"); }
-
+                } catch (e) {}
                 app.currentUser = profile;
-                if(app.currentUser.username) {
-                    document.getElementById('username-display').innerText = app.currentUser.username;
-                }
+                if(app.currentUser.username) document.getElementById('username-display').innerText = app.currentUser.username;
             },
 
             logout: async () => {
@@ -222,5 +202,6 @@
 
         window.onload = app.init;
     </script>
+
 </body>
 </html>
