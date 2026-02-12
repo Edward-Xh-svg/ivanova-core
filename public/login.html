@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVANOVA | Login Access</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#66FCF1', // لون إيفانو المميز
+                        dark: '#0B0C10',
+                        glass: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { margin: 0; padding: 0; background-color: #050505; color: white; font-family: 'Cairo', sans-serif; }
+        
+        /* الصورة الخلفية مع تأثير التراكب */
+        .bg-split {
+            /* تم تحديث الرابط هنا */
+            background-image: url('https://yubvsehgmnudhcqwajae.supabase.co/storage/v1/object/public/login%20png/_%20(2).jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* تأثير الزجاج للجهة اليمنى */
+        .glass-panel {
+            background: rgba(11, 12, 16, 0.85); /* لون داكن جداً شفاف قليلاً */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* تخصيص حقول الإدخال لتشبه الصورة */
+        .input-field {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: white;
+            padding: 10px 0;
+            width: 100%;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-field:focus {
+            border-bottom-color: #66FCF1; /* التوهج عند الكتابة */
+        }
+        .input-label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden">
+
+    <div class="hidden md:block w-1/2 h-full bg-split relative">
+        <div class="absolute inset-0 bg-black/20"></div> <div class="absolute bottom-10 left-10 text-white z-10">
+            <h1 class="text-5xl font-bold font-mono tracking-widest text-white">IVANOVA</h1>
+            <p class="text-gray-300 text-sm mt-2 tracking-wider">Strategic Reality System</p>
+        </div>
+    </div>
+
+    <div class="w-full md:w-1/2 h-full glass-panel flex flex-col justify-center items-center px-8 relative">
+        
+        <div class="w-full max-w-md fade-in">
+            <div class="mb-10">
+                <h2 class="text-4xl font-bold font-mono mb-2">Welcome back</h2>
+                <p class="text-gray-400 text-sm">Enter your credentials to access the system core.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="input-label">IDENTITY (EMAIL)</label>
+                    <input type="email" placeholder="operative@ivanova.sbs" class="input-field placeholder-gray-700">
+                </div>
+                
+                <div>
+                    <label class="input-label">ACCESS CODE</label>
+                    <input type="password" placeholder="••••••••" class="input-field placeholder-gray-700">
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
+                        <input type="checkbox" class="accent-brand bg-transparent"> Remember me
+                    </label>
+                    <a href="#" class="hover:text-brand transition">Forgot password?</a>
+                </div>
+
+                <button class="w-full py-4 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition tracking-wider mt-4 opacity-50 cursor-not-allowed" title="Use Google Login below">
+                    LOG IN
+                </button>
+            </div>
+
+            <div class="relative flex py-8 items-center">
+                <div class="flex-grow border-t border-gray-800"></div>
+                <span class="flex-shrink-0 mx-4 text-gray-600 text-xs">OR ACCESS WITH</span>
+                <div class="flex-grow border-t border-gray-800"></div>
+            </div>
+
+            <button onclick="loginWithGoogle()" class="w-full py-4 border border-gray-700 rounded-lg flex justify-center items-center gap-3 hover:border-brand hover:text-brand hover:bg-brand/5 transition-all group">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 grayscale group-hover:grayscale-0 transition">
+                <span class="font-bold text-sm tracking-wide">GOOGLE AUTHENTICATION</span>
+            </button>
+
+            <div class="mt-8 text-center text-xs text-gray-500">
+                Don't have an identity? <a href="#" onclick="loginWithGoogle()" class="text-white font-bold hover:text-brand underline">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // إعداد Supabase
+        const supabaseUrl = 'https://yubvsehgmnudhcqwajae.supabase.co';
+        const supabaseKey = 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'; // مفتاحك العام
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function loginWithGoogle() {
+            try {
+                const { error } = await _supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        // سيتم توجيه المستخدم إلى الصفحة الرئيسية بعد الدخول
+                        redirectTo: window.location.origin + '/index.html' 
+                    }
+                });
+                if (error) throw error;
+            } catch (error) {
+                alert("Access Denied: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
