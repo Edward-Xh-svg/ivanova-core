@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVANOVA OS | System Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#66FCF1',
+                        brandDark: 'rgba(102, 252, 241, 0.1)',
+                        bgDark: '#050505',
+                        panel: '#0F1115'
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: #fff; overflow: hidden; }
+        
+        /* تأثيرات الزجاج المتوهج */
+        .glass-panel {
+            background: rgba(15, 17, 21, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+        
+        /* الحدود المضيئة عند التفاعل */
+        .glow-border:hover {
+            border-color: rgba(102, 252, 241, 0.4);
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.1);
+        }
+
+        /* شريط التمرير المخفي */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* الدوك السفلي */
+        .dock-item {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .dock-item:hover {
+            transform: translateY(-10px) scale(1.1);
+            color: #66FCF1;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col relative bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm z-0"></div>
+
+    <div id="loader" class="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+        <div class="text-center">
+            <div class="w-16 h-16 border-t-2 border-brand border-r-2 border-brand/30 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="font-mono text-brand text-xs tracking-[0.3em]">LOADING OS...</p>
+        </div>
+    </div>
+
+    <div class="relative z-10 flex h-full w-full p-4 gap-4 fade-in" style="animation-delay: 0.2s;">
+        
+        <aside class="w-20 md:w-64 glass-panel rounded-2xl flex flex-col justify-between py-6 px-4 transition-all duration-300">
+            <div>
+                <div class="flex items-center gap-3 mb-10 px-2 justify-center md:justify-start">
+                    <i class="fas fa-fingerprint text-3xl text-brand"></i>
+                    <span class="hidden md:block font-[Rajdhani] font-bold text-2xl tracking-widest mt-1">IVANOVA</span>
+                </div>
+
+                <nav class="space-y-2">
+                    <button class="w-full flex items-center gap-4 p-3 rounded-xl bg-brand/10 text-brand border border-brand/20 transition-all">
+                        <i class="fas fa-home text-lg"></i>
+                        <span class="hidden md:block font-bold text-sm">Dashboard</span>
+                    </button>
+                    <button onclick="window.location.href='space.html'" class="w-full flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <i class="fas fa-cube text-lg"></i>
+                        <span class="hidden md:block font-bold text-sm">Space Cloud</span>
+                    </button>
+                    <button onclick="window.location.href='comio.html'" class="w-full flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <i class="fas fa-comments text-lg"></i>
+                        <span class="hidden md:block font-bold text-sm">Comio Feed</span>
+                    </button>
+                    <button class="w-full flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <i class="fas fa-chart-pie text-lg"></i>
+                        <span class="hidden md:block font-bold text-sm">Analytics</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="border-t border-white/10 pt-4 text-center md:text-right">
+                <div class="hidden md:block text-xs text-gray-500 mb-1">LOGGED AS</div>
+                <div id="sidebar-username" class="hidden md:block font-mono text-brand font-bold truncate">...</div>
+                <button onclick="app.logout()" class="mt-2 text-red-500 hover:text-red-400 text-xl md:text-xs"><i class="fas fa-power-off"></i></button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col gap-4 overflow-hidden">
+            
+            <header class="glass-panel rounded-2xl p-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-bold">Welcome back, <span id="header-username" class="text-brand">Commander</span></h1>
+                    <p class="text-xs text-gray-400 font-mono" id="system-date">Loading date...</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/5 text-xs font-mono text-green-400">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> SYSTEM ONLINE
+                    </div>
+                    <i class="fas fa-bell text-gray-400 hover:text-white cursor-pointer"></i>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-black border border-white/20 overflow-hidden">
+                        <img id="user-avatar" src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto pb-20">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                    
+                    <div class="glass-panel rounded-2xl p-6 glow-border group cursor-pointer relative overflow-hidden" onclick="window.location.href='space.html'">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all"><i class="fas fa-hdd text-6xl"></i></div>
+                        <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase mb-2">Ivanova Space</h3>
+                        <div class="text-3xl font-bold text-white mb-4">12.4 <span class="text-sm text-gray-500">GB Used</span></div>
+                        <div class="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-brand w-[15%]"></div>
+                        </div>
+                        <p class="mt-4 text-xs text-brand">Access Drive <i class="fas fa-arrow-right ml-1"></i></p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 glow-border group cursor-pointer relative overflow-hidden" onclick="window.location.href='comio.html'">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all"><i class="fas fa-hashtag text-6xl"></i></div>
+                        <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase mb-2">Comio Network</h3>
+                        <div class="text-3xl font-bold text-white mb-1">0 <span class="text-sm text-gray-500">New Alerts</span></div>
+                        <p class="text-xs text-gray-400">Your network is quiet.</p>
+                        <p class="mt-8 text-xs text-blue-400">Open Feed <i class="fas fa-arrow-right ml-1"></i></p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 glow-border relative overflow-hidden md:row-span-2">
+                        <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase mb-6">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+                                <div class="w-8 h-8 rounded bg-brand/20 flex items-center justify-center text-brand"><i class="fas fa-sign-in-alt"></i></div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">System Login</div>
+                                    <div class="text-[10px] text-gray-500">Just now • Secure</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5 opacity-50">
+                                <div class="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fas fa-sync"></i></div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Cloud Sync</div>
+                                    <div class="text-[10px] text-gray-500">2 hours ago • Completed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 md:col-span-2 flex items-center justify-between">
+                         <div>
+                            <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase">System Integrity</h3>
+                            <p class="text-2xl font-bold text-green-400 mt-1">100% SECURE</p>
+                         </div>
+                         <div class="h-10 w-[1px] bg-white/10"></div>
+                         <div>
+                            <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase">Encryption</h3>
+                            <p class="text-xl font-bold text-white mt-1">AES-256</p>
+                         </div>
+                         <div class="h-10 w-[1px] bg-white/10"></div>
+                         <div>
+                            <h3 class="text-gray-400 text-xs font-mono tracking-widest uppercase">Node</h3>
+                            <p class="text-xl font-bold text-white mt-1">Casablanca-01</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel px-6 py-3 rounded-2xl flex items-center gap-6 z-50 border border-brand/20">
+        <div class="dock-item cursor-pointer text-gray-400 hover:text-brand" title="Home" onclick="location.reload()">
+            <i class="fas fa-home text-xl"></i>
+        </div>
+        <div class="w-[1px] h-6 bg-white/10"></div>
+        <div class="dock-item cursor-pointer text-gray-400 hover:text-white" title="Space" onclick="window.location.href='space.html'">
+            <i class="fas fa-folder text-xl"></i>
+        </div>
+        <div class="dock-item cursor-pointer text-gray-400 hover:text-blue-400" title="Comio" onclick="window.location.href='comio.html'">
+            <i class="fas fa-globe text-xl"></i>
+        </div>
+        <div class="dock-item cursor-pointer text-gray-400 hover:text-purple-400" title="Terminal">
+            <i class="fas fa-terminal text-xl"></i>
+        </div>
+        <div class="w-[1px] h-6 bg-white/10"></div>
+        <div class="dock-item cursor-pointer text-gray-400 hover:text-white" title="Settings">
+            <i class="fas fa-cog text-xl"></i>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            supabase: null,
+            init: async () => {
+                // تفعيل الساعة
+                setInterval(app.updateTime, 1000);
+                app.updateTime();
+
+                // الاتصال بقاعدة البيانات
+                app.supabase = supabase.createClient(
+                    'https://yubvsehgmnudhcqwajae.supabase.co',
+                    'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
+                );
+
+                // التحقق من المستخدم
+                const { data: { session } } = await app.supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = 'login.html';
+                } else {
+                    app.loadUserData(session.user);
+                    setTimeout(() => {
+                        document.getElementById('loader').classList.add('hidden');
+                    }, 500);
+                }
+            },
+
+            loadUserData: (user) => {
+                const name = user.user_metadata.full_name || 'Operative';
+                const email = user.email;
+                
+                document.getElementById('header-username').innerText = name;
+                document.getElementById('sidebar-username').innerText = name.toUpperCase();
+                
+                // صورة الأفاتار
+                if(user.user_metadata.avatar_url) {
+                    document.getElementById('user-avatar').src = user.user_metadata.avatar_url;
+                } else {
+                    document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
+                }
+            },
+
+            updateTime: () => {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('system-date').innerText = now.toLocaleDateString('en-US', options);
+            },
+
+            logout: async () => {
+                await app.supabase.auth.signOut();
+                window.location.href = 'login.html';
+            }
+        };
+
+        window.onload = app.init;
+    </script>
+</body>
+</html>
