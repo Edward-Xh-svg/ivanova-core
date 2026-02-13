@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-COMIO | Secure Messaging</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#66FCF1',
+                        brandDim: 'rgba(102, 252, 241, 0.1)',
+                        darkBase: '#0b0c10',
+                        darkSurface: '#1f2833',
+                        chatIn: 'rgba(255, 255, 255, 0.03)',
+                        chatOut: 'rgba(102, 252, 241, 0.1)'
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; height: 100vh; }
+        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+        .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+        .cursor-dot { width: 8px; height: 8px; background: white; }
+        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
+        body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
+
+        .glass-panel { background: rgba(15, 17, 21, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        /* تصميم الرسائل */
+        .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 0.875rem; line-height: 1.5; }
+        .msg-in { background: var(--tw-color-chatIn); border-bottom-right-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+        .msg-out { background: rgba(102, 252, 241, 0.1); border-bottom-left-radius: 4px; border: 1px solid rgba(102, 252, 241, 0.2); align-self: flex-start; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body class="flex flex-col relative overflow-hidden">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+    <div class="noise-overlay"></div>
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-md z-0"></div>
+
+    <div class="relative z-10 flex h-full w-full p-2 md:p-4 gap-2 md:gap-4 fade-in">
+        
+        <aside class="w-16 glass-panel rounded-2xl flex flex-col items-center py-6 gap-8 shrink-0">
+            <div class="hover-target cursor-pointer" onclick="window.location.href='comio.html'">
+                <i class="fas fa-chevron-right text-gray-500 hover:text-white transition"></i>
+            </div>
+            <div class="flex flex-col gap-6 flex-1">
+                <i class="fas fa-comment-dots text-brand text-xl cursor-pointer"></i>
+                <i class="fas fa-user-friends text-gray-500 hover:text-white cursor-pointer transition"></i>
+                <i class="fas fa-archive text-gray-500 hover:text-white cursor-pointer transition"></i>
+            </div>
+            <img id="user-avatar" src="" class="w-10 h-10 rounded-full border border-brand/30 grayscale">
+        </aside>
+
+        <aside class="w-80 glass-panel rounded-2xl flex flex-col overflow-hidden shrink-0 hidden md:flex">
+            <div class="p-6 border-b border-white/5">
+                <h2 class="font-[Rajdhani] font-bold text-xl tracking-widest mb-4">M-COMIO</h2>
+                <div class="relative">
+                    <input type="text" placeholder="Search chats..." class="w-full bg-black/40 border border-white/10 rounded-xl py-2 px-4 text-xs focus:outline-none focus:border-brand transition">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                <div class="hover-target flex items-center gap-3 p-3 rounded-xl bg-brand/5 border border-brand/10 cursor-pointer transition group">
+                    <div class="relative shrink-0">
+                        <img src="https://ui-avatars.com/api/?name=Agent+Smith&background=333&color=fff" class="w-11 h-11 rounded-full">
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-darkBase"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-bold text-white group-hover:text-brand transition">Agent Smith</span>
+                            <span class="text-[10px] text-gray-500">12:45</span>
+                        </div>
+                        <p class="text-xs text-gray-400 truncate">The payload is ready for deployment.</p>
+                    </div>
+                </div>
+
+                <div class="hover-target flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition group">
+                    <div class="relative shrink-0">
+                        <img src="https://ui-avatars.com/api/?name=Trinity&background=0D8ABC&color=fff" class="w-11 h-11 rounded-full grayscale">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-bold text-white group-hover:text-brand transition">Trinity</span>
+                            <span class="text-[10px] text-gray-500">Yesterday</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">See you at the node.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 glass-panel rounded-2xl flex flex-col overflow-hidden relative">
+            
+            <header class="p-4 md:p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                <div class="flex items-center gap-4">
+                    <div class="md:hidden cursor-pointer" onclick="/* كود للرجوع للقائمة في الموبايل */">
+                        <i class="fas fa-chevron-right text-brand"></i>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Agent+Smith&background=333&color=fff" class="w-10 h-10 rounded-full">
+                    <div>
+                        <div class="font-bold text-sm tracking-wide">Agent Smith</div>
+                        <div class="text-[10px] text-green-500 font-mono tracking-widest uppercase">Encryption: AES-256 Active</div>
+                    </div>
+                </div>
+                <div class="flex gap-6 text-gray-500">
+                    <i class="fas fa-phone hover:text-brand cursor-pointer hover-target"></i>
+                    <i class="fas fa-video hover:text-brand cursor-pointer hover-target"></i>
+                    <i class="fas fa-info-circle hover:text-brand cursor-pointer hover-target"></i>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+                
+                <div class="msg-bubble msg-out">
+                    <p>أهلاً بك أيها العميل. هل تم تأمين القطاع الرابع؟</p>
+                    <span class="text-[9px] text-gray-500 mt-2 block text-left">12:40 PM</span>
+                </div>
+
+                <div class="msg-bubble msg-in self-end">
+                    <p>تم التأمين بالكامل. نحن بانتظار الإشارة النهائية لبدء النشر.</p>
+                    <span class="text-[9px] text-gray-500 mt-2 block text-right">12:42 PM <i class="fas fa-check-double text-brand ml-1"></i></span>
+                </div>
+
+                <div class="text-center my-4">
+                    <span class="text-[10px] bg-white/5 px-3 py-1 rounded-full text-gray-500 tracking-widest uppercase">End of Secure Session</span>
+                </div>
+
+            </div>
+
+            <footer class="p-4 md:p-6 border-t border-white/5 bg-black/20">
+                <div class="flex items-center gap-4 glass-panel rounded-2xl px-4 py-2 border-white/10">
+                    <i class="fas fa-paperclip text-gray-500 hover:text-brand cursor-pointer hover-target"></i>
+                    <input type="text" placeholder="Type an encrypted message..." class="flex-1 bg-transparent border-none text-sm focus:ring-0 placeholder-gray-600 hover-target">
+                    <i class="fas fa-microphone text-gray-500 hover:text-brand cursor-pointer hover-target"></i>
+                    <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-black cursor-pointer hover:bg-white transition hover-target">
+                        <i class="fas fa-paper-plane text-sm"></i>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        });
+        document.querySelectorAll('.hover-target, button, i, input').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        const app = {
+            supabase: null,
+            init: async () => {
+                app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
+                const { data: { session } } = await app.supabase.auth.getSession();
+                if (!session) window.location.href = 'login.html';
+                else app.loadUserData(session.user);
+            },
+            loadUserData: (user) => {
+                const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${user.user_metadata.full_name}&background=66FCF1&color=000`;
+                document.getElementById('user-avatar').src = avatar;
+            }
+        };
+        window.onload = app.init;
+    </script>
+</body>
+</html>
