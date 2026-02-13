@@ -20,24 +20,34 @@ app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 3. صفحة الدخول (صراحة)
+// 3. صفحة الدخول
 app.get('/login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// 4. ✅ (الجديد) نظام التشغيل - Ivanova World
+// 4. نظام التشغيل - Ivanova World
 app.get('/ivanovaworld.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'ivanovaworld.html'));
 });
 
-// 5. ✅ (مستقبلاً) Space
+// 5. المستودع السحابي - Space
 app.get('/space.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'space.html'));
 });
 
-// 6. ✅ (مستقبلاً) Comio
+// 6. منصة التواصل - Comio
 app.get('/comio.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'comio.html'));
+});
+
+// 7. ✅ (الجديد) مركز الرسائل المشفرة - M-Comio
+app.get('/mcomio.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'mcomio.html'));
+});
+
+// 8. ✅ (الجديد) مركز الخدمات والهوية - Ivavers
+app.get('/ivavers.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ivavers.html'));
 });
 
 // =================================================================
