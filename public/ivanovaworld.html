@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVANOVA OS | System Core</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#66FCF1',
+                        brandDim: 'rgba(102, 252, 241, 0.1)',
+                        darkBase: '#0b0c10',
+                        darkSurface: '#1f2833'
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* توحيد التجربة مع الصفحة الرئيسية */
+        body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; }
+        
+        /* طبقة التشويش */
+        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+        
+        /* المؤشر الخاص */
+        .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+        .cursor-dot { width: 8px; height: 8px; background: white; }
+        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
+        body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
+
+        /* اللوحات الزجاجية */
+        .glass-panel {
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
+        }
+        .hover-target:hover { border-color: rgba(102, 252, 241, 0.3); }
+
+        /* شريط التمرير */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* الدوك السفلي */
+        .dock-item { transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; }
+        .dock-item::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: #66FCF1; transition: 0.3s; }
+        .dock-item:hover { transform: translateY(-5px); color: #66FCF1; }
+        .dock-item:hover::after { width: 100%; }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col relative bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+    <div class="noise-overlay"></div>
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md z-0"></div>
+
+    <div id="loader" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
+        <div class="text-center">
+            <div class="w-64 h-1 bg-gray-900 rounded-full overflow-hidden mb-4">
+                <div class="h-full bg-brand animate-[loading_1s_ease-in-out_infinite]"></div>
+            </div>
+            <p class="font-mono text-brand text-xs tracking-[0.3em] animate-pulse">LOADING OS ENVIRONMENT...</p>
+        </div>
+    </div>
+
+    <div class="relative z-10 flex h-full w-full p-6 gap-6 fade-in" style="animation-delay: 0.3s;">
+        
+        <aside class="w-20 md:w-72 glass-panel rounded-2xl flex flex-col justify-between py-8 px-4">
+            <div>
+                <div class="flex items-center gap-4 mb-12 px-2 justify-center md:justify-start">
+                    <span class="text-brand text-3xl font-bold font-mono">IV</span>
+                    <span class="hidden md:block font-[Rajdhani] font-bold text-xl tracking-[0.2em] text-white">IVANOVA</span>
+                </div>
+
+                <nav class="space-y-3">
+                    <button class="hover-target w-full flex items-center gap-4 p-4 rounded-xl bg-brand/5 text-brand border border-brand/20 transition-all group">
+                        <i class="fas fa-microchip text-xl"></i>
+                        <span class="hidden md:block font-bold text-sm tracking-wider">DASHBOARD</span>
+                        <div class="ml-auto w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_10px_#66FCF1]"></div>
+                    </button>
+                    <button onclick="window.location.href='space.html'" class="hover-target w-full flex items-center gap-4 p-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <i class="fas fa-hdd text-xl"></i>
+                        <span class="hidden md:block font-bold text-sm tracking-wider">SPACE DRIVE</span>
+                    </button>
+                    <button onclick="window.location.href='comio.html'" class="hover-target w-full flex items-center gap-4 p-4 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                        <i class="fas fa-globe-americas text-xl"></i>
+                        <span class="hidden md:block font-bold text-sm tracking-wider">COMIO NET</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="border-t border-white/5 pt-6 text-center md:text-right">
+                <div class="hidden md:block text-[10px] text-gray-500 mb-2 tracking-widest uppercase">Logged in as</div>
+                <div id="sidebar-username" class="hidden md:block font-mono text-white font-bold truncate tracking-wider">GHOST</div>
+                <button onclick="app.logout()" class="hover-target mt-4 text-red-500 hover:text-red-400 text-xl md:text-xs tracking-widest uppercase flex items-center justify-end gap-2 w-full">
+                    <span class="hidden md:block">Disconnect</span> <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col gap-6 overflow-hidden">
+            
+            <header class="glass-panel rounded-2xl p-6 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold font-[Rajdhani] tracking-wide">WELCOME BACK, <span id="header-username" class="text-brand">COMMANDER</span></h1>
+                    <p class="text-xs text-gray-500 font-mono mt-1 tracking-widest" id="system-date">INITIALIZING...</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="hidden md:flex items-center gap-3 px-4 py-2 rounded-full bg-black/40 border border-white/5 text-xs font-mono text-brand">
+                        <div class="w-1.5 h-1.5 bg-brand rounded-full animate-pulse"></div> SECURE CONNECTION
+                    </div>
+                    <div class="w-12 h-12 rounded-full p-0.5 border border-brand/30">
+                        <img id="user-avatar" src="" class="w-full h-full rounded-full object-cover grayscale hover:grayscale-0 transition duration-500">
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto pb-24 pr-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="glass-panel hover-target rounded-2xl p-8 cursor-pointer relative overflow-hidden group" onclick="window.location.href='space.html'">
+                        <div class="absolute -right-4 -top-4 text-8xl text-white opacity-[0.02] group-hover:scale-110 transition duration-700"><i class="fas fa-database"></i></div>
+                        <h3 class="text-brand text-xs font-mono tracking-[0.2em] mb-4">STORAGE STATUS</h3>
+                        <div class="text-4xl font-bold text-white mb-6 font-[Rajdhani]">45% <span class="text-lg text-gray-500 font-sans">Used</span></div>
+                        <div class="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-brand w-[45%] shadow-[0_0_10px_#66FCF1]"></div>
+                        </div>
+                        <div class="mt-6 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">12.4 GB / 30 GB</span>
+                            <i class="fas fa-arrow-right text-brand -rotate-45 group-hover:rotate-0 transition"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel hover-target rounded-2xl p-8 cursor-pointer relative overflow-hidden group" onclick="window.location.href='comio.html'">
+                        <div class="absolute -right-4 -top-4 text-8xl text-white opacity-[0.02] group-hover:scale-110 transition duration-700"><i class="fas fa-share-alt"></i></div>
+                        <h3 class="text-blue-400 text-xs font-mono tracking-[0.2em] mb-4">SOCIAL FEED</h3>
+                        <div class="text-4xl font-bold text-white mb-2 font-[Rajdhani]">ACTIVE</div>
+                        <p class="text-xs text-gray-500 mb-6">Global network synchronized.</p>
+                        <div class="flex -space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-700 border border-black"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-600 border border-black"></div>
+                            <div class="w-8 h-8 rounded-full bg-gray-500 border border-black flex items-center justify-center text-[10px]">+9</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel hover-target rounded-2xl p-8 md:row-span-2 flex flex-col">
+                        <h3 class="text-gray-500 text-xs font-mono tracking-[0.2em] mb-8">SYSTEM LOGS</h3>
+                        <div class="space-y-6 font-mono text-xs flex-1">
+                            <div class="flex gap-4">
+                                <span class="text-brand">10:42</span>
+                                <span class="text-gray-300">Biometric auth verified.</span>
+                            </div>
+                            <div class="flex gap-4 opacity-70">
+                                <span class="text-brand">10:41</span>
+                                <span class="text-gray-300">Space drive mounted.</span>
+                            </div>
+                            <div class="flex gap-4 opacity-50">
+                                <span class="text-brand">09:30</span>
+                                <span class="text-gray-300">System update checked.</span>
+                            </div>
+                            <div class="flex gap-4 opacity-30">
+                                <span class="text-brand">08:15</span>
+                                <span class="text-gray-300">Background tasks cleared.</span>
+                            </div>
+                        </div>
+                        <div class="pt-6 border-t border-white/5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500">CPU LOAD</span>
+                                <span class="text-green-400">12%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel hover-target rounded-2xl p-8 md:col-span-2 flex items-center justify-between relative overflow-hidden">
+                         <div class="absolute inset-0 bg-brand/5"></div>
+                         <div class="relative z-10">
+                            <h3 class="text-gray-400 text-xs font-mono tracking-[0.2em]">SECURITY LEVEL</h3>
+                            <p class="text-3xl font-bold text-white mt-2 font-[Rajdhani]">MAXIMUM</p>
+                         </div>
+                         <div class="h-12 w-[1px] bg-white/10 relative z-10"></div>
+                         <div class="relative z-10">
+                            <h3 class="text-gray-400 text-xs font-mono tracking-[0.2em]">ENCRYPTION</h3>
+                            <p class="text-3xl font-bold text-white mt-2 font-[Rajdhani]">AES-256</p>
+                         </div>
+                         <div class="h-12 w-[1px] bg-white/10 relative z-10"></div>
+                         <div class="relative z-10 text-right">
+                             <i class="fas fa-shield-alt text-4xl text-brand"></i>
+                         </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 glass-panel px-8 py-4 rounded-2xl flex items-center gap-8 z-50 hover-target">
+        <div class="dock-item cursor-pointer text-brand" title="Home" onclick="location.reload()">
+            <i class="fas fa-home text-2xl"></i>
+        </div>
+        <div class="w-[1px] h-8 bg-white/10"></div>
+        <div class="dock-item cursor-pointer text-gray-400" title="Space" onclick="window.location.href='space.html'">
+            <i class="fas fa-folder text-2xl"></i>
+        </div>
+        <div class="dock-item cursor-pointer text-gray-400" title="Comio" onclick="window.location.href='comio.html'">
+            <i class="fas fa-globe text-2xl"></i>
+        </div>
+        <div class="dock-item cursor-pointer text-gray-400" title="Terminal">
+            <i class="fas fa-terminal text-2xl"></i>
+        </div>
+        <div class="w-[1px] h-8 bg-white/10"></div>
+        <div class="dock-item cursor-pointer text-gray-400" title="Settings">
+            <i class="fas fa-cog text-2xl"></i>
+        </div>
+    </div>
+
+    <script>
+        // 1. تحريك المؤشر
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        });
+        document.querySelectorAll('.hover-target, button, a, .dock-item').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        const app = {
+            supabase: null,
+            init: async () => {
+                setInterval(app.updateTime, 1000);
+                app.updateTime();
+
+                app.supabase = supabase.createClient(
+                    'https://yubvsehgmnudhcqwajae.supabase.co',
+                    'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
+                );
+
+                const { data: { session } } = await app.supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = 'login.html';
+                } else {
+                    app.loadUserData(session.user);
+                    const loader = document.getElementById('loader');
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 700);
+                }
+            },
+
+            loadUserData: (user) => {
+                const name = user.user_metadata.full_name || 'Operative';
+                document.getElementById('header-username').innerText = name.toUpperCase();
+                document.getElementById('sidebar-username').innerText = name.toUpperCase();
+                
+                const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
+                document.getElementById('user-avatar').src = avatar;
+            },
+
+            updateTime: () => {
+                const now = new Date();
+                const options = { weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('system-date').innerText = now.toLocaleDateString('en-US', options).toUpperCase();
+            },
+
+            logout: async () => {
+                await app.supabase.auth.signOut();
+                window.location.href = 'login.html';
+            }
+        };
+
+        window.onload = app.init;
+    </script>
+    <style> @keyframes loading { 0% { width: 0; margin-left: 0; } 50% { width: 100%; margin-left: 0; } 100% { width: 0; margin-left: 100%; } } </style>
+</body>
+</html>
