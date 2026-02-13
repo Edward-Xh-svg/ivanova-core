@@ -28,26 +28,21 @@
 
     <style>
         body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; height: 100vh; font-family: 'Cairo', sans-serif; }
-        /* ملمس سينمائي (Cinematic Noise) */
         .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
         
-        /* مؤشر ماوس خاص (Custom Cursor) */
         .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
         .cursor-dot { width: 8px; height: 8px; background: white; }
         .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s; }
         body.hovering .cursor-circle { width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-color: transparent; }
 
-        /* الألواح الزجاجية */
         .glass-panel { background: rgba(15, 17, 21, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        
-        /* بطاقة المنشور (The Post) */
-        .post-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .post-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.04); border-color: rgba(102, 252, 241, 0.3); }
+        .post-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s ease; }
+        .post-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.04); border-color: rgba(102, 252, 241, 0.3); }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="flex flex-col relative">
@@ -56,45 +51,42 @@
     <div class="cursor-circle"></div>
     <div class="noise-overlay"></div>
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
+    <div id="loader-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
         <div class="text-center">
-            <p class="font-mono text-brand text-xs tracking-[0.5em] animate-pulse">CONNECTING TO THE GRID...</p>
+            <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="font-mono text-brand text-[10px] tracking-[0.5em] animate-pulse uppercase">Syncing with Grid...</p>
         </div>
     </div>
 
     <div class="flex h-screen w-full p-3 gap-3 fade-in">
         
         <aside class="hidden lg:flex w-72 glass-panel rounded-[32px] flex-col py-8 px-6 shrink-0">
-            <div class="flex items-center gap-4 mb-12 hover-target cursor-pointer" onclick="window.location.href='ivanovaworld.html'">
-                <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-black shadow-[0_0_15px_#66FCF1]">
-                    <i class="fas fa-satellite-dish"></i>
-                </div>
-                <span class="font-[Rajdhani] font-bold text-2xl tracking-widest">COMIO</span>
+            <div class="flex items-center gap-4 mb-10 hover-target cursor-pointer" onclick="window.location.href='ivanovaworld.html'">
+                <i class="fas fa-satellite text-brand text-2xl"></i>
+                <span class="font-[Rajdhani] font-bold text-2xl tracking-widest uppercase">Comio</span>
             </div>
 
-            <nav class="space-y-6 flex-1">
-                <div class="space-y-2">
-                    <button class="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand/10 text-brand border border-brand/20 transition hover-target">
-                        <i class="fas fa-home"></i> <span class="text-sm font-bold">Global Feed</span>
-                    </button>
-                    <button class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
-                        <i class="fas fa-hashtag"></i> <span class="text-sm font-bold">Trending Topics</span>
-                    </button>
-                    <button class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
-                        <i class="fas fa-users"></i> <span class="text-sm font-bold">Communities</span>
-                    </button>
-                    <button onclick="window.location.href='mcomio.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
-                        <i class="fas fa-envelope"></i> <span class="text-sm font-bold">Messages</span>
-                    </button>
-                </div>
+            <nav class="space-y-4 flex-1">
+                <button class="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand/10 text-brand border border-brand/20">
+                    <i class="fas fa-home-alt"></i> <span class="text-sm font-bold">Global Feed</span>
+                </button>
+                <button onclick="window.location.href='mcomio.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
+                    <i class="fas fa-comment-alt-lines"></i> <span class="text-sm font-bold">Messages</span>
+                </button>
+                <button class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
+                    <i class="fas fa-fire"></i> <span class="text-sm font-bold">Trending</span>
+                </button>
+                <button onclick="window.location.href='ivavers.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
+                    <i class="fas fa-user-shield"></i> <span class="text-sm font-bold">Identity Hub</span>
+                </button>
             </nav>
 
             <div class="pt-6 border-t border-white/5">
-                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover-target cursor-pointer" onclick="window.location.href='ivavers.html'">
-                    <img id="user-avatar" src="" class="w-10 h-10 rounded-full border border-brand/30">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5">
+                    <img id="user-avatar" src="" class="w-10 h-10 rounded-full border border-brand/20">
                     <div class="truncate">
-                        <div id="username-display" class="text-xs font-bold truncate tracking-wider">...</div>
-                        <div class="text-[9px] text-brand uppercase font-mono">Verified Node</div>
+                        <div id="username-display" class="text-xs font-bold truncate">...</div>
+                        <div class="text-[9px] text-brand font-mono">NODE ONLINE</div>
                     </div>
                 </div>
             </div>
@@ -102,22 +94,17 @@
 
         <main class="flex-1 flex flex-col gap-4 overflow-hidden relative">
             
-            <div class="glass-panel rounded-[32px] p-6 shrink-0 relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><i class="fas fa-pen-nib text-8xl"></i></div>
-                
-                <div class="flex gap-4 items-start">
-                    <img id="post-avatar" src="" class="w-12 h-12 rounded-full border border-white/10 grayscale">
+            <div class="glass-panel rounded-[32px] p-6 shrink-0">
+                <div class="flex gap-4">
+                    <img id="post-avatar" src="" class="w-12 h-12 rounded-full border border-white/5 grayscale">
                     <div class="flex-1">
-                        <textarea placeholder="Transmit your message to the grid..." class="w-full bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 resize-none text-lg h-16 hover-target"></textarea>
-                        <div class="flex justify-between items-center mt-4 border-t border-white/5 pt-4">
-                            <div class="flex gap-6 text-gray-400">
-                                <i class="fas fa-image cursor-pointer hover:text-brand transition hover-target"></i>
-                                <i class="fas fa-link cursor-pointer hover:text-brand transition hover-target"></i>
-                                <i class="fas fa-poll-h cursor-pointer hover:text-brand transition hover-target"></i>
+                        <textarea placeholder="What's happening in your sector?" class="w-full bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 resize-none text-lg h-14 hover-target"></textarea>
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                            <div class="flex gap-6 text-gray-500">
+                                <i class="far fa-image cursor-pointer hover:text-brand transition hover-target"></i>
+                                <i class="far fa-smile cursor-pointer hover:text-brand transition hover-target"></i>
                             </div>
-                            <button class="hover-target px-8 py-2.5 bg-brand text-black text-xs font-bold rounded-xl hover:bg-white transition uppercase tracking-widest shadow-[0_0_20px_rgba(102,252,241,0.2)]">
-                                Transmit
-                            </button>
+                            <button class="px-8 py-2 bg-brand text-black font-bold rounded-xl hover:bg-white transition uppercase text-[10px] tracking-widest shadow-lg shadow-brand/10 hover-target">Transmit</button>
                         </div>
                     </div>
                 </div>
@@ -128,44 +115,30 @@
                 <article class="post-card p-6 cursor-pointer hover-target">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex gap-4">
-                            <img src="https://ui-avatars.com/api/?name=Ivanova+Admin&background=66FCF1&color=000" class="w-11 h-11 rounded-full">
+                            <img src="https://ui-avatars.com/api/?name=Ivanova+Core&background=66FCF1&color=000" class="w-11 h-11 rounded-full">
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-sm text-white">System Overlord</span>
-                                    <i class="fas fa-shield-check text-[10px] text-brand"></i>
-                                </div>
-                                <div class="text-[10px] text-gray-500 font-mono">@ivanova_core • 5m ago</div>
+                                <div class="font-bold text-sm">Ivanova Central</div>
+                                <div class="text-[10px] text-gray-500">@core_node • Just now</div>
                             </div>
                         </div>
-                        <i class="fas fa-ellipsis-h text-gray-600"></i>
                     </div>
-                    <p class="text-sm text-gray-300 leading-relaxed mb-4">
-                        نرحب بجميع المواطنين في النسخة الجديدة من <span class="text-brand">COMIO GRID</span>. 
-                        الآن تم فصل الرسائل الخاصة لتوفير مساحة أكبر للمشاركات العامة والتفاعل المجتمعي. السيادة الرقمية تبدأ من هنا.
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Welcome to the new <span class="text-brand">COMIO FEED</span>. 
+                        Your personal messages have been moved to M-COMIO for better organization. Enjoy the grid.
                     </p>
-                    <div class="flex gap-8 text-gray-500 text-xs mt-6 border-t border-white/5 pt-4">
-                        <span class="hover:text-brand transition flex items-center gap-2"><i class="far fa-comment"></i> 24</span>
-                        <span class="hover:text-green-400 transition flex items-center gap-2"><i class="fas fa-retweet"></i> 12</span>
-                        <span class="hover:text-red-400 transition flex items-center gap-2"><i class="far fa-heart"></i> 128</span>
-                        <span class="hover:text-white transition ml-auto"><i class="far fa-share-square"></i></span>
-                    </div>
                 </article>
 
                 <article class="post-card p-6 cursor-pointer hover-target">
                     <div class="flex gap-4 mb-4">
-                        <img src="https://ui-avatars.com/api/?name=Artio&background=333&color=fff" class="w-11 h-11 rounded-full">
+                        <img src="https://ui-avatars.com/api/?name=Operative+X&background=333&color=fff" class="w-11 h-11 rounded-full grayscale">
                         <div>
-                            <span class="font-bold text-sm text-white">Artio UNC</span>
-                            <div class="text-[10px] text-gray-500 font-mono">@artio_unc • 1h ago</div>
+                            <span class="font-bold text-sm">Operative 404</span>
+                            <div class="text-[10px] text-gray-500">@op_404 • 2h ago</div>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-300 mb-4">New dashboard aesthetics finalized. Stability is at 100%.</p>
-                    <div class="rounded-3xl overflow-hidden border border-white/10">
-                        <img src="https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop" class="w-full h-64 object-cover opacity-80 hover:opacity-100 transition duration-700">
-                    </div>
-                    <div class="flex gap-8 text-gray-500 text-xs mt-6">
-                        <span class="flex items-center gap-2"><i class="far fa-comment"></i> 8</span>
-                        <span class="flex items-center gap-2 text-red-400"><i class="fas fa-heart"></i> 56</span>
+                    <p class="text-sm text-gray-300 mb-4">Testing the new encrypted uplink. Connection is solid. 🛰️</p>
+                    <div class="rounded-2xl overflow-hidden border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop" class="w-full h-48 object-cover opacity-60">
                     </div>
                 </article>
 
@@ -173,52 +146,31 @@
         </main>
 
         <aside class="hidden xl:flex w-80 glass-panel rounded-[32px] flex-col p-8 shrink-0">
-            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6">Trending in Grid</h3>
-            
+            <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Trending Topics</h3>
             <div class="space-y-6">
-                <div class="hover-target cursor-pointer group">
-                    <div class="text-[10px] text-brand font-mono">SYSTEM UPDATES</div>
-                    <div class="text-sm font-bold text-white group-hover:text-brand transition">#Ivanova_OS_V2</div>
-                    <div class="text-[10px] text-gray-500">2.4k Transmissions</div>
+                <div class="group cursor-pointer hover-target">
+                    <div class="text-brand font-mono text-[9px]">#IVANOVA_OS_V2</div>
+                    <div class="text-sm font-bold mt-1">System Update Incoming</div>
                 </div>
-                <div class="hover-target cursor-pointer group">
-                    <div class="text-[10px] text-brand font-mono">TECHNOLOGY</div>
-                    <div class="text-sm font-bold text-white group-hover:text-brand transition">#Cloud_Sovereignty</div>
-                    <div class="text-[10px] text-gray-500">1.2k Transmissions</div>
-                </div>
-                <div class="hover-target cursor-pointer group">
-                    <div class="text-[10px] text-brand font-mono">COMMUNITY</div>
-                    <div class="text-sm font-bold text-white group-hover:text-brand transition">#The_Grid_Launch</div>
-                    <div class="text-[10px] text-gray-500">856 Transmissions</div>
-                </div>
-            </div>
-
-            <div class="mt-12">
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-6">Who to follow</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between hover-target">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 text-xs font-bold">X</div>
-                            <span class="text-xs font-bold">SpaceX</span>
-                        </div>
-                        <button class="text-[10px] border border-brand/30 px-3 py-1 rounded-full text-brand hover:bg-brand hover:text-black transition">Follow</button>
-                    </div>
+                <div class="group cursor-pointer hover-target">
+                    <div class="text-brand font-mono text-[9px]">#SPACE_DRIVE</div>
+                    <div class="text-sm font-bold mt-1">Cloud Synchronization</div>
                 </div>
             </div>
         </aside>
 
     </div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel px-8 py-4 rounded-3xl flex items-center gap-10 z-50 border border-brand/20 hover-target">
-        <div class="cursor-pointer text-gray-500 hover:text-white transition" title="Home" onclick="window.location.href='ivanovaworld.html'"><i class="fas fa-home text-2xl"></i></div>
-        <div class="cursor-pointer text-gray-500 hover:text-white transition" title="Space" onclick="window.location.href='space.html'"><i class="fas fa-folder text-2xl"></i></div>
-        <div class="cursor-pointer text-brand" title="Comio"><i class="fas fa-globe text-2xl shadow-[0_0_10px_#66FCF1]"></i></div>
-        <div class="cursor-pointer text-gray-500 hover:text-brand transition" title="Messages" onclick="window.location.href='mcomio.html'"><i class="fas fa-comment-alt text-2xl"></i></div>
-        <div class="cursor-pointer text-gray-500 hover:text-white transition" title="Identity" onclick="window.location.href='ivavers.html'"><i class="fas fa-cog text-2xl"></i></div>
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel px-8 py-3 rounded-2xl flex items-center gap-10 z-50 border border-brand/20">
+        <i class="fas fa-home text-xl text-gray-500 hover:text-white cursor-pointer hover-target" onclick="window.location.href='ivanovaworld.html'"></i>
+        <i class="fas fa-folder text-xl text-gray-500 hover:text-white cursor-pointer hover-target" onclick="window.location.href='space.html'"></i>
+        <i class="fas fa-globe text-xl text-brand"></i>
+        <i class="fas fa-comment-alt text-xl text-gray-500 hover:text-brand cursor-pointer hover-target" onclick="window.location.href='mcomio.html'"></i>
+        <i class="fas fa-cog text-xl text-gray-500 hover:text-white cursor-pointer hover-target" onclick="window.location.href='ivavers.html'"></i>
     </div>
 
     <script>
-        // تحريك المؤشر
+        // إصلاح منطق المؤشر
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
         document.addEventListener('mousemove', (e) => {
@@ -230,25 +182,49 @@
             el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
         });
 
+        // منطق التطبيق مع إصلاح "شاشة التحميل اللانهائية"
         const app = {
             supabase: null,
             init: async () => {
-                app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
-                const { data: { session } } = await app.supabase.auth.getSession();
-                if (!session) window.location.href = 'login.html';
-                else {
+                try {
+                    app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
+                    
+                    const { data: { session }, error } = await app.supabase.auth.getSession();
+                    
+                    if (error || !session) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
                     app.loadUserData(session.user);
-                    setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => document.getElementById('loader').style.display = 'none', 700); }, 500);
+                } catch (err) {
+                    console.error("Critical Boot Error:", err);
+                } finally {
+                    // إخفاء اللودر مهما حدث بعد 1.5 ثانية كأمان
+                    setTimeout(app.hideLoader, 1000);
                 }
             },
+
             loadUserData: (user) => {
                 const name = user.user_metadata.full_name || 'Operative';
                 const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
-                document.getElementById('sidebar-username').innerText = name.toUpperCase();
-                document.getElementById('user-avatar').src = avatar;
-                document.getElementById('post-avatar').src = avatar;
+                
+                const userDisplay = document.getElementById('username-display');
+                if (userDisplay) userDisplay.innerText = name.toUpperCase();
+                
+                if (document.getElementById('user-avatar')) document.getElementById('user-avatar').src = avatar;
+                if (document.getElementById('post-avatar')) document.getElementById('post-avatar').src = avatar;
+            },
+
+            hideLoader: () => {
+                const loader = document.getElementById('loader-screen');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 700);
+                }
             }
         };
+
         window.onload = app.init;
     </script>
 </body>
