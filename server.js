@@ -7,48 +7,34 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 // =================================================================
-// 🚦 خريطة الطرق (Routing Map)
+// 🚦 خريطة الطرق (Routing Map) المحدثة
 // =================================================================
 
-// 1. الصفحة الرئيسية (ivanova.sbs) -> تذهب للدخول
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
+// 1. البوابات الأساسية
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 
-// 2. صفحة البوابة (The Gateway)
-app.get('/index.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// 2. نظام التشغيل المركزي - Ivanova World
+app.get('/ivanovaworld.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivanovaworld.html')));
 
-// 3. صفحة الدخول
-app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
+// 3. المستودع السحابي - Space
+app.get('/space.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'space.html')));
 
-// 4. نظام التشغيل - Ivanova World
-app.get('/ivanovaworld.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ivanovaworld.html'));
-});
-
-// 5. المستودع السحابي - Space
-app.get('/space.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'space.html'));
-});
-
-// 6. منصة التواصل - Comio
-app.get('/comio.html', (req, res) => {
+// 4. ✅ دعم الروابط الديناميكية لـ Comio (Profiles / Search)
+// نستخدم النجمة (*) للسماح بالمسارات الفرعية مثل /comio.html/profile
+app.get('/comio.html*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'comio.html'));
 });
 
-// 7. ✅ (الجديد) مركز الرسائل المشفرة - M-Comio
-app.get('/mcomio.html', (req, res) => {
+// 5. ✅ دعم الروابط الديناميكية لـ M-Comio (Private/Group Messages)
+// يسمح بفتح المسارات العميقة مثل /mcomio.html/iosin/mes?=...
+app.get('/mcomio.html*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mcomio.html'));
 });
 
-// 8. ✅ (الجديد) مركز الخدمات والهوية - Ivavers
-app.get('/ivavers.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ivavers.html'));
-});
+// 6. مركز الخدمات والهوية - Ivavers
+app.get('/ivavers.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivavers.html')));
 
 // =================================================================
 
