@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMIO | The Social Grid</title>
+    <title>COMIO | The Grid</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -17,163 +17,197 @@
                     colors: {
                         brand: '#66FCF1',
                         brandDim: 'rgba(102, 252, 241, 0.1)',
-                        darkBase: '#0b0c10',
-                        darkSurface: '#1f2833'
+                        darkPanel: '#0F1115',
+                        darkSurface: '#050505'
                     },
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                        mono: ['Rajdhani', 'sans-serif']
-                    }
+                    fontFamily: { sans: ['Cairo', 'sans-serif'], mono: ['Rajdhani', 'sans-serif'] }
                 }
             }
         }
     </script>
 
     <style>
-        body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; }
+        body { background-color: #050505; color: #fff; overflow: hidden; height: 100vh; }
         .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
         .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
         .cursor-dot { width: 8px; height: 8px; background: white; }
-        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
-        body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
-        .glass-panel { background: rgba(15, 17, 21, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
-        .post-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
-        .post-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(102, 252, 241, 0.2); }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s; }
+        body.hovering .cursor-circle { width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-color: transparent; }
+
+        .glass-panel { background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .msg-list-item { transition: all 0.3s; border-right: 2px solid transparent; }
+        .msg-list-item:hover { background: rgba(102, 252, 241, 0.05); }
+        .msg-list-item.active { background: rgba(102, 252, 241, 0.08); border-right-color: #66FCF1; }
+
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="h-screen w-full flex flex-col relative bg-[url('https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+<body class="flex flex-col relative font-mono">
 
     <div class="cursor-dot"></div>
     <div class="cursor-circle"></div>
     <div class="noise-overlay"></div>
-    <div class="absolute inset-0 bg-black/90 backdrop-blur-md z-0"></div>
 
-    <div id="loader" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
-        <div class="text-center">
-            <div class="flex gap-2 justify-center mb-4">
-                <div class="w-3 h-3 bg-brand rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                <div class="w-3 h-3 bg-brand rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-3 h-3 bg-brand rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-            </div>
-            <p class="font-mono text-brand text-xs tracking-[0.3em]">CONNECTING TO COMIO NET...</p>
-        </div>
-    </div>
-
-    <div class="relative z-10 flex h-full w-full p-4 gap-4 fade-in" style="animation-delay: 0.2s;">
+    <div class="flex h-screen w-full p-2 gap-2 fade-in">
         
-        <aside class="hidden md:flex w-64 glass-panel rounded-2xl flex-col py-6 px-4">
-            <div class="flex items-center gap-3 mb-8 px-2 cursor-pointer hover-target" onclick="window.location.href='ivanovaworld.html'">
-                <i class="fas fa-arrow-right text-gray-500 hover:text-white transition"></i>
-                <span class="font-[Rajdhani] font-bold text-2xl tracking-widest text-white">COMIO</span>
+        <aside class="w-64 glass-panel rounded-3xl flex flex-col py-8 px-6 shrink-0">
+            <div class="flex items-center gap-3 mb-12 hover-target cursor-pointer" onclick="window.location.href='ivanovaworld.html'">
+                <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-black">
+                    <i class="fas fa-ghost"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tighter">COMIO</span>
             </div>
 
-            <div onclick="window.location.href='ivavers.html'" class="flex items-center gap-3 p-3 mb-6 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition hover-target">
-                <div class="w-10 h-10 rounded-full overflow-hidden border border-brand/50">
-                    <img id="user-avatar" src="" class="w-full h-full object-cover">
+            <nav class="space-y-6 flex-1">
+                <div class="text-[10px] text-gray-500 tracking-[0.2em] uppercase">Main</div>
+                <div class="space-y-1">
+                    <button class="w-full flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition hover-target">
+                        <i class="fas fa-th-large"></i> <span class="text-sm font-bold">Dashboard</span>
+                    </button>
+                    <button class="w-full flex items-center gap-4 p-3 rounded-xl bg-brand/10 text-brand border border-brand/20 transition hover-target">
+                        <i class="fas fa-comment-alt"></i> <span class="text-sm font-bold">Chats</span>
+                        <span class="ml-auto bg-brand/20 px-2 py-0.5 rounded text-[10px]">12</span>
+                    </button>
+                    <button class="w-full flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition hover-target">
+                        <i class="fas fa-users"></i> <span class="text-sm font-bold">Community</span>
+                    </button>
                 </div>
-                <div>
-                    <div id="sidebar-username" class="font-bold text-sm text-white leading-none mb-1">...</div>
-                    <div class="text-[10px] text-brand">Edit Profile</div>
-                </div>
-            </div>
 
-            <nav class="space-y-2 flex-1">
-                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg bg-brand/10 text-brand border border-brand/20">
-                    <i class="fas fa-stream text-lg w-6 text-center"></i>
-                    <span class="text-sm font-bold">Global Feed</span>
-                </button>
-                <button onclick="window.location.href='mcomio.html'" class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
-                    <i class="fas fa-envelope text-lg w-6 text-center"></i>
-                    <span class="text-sm font-bold">Direct Messages</span>
-                </button>
-                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
-                    <i class="fas fa-fire text-lg w-6 text-center"></i>
-                    <span class="text-sm font-bold">Trending</span>
-                </button>
-                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
-                    <i class="fas fa-bell text-lg w-6 text-center"></i>
-                    <span class="text-sm font-bold">Notifications</span>
-                </button>
+                <div class="text-[10px] text-gray-500 tracking-[0.2em] uppercase mt-10">AI Apps Connected</div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/5 hover-target cursor-pointer">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" class="w-5 h-5 grayscale">
+                        <span class="text-xs text-gray-300">ChatGPT</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/5 hover-target cursor-pointer">
+                        <div class="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-[10px]">M</div>
+                        <span class="text-xs text-gray-300">Midjourney</span>
+                    </div>
+                </div>
             </nav>
+
+            <div class="pt-6 border-t border-white/5">
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover-target cursor-pointer" onclick="window.location.href='ivavers.html'">
+                    <img id="user-avatar" src="" class="w-10 h-10 rounded-full border border-brand/30">
+                    <div class="truncate">
+                        <div id="username-display" class="text-xs font-bold truncate">...</div>
+                        <div class="text-[9px] text-brand">Authenticated</div>
+                    </div>
+                </div>
+            </div>
         </aside>
 
-        <main class="flex-1 flex flex-col gap-4 overflow-hidden relative">
-            <div class="glass-panel rounded-2xl p-4 flex gap-4 items-start shrink-0">
-                <div class="w-10 h-10 rounded-full bg-gray-700 shrink-0 overflow-hidden">
-                    <img id="post-avatar" src="" class="w-full h-full object-cover grayscale">
+        <aside class="w-96 glass-panel rounded-3xl flex flex-col overflow-hidden shrink-0">
+            <div class="p-8 border-b border-white/5">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold font-[Rajdhani]">My chats <span class="text-gray-500 text-sm ml-2">12</span></h2>
+                    <div class="flex gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-xs hover-target cursor-pointer"><i class="fas fa-list"></i></div>
+                        <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-xs hover-target cursor-pointer"><i class="fas fa-filter"></i></div>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <textarea placeholder="What is happening in the grid?" class="w-full bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 resize-none text-sm h-12 hover-target"></textarea>
-                    <div class="flex justify-between items-center mt-2 border-t border-white/5 pt-2">
-                        <div class="flex gap-4 text-brand">
-                            <i class="fas fa-image cursor-pointer hover:text-white hover-target"></i>
+                <div class="relative">
+                    <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                    <input type="text" placeholder="Search chat/message" class="w-full bg-black/40 border border-white/10 rounded-2xl py-3 pr-10 pl-4 text-xs focus:outline-none focus:border-brand transition">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-4 space-y-2">
+                    <div class="text-[10px] text-brand font-bold uppercase tracking-widest px-4 mb-4">12 New Messages</div>
+                    
+                    <div class="msg-list-item active p-4 rounded-2xl flex gap-4 cursor-pointer hover-target">
+                        <div class="relative">
+                            <img src="https://ui-avatars.com/api/?name=Edward+Norton&background=333&color=fff" class="w-12 h-12 rounded-2xl">
+                            <div class="absolute -bottom-1 -left-1 w-4 h-4 bg-brand rounded-full border-4 border-darkPanel"></div>
                         </div>
-                        <button class="hover-target px-4 py-1.5 bg-brand text-black text-xs font-bold rounded-lg hover:bg-white transition">TRANSMIT</button>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-bold">Edward Norton</span>
+                                <span class="text-[9px] text-gray-500">3min ago</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 truncate">Thanks for the helpful call. Have a g...</p>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="flex-1 overflow-y-auto space-y-4 pr-2 pb-20">
-                <div class="post-card rounded-2xl p-5 hover-target cursor-pointer">
-                    <p class="text-sm text-gray-300 leading-relaxed">System Update: Comio is now linked with Ivavers Identity Hub. 🔐</p>
-                </div>
-            </div>
-        </main>
-
-        <aside class="hidden lg:flex w-72 glass-panel rounded-2xl flex-col p-4">
-            <div class="flex justify-between items-center mb-6 cursor-pointer hover-target group" onclick="window.location.href='mcomio.html'">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest group-hover:text-brand transition">My Chats</h3>
-                <i class="fas fa-external-link-alt text-xs text-brand"></i>
-            </div>
-
-            <div class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <div onclick="window.location.href='mcomio.html'" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer hover-target group transition">
-                    <div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                         <img src="https://ui-avatars.com/api/?name=Agent+Smith&background=333&color=fff" class="w-full h-full">
-                    </div>
-                    <div class="flex-1 min-w-0 text-xs">
-                        <div class="font-bold text-white group-hover:text-brand">Agent Smith</div>
-                        <div class="text-gray-500 truncate">Encrypted data received.</div>
+                    <div class="msg-list-item p-4 rounded-2xl flex gap-4 cursor-pointer hover-target">
+                        <img src="https://ui-avatars.com/api/?name=Joanna+Smith&background=F59E0B&color=fff" class="w-12 h-12 rounded-2xl grayscale">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-bold">Joanna Smith</span>
+                                <span class="text-[9px] text-gray-500">2h ago</span>
+                            </div>
+                            <p class="text-[11px] text-gray-500 truncate">Awesome! ✨</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </aside>
-    </div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 glass-panel px-6 py-3 rounded-2xl flex items-center gap-6 z-50 border border-brand/20 hover-target">
-        <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Home" onclick="window.location.href='ivanovaworld.html'">
-            <i class="fas fa-home text-xl"></i>
-        </div>
-        <div class="w-[1px] h-6 bg-white/10"></div>
-        <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Space" onclick="window.location.href='space.html'">
-            <i class="fas fa-folder text-xl"></i>
-        </div>
-        <div class="cursor-pointer text-blue-400 hover:-translate-y-1 transition" title="Comio" onclick="location.reload()">
-            <i class="fas fa-globe text-xl"></i>
-        </div>
-        <div class="cursor-pointer text-gray-400 hover:text-brand hover:-translate-y-1 transition" title="Messages" onclick="window.location.href='mcomio.html'">
-            <i class="fas fa-comment-alt text-xl"></i>
-        </div>
-        <div class="w-[1px] h-6 bg-white/10"></div>
-        <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Identity" onclick="window.location.href='ivavers.html'">
-            <i class="fas fa-cog text-xl"></i>
-        </div>
+        <main class="flex-1 glass-panel rounded-3xl flex flex-col overflow-hidden relative">
+            
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[300px] bg-brand/5 blur-[120px] pointer-events-none"></div>
+
+            <header class="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02] relative z-10">
+                <div class="flex items-center gap-4">
+                    <img src="https://ui-avatars.com/api/?name=Edward+Norton&background=333&color=fff" class="w-12 h-12 rounded-2xl">
+                    <div>
+                        <h2 class="text-xl font-bold">Edward Norton</h2>
+                        <div class="text-[10px] text-brand tracking-widest font-mono">STATUS: ENCRYPTED NODE</div>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <button class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:text-brand transition hover-target"><i class="fas fa-phone"></i></button>
+                    <button class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:text-brand transition hover-target"><i class="fas fa-video"></i></button>
+                    <button class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:text-brand transition hover-target"><i class="fas fa-info-circle"></i></button>
+                </div>
+            </header>
+
+            <div class="flex-1 p-8 overflow-y-auto space-y-6 relative z-10">
+                <div class="text-center"><span class="text-[9px] bg-white/5 px-3 py-1 rounded-full text-gray-500 tracking-widest uppercase">Encryption Established</span></div>
+                
+                <div class="flex gap-4 max-w-[80%]">
+                    <img src="https://ui-avatars.com/api/?name=Edward+Norton&background=333&color=fff" class="w-8 h-8 rounded-lg self-end">
+                    <div class="bg-white/5 p-4 rounded-3xl rounded-br-none border border-white/5 text-sm leading-relaxed">
+                        Hey there! I've analyzed the latest sector data. Everything looks stable. Ready for the next phase?
+                    </div>
+                </div>
+
+                <div class="flex gap-4 max-w-[80%] self-end flex-row-reverse">
+                    <div class="bg-brand/10 p-4 rounded-3xl rounded-bl-none border border-brand/20 text-sm leading-relaxed">
+                        Affirmative. The uplink is secure. Waiting for your signal.
+                    </div>
+                </div>
+            </div>
+
+            <footer class="p-8 bg-white/[0.02] relative z-10">
+                <div class="glass-panel rounded-3xl p-2 flex items-center gap-4 px-6 border-white/10">
+                    <i class="fas fa-plus-circle text-gray-500 cursor-pointer hover:text-brand transition hover-target"></i>
+                    <input type="text" placeholder="Type a message..." class="flex-1 bg-transparent border-none text-sm focus:ring-0 placeholder-gray-600 hover-target">
+                    <div class="flex gap-4 text-gray-500">
+                        <i class="far fa-smile cursor-pointer hover:text-brand transition hover-target"></i>
+                        <i class="fas fa-microphone cursor-pointer hover:text-brand transition hover-target"></i>
+                    </div>
+                    <div class="w-12 h-12 bg-brand rounded-2xl flex items-center justify-center text-black cursor-pointer hover:bg-white transition hover-target">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
     </div>
 
     <script>
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
         document.addEventListener('mousemove', (e) => {
-            cursorDot.style.left = `${e.clientX}px`;
-            cursorDot.style.top = `${e.clientY}px`;
+            cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
             cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
         });
-        document.querySelectorAll('.hover-target, button, a, .post-card').forEach(el => {
+        document.querySelectorAll('.hover-target, button, input').forEach(el => {
             el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
             el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
         });
@@ -184,19 +218,12 @@
                 app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
                 const { data: { session } } = await app.supabase.auth.getSession();
                 if (!session) window.location.href = 'login.html';
-                else {
-                    app.loadUserData(session.user);
-                    const loader = document.getElementById('loader');
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.style.display = 'none', 700);
-                }
+                else app.loadUserData(session.user);
             },
             loadUserData: (user) => {
                 const name = user.user_metadata.full_name || 'Operative';
-                const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
-                document.getElementById('sidebar-username').innerText = name;
-                document.getElementById('user-avatar').src = avatar;
-                document.getElementById('post-avatar').src = avatar;
+                document.getElementById('username-display').innerText = name.toUpperCase();
+                document.getElementById('user-avatar').src = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
             }
         };
         window.onload = app.init;
