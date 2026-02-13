@@ -31,38 +31,17 @@
 
     <style>
         body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; }
-        
-        /* مؤثرات الخلفية والمؤشر */
         .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
         .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
         .cursor-dot { width: 8px; height: 8px; background: white; }
         .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
         body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
-
-        /* اللوحات الزجاجية */
-        .glass-panel {
-            background: rgba(15, 17, 21, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        /* تصميم المنشورات (Post Card) */
-        .post-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s;
-        }
-        .post-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(102, 252, 241, 0.2);
-        }
-
-        /* شريط التمرير */
+        .glass-panel { background: rgba(15, 17, 21, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .post-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
+        .post-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(102, 252, 241, 0.2); }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -93,13 +72,13 @@
                 <span class="font-[Rajdhani] font-bold text-2xl tracking-widest text-white">COMIO</span>
             </div>
 
-            <div class="flex items-center gap-3 p-3 mb-6 rounded-xl bg-white/5 border border-white/5">
+            <div onclick="window.location.href='ivavers.html'" class="flex items-center gap-3 p-3 mb-6 rounded-xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition hover-target">
                 <div class="w-10 h-10 rounded-full overflow-hidden border border-brand/50">
                     <img id="user-avatar" src="" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <div id="sidebar-username" class="font-bold text-sm text-white leading-none mb-1">...</div>
-                    <div class="text-[10px] text-brand">Online Status: Visible</div>
+                    <div class="text-[10px] text-brand">Edit Profile</div>
                 </div>
             </div>
 
@@ -108,35 +87,22 @@
                     <i class="fas fa-stream text-lg w-6 text-center"></i>
                     <span class="text-sm font-bold">Global Feed</span>
                 </button>
+                <button onclick="window.location.href='mcomio.html'" class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
+                    <i class="fas fa-envelope text-lg w-6 text-center"></i>
+                    <span class="text-sm font-bold">Direct Messages</span>
+                </button>
                 <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
                     <i class="fas fa-fire text-lg w-6 text-center"></i>
                     <span class="text-sm font-bold">Trending</span>
                 </button>
                 <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
-                    <i class="fas fa-users text-lg w-6 text-center"></i>
-                    <span class="text-sm font-bold">Communities</span>
-                    <span class="ml-auto text-[10px] bg-white/10 px-1.5 rounded">4</span>
-                </button>
-                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
                     <i class="fas fa-bell text-lg w-6 text-center"></i>
                     <span class="text-sm font-bold">Notifications</span>
-                    <div class="ml-auto w-2 h-2 rounded-full bg-red-500"></div>
                 </button>
             </nav>
-            
-            <div class="mt-4 p-4 rounded-xl bg-gradient-to-br from-purple-900/40 to-black border border-purple-500/20">
-                <h4 class="text-xs font-bold text-purple-300 mb-2">Comio AI</h4>
-                <p class="text-[10px] text-gray-400 mb-3">Ask Ivanova AI to summarize your feed.</p>
-                <button class="w-full py-1.5 rounded bg-purple-500/20 text-purple-300 text-xs border border-purple-500/30 hover:bg-purple-500/40 transition hover-target">Activate</button>
-            </div>
         </aside>
 
         <main class="flex-1 flex flex-col gap-4 overflow-hidden relative">
-            <div class="md:hidden flex justify-between items-center p-2">
-                <span class="font-[Rajdhani] font-bold text-xl">COMIO</span>
-                <div class="w-8 h-8 rounded-full bg-gray-700"></div>
-            </div>
-
             <div class="glass-panel rounded-2xl p-4 flex gap-4 items-start shrink-0">
                 <div class="w-10 h-10 rounded-full bg-gray-700 shrink-0 overflow-hidden">
                     <img id="post-avatar" src="" class="w-full h-full object-cover grayscale">
@@ -146,149 +112,36 @@
                     <div class="flex justify-between items-center mt-2 border-t border-white/5 pt-2">
                         <div class="flex gap-4 text-brand">
                             <i class="fas fa-image cursor-pointer hover:text-white hover-target"></i>
-                            <i class="fas fa-chart-bar cursor-pointer hover:text-white hover-target"></i>
-                            <i class="fas fa-smile cursor-pointer hover:text-white hover-target"></i>
                         </div>
-                        <button onclick="alert('Sending to network...')" class="hover-target px-4 py-1.5 bg-brand text-black text-xs font-bold rounded-lg hover:bg-white transition">TRANSMIT</button>
+                        <button class="hover-target px-4 py-1.5 bg-brand text-black text-xs font-bold rounded-lg hover:bg-white transition">TRANSMIT</button>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto space-y-4 pr-2 pb-20">
-                
                 <div class="post-card rounded-2xl p-5 hover-target cursor-pointer">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-3">
-                            <div class="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/30 overflow-hidden">
-                                <img src="https://ui-avatars.com/api/?name=Sarah+Connor&background=0D8ABC&color=fff" class="w-full h-full">
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-sm text-white">Sarah Connor</span>
-                                    <i class="fas fa-check-circle text-[10px] text-blue-400"></i>
-                                    <span class="text-xs text-gray-500">@sarah_c • 2h</span>
-                                </div>
-                                <div class="text-[10px] text-brand border border-brand/20 px-1.5 rounded inline-block mt-1">Resistance Leader</div>
-                            </div>
-                        </div>
-                        <i class="fas fa-ellipsis-h text-gray-500 hover:text-white"></i>
-                    </div>
-                    <p class="text-sm text-gray-300 leading-relaxed mb-4">
-                        Just secured the new sector in Ivanova Space. The encryption levels are off the charts. Has anyone tested the new Comio API yet? 🤖
-                        <span class="text-brand">#Ivanova #CyberSecurity</span>
-                    </p>
-                    <div class="w-full h-48 rounded-xl bg-cover bg-center mb-4 border border-white/10" style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop');"></div>
-                    
-                    <div class="flex justify-between text-gray-500 text-xs px-2">
-                        <div class="flex items-center gap-2 hover:text-brand transition"><i class="far fa-comment"></i> 12</div>
-                        <div class="flex items-center gap-2 hover:text-green-400 transition"><i class="fas fa-retweet"></i> 5</div>
-                        <div class="flex items-center gap-2 hover:text-red-400 transition"><i class="far fa-heart"></i> 48</div>
-                        <div class="flex items-center gap-2 hover:text-brand transition"><i class="far fa-share-square"></i></div>
-                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">System Update: Comio is now linked with Ivavers Identity Hub. 🔐</p>
                 </div>
-
-                <div class="post-card rounded-2xl p-5 hover-target cursor-pointer">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-3">
-                            <div class="w-10 h-10 rounded-full bg-purple-600/20 border border-purple-500/30 overflow-hidden">
-                                <img src="https://ui-avatars.com/api/?name=Neo+Anderson&background=6B21A8&color=fff" class="w-full h-full">
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-sm text-white">Neo</span>
-                                    <span class="text-xs text-gray-500">@the_one • 5h</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-300 leading-relaxed">
-                        Wake up. The matrix has you. Follow the white rabbit to the new Ivanova update.
-                    </p>
-                    <div class="flex justify-between text-gray-500 text-xs px-2 mt-4">
-                        <div class="flex items-center gap-2 hover:text-brand transition"><i class="far fa-comment"></i> 102</div>
-                        <div class="flex items-center gap-2 hover:text-green-400 transition"><i class="fas fa-retweet"></i> 890</div>
-                        <div class="flex items-center gap-2 hover:text-red-400 transition"><i class="far fa-heart"></i> 1.2k</div>
-                        <div class="flex items-center gap-2 hover:text-brand transition"><i class="far fa-share-square"></i></div>
-                    </div>
-                </div>
-
             </div>
         </main>
 
         <aside class="hidden lg:flex w-72 glass-panel rounded-2xl flex-col p-4">
-            
-            <div class="relative mb-6">
-                <input type="text" placeholder="Search Comio..." class="w-full bg-black/40 border border-white/10 rounded-xl py-2 px-4 text-xs text-white focus:border-brand focus:outline-none hover-target">
-                <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
-            </div>
-
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">My Chats</h3>
-                <i class="fas fa-plus text-xs text-brand cursor-pointer hover-target"></i>
+            <div class="flex justify-between items-center mb-6 cursor-pointer hover-target group" onclick="window.location.href='mcomio.html'">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest group-hover:text-brand transition">My Chats</h3>
+                <i class="fas fa-external-link-alt text-xs text-brand"></i>
             </div>
 
             <div class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer hover-target group transition">
-                    <div class="relative">
-                        <div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                             <img src="https://ui-avatars.com/api/?name=Edward+N&background=333&color=fff" class="w-full h-full">
-                        </div>
-                        <div class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-black"></div>
+                <div onclick="window.location.href='mcomio.html'" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer hover-target group transition">
+                    <div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
+                         <img src="https://ui-avatars.com/api/?name=Agent+Smith&background=333&color=fff" class="w-full h-full">
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between">
-                            <span class="text-xs font-bold text-white group-hover:text-brand">Edward Norton</span>
-                            <span class="text-[9px] text-gray-600">3m</span>
-                        </div>
-                        <div class="text-[10px] text-gray-500 truncate">Thanks for the helpful call...</div>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 p-2 rounded-lg bg-brand/5 border border-brand/10 cursor-pointer hover-target transition">
-                    <div class="relative">
-                        <div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                             <img src="https://ui-avatars.com/api/?name=Joanna+S&background=F59E0B&color=fff" class="w-full h-full">
-                        </div>
-                        <div class="absolute bottom-0 right-0 w-2 h-2 bg-gray-500 rounded-full border border-black"></div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between">
-                            <span class="text-xs font-bold text-white">Joanna Smith</span>
-                            <span class="text-[9px] text-gray-600">2h</span>
-                        </div>
-                        <div class="text-[10px] text-gray-400 font-bold truncate">Awesome! ✨</div>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer hover-target transition">
-                    <div class="relative">
-                        <div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                             <img src="https://ui-avatars.com/api/?name=Marianna+HR&background=EF4444&color=fff" class="w-full h-full">
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between">
-                            <span class="text-xs font-bold text-white group-hover:text-brand">Marianna HR</span>
-                            <span class="text-[9px] text-gray-600">4h</span>
-                        </div>
-                        <div class="text-[10px] text-gray-500 truncate">Sent the CV, check it out.</div>
+                    <div class="flex-1 min-w-0 text-xs">
+                        <div class="font-bold text-white group-hover:text-brand">Agent Smith</div>
+                        <div class="text-gray-500 truncate">Encrypted data received.</div>
                     </div>
                 </div>
             </div>
-
-            <div class="mt-6 border-t border-white/10 pt-4">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Who to follow</h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center hover-target">
-                        <div class="flex items-center gap-2">
-                             <div class="w-6 h-6 rounded bg-blue-500 flex items-center justify-center text-[10px] font-bold">X</div>
-                             <span class="text-xs font-bold">SpaceX</span>
-                        </div>
-                        <button class="text-[10px] border border-white/20 px-2 py-0.5 rounded text-gray-300 hover:text-white hover:border-white">Follow</button>
-                    </div>
-                </div>
-            </div>
-
         </aside>
     </div>
 
@@ -300,17 +153,19 @@
         <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Space" onclick="window.location.href='space.html'">
             <i class="fas fa-folder text-xl"></i>
         </div>
-        <div class="cursor-pointer text-blue-400 hover:-translate-y-1 transition" title="Comio">
+        <div class="cursor-pointer text-blue-400 hover:-translate-y-1 transition" title="Comio" onclick="location.reload()">
             <i class="fas fa-globe text-xl"></i>
         </div>
+        <div class="cursor-pointer text-gray-400 hover:text-brand hover:-translate-y-1 transition" title="Messages" onclick="window.location.href='mcomio.html'">
+            <i class="fas fa-comment-alt text-xl"></i>
+        </div>
         <div class="w-[1px] h-6 bg-white/10"></div>
-        <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Settings">
+        <div class="cursor-pointer text-gray-400 hover:text-white hover:-translate-y-1 transition" title="Identity" onclick="window.location.href='ivavers.html'">
             <i class="fas fa-cog text-xl"></i>
         </div>
     </div>
 
     <script>
-        // المؤشر
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
         document.addEventListener('mousemove', (e) => {
@@ -326,32 +181,24 @@
         const app = {
             supabase: null,
             init: async () => {
-                app.supabase = supabase.createClient(
-                    'https://yubvsehgmnudhcqwajae.supabase.co',
-                    'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
-                );
-
+                app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
                 const { data: { session } } = await app.supabase.auth.getSession();
-                if (!session) {
-                    window.location.href = 'login.html';
-                } else {
+                if (!session) window.location.href = 'login.html';
+                else {
                     app.loadUserData(session.user);
                     const loader = document.getElementById('loader');
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 700);
                 }
             },
-
             loadUserData: (user) => {
                 const name = user.user_metadata.full_name || 'Operative';
                 const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
-                
                 document.getElementById('sidebar-username').innerText = name;
                 document.getElementById('user-avatar').src = avatar;
                 document.getElementById('post-avatar').src = avatar;
             }
         };
-
         window.onload = app.init;
     </script>
 </body>
