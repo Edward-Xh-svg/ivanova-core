@@ -3,31 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVANOVA WORLD | The Core Ecosystem</title>
+    <title>IVANOVA | The Sovereign Core</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: '#66FCF1', // اللون الأساسي
-                        brandDark: '#45b2aa',
-                        darkBg: '#050505', // خلفية أغمق
-                        panel: '#0A0A0A', // لون الكتل
-                        borderSubtle: 'rgba(255, 255, 255, 0.05)'
+                        brand: '#66FCF1',
+                        brandDim: 'rgba(102, 252, 241, 0.1)',
+                        darkBase: '#0b0c10',
+                        darkSurface: '#1f2833'
                     },
                     fontFamily: {
                         sans: ['Cairo', 'sans-serif'],
                         mono: ['Rajdhani', 'sans-serif']
-                    },
-                    backgroundImage: {
-                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-                        'noise-pattern': "url('https://www.transparenttextures.com/patterns/stardust.png')" // نمط خفيف جداً للخلفية
                     }
                 }
             }
@@ -35,178 +31,218 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: #e2e8f0; overflow-x: hidden; font-family: 'Cairo', sans-serif; }
-        /* تأثير الخلفية المستوحى من التصميم */
-        .bg-texture {
-            background-color: #050505;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23ffffff' fill-opacity='0.02' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+        /* إخفاء المؤشر الأصلي */
+        body { cursor: none; background-color: #050505; color: #fff; overflow-x: hidden; }
+
+        /* طبقة التشويش (Noise Effect) - سر الفخامة */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.07;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        /* المؤشر المخصص */
+        .cursor-dot, .cursor-circle {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            mix-blend-mode: difference; /* لون عكسي ذكي */
+        }
+        .cursor-dot { width: 8px; height: 8px; background: white; }
+        .cursor-circle { 
+            width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); 
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+        /* تكبير المؤشر عند التفاعل */
+        body.hovering .cursor-circle {
+            width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent;
+        }
+
+        /* البطاقات الزجاجية التفاعلية */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-glass:hover {
+            border-color: rgba(102, 252, 241, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* النصوص العملاقة */
+        .mega-text {
+            font-size: clamp(4rem, 15vw, 12rem);
+            line-height: 0.8;
+            background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        /* تصميم الكتل الداكنة */
-        .dark-panel {
-            background: #0A0A0A;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        /* الأزرار الفاخرة */
-        .btn-premium {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(102, 252, 241, 0.3);
-        }
-        .btn-premium:hover {
-            background-color: rgba(102, 252, 241, 0.1);
-            border-color: #66FCF1;
-            box-shadow: 0 0 15px rgba(102, 252, 241, 0.2);
-        }
-
-        .hidden-view { display: none !important; }
-        .fade-in { animation: fadeIn 1s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeUp 1s ease-out forwards; opacity: 0; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex flex-col min-h-screen bg-texture font-sans">
+<body class="min-h-screen flex flex-col font-mono selection:bg-brand selection:text-black">
 
-    <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center transition-opacity duration-700">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand mb-4"></div>
-        <p id="status-text" class="text-brand font-mono text-xs tracking-[0.2em] animate-pulse">INITIALIZING WORLD CORE...</p>
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div class="noise-overlay"></div>
+
+    <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#000] flex flex-col items-center justify-center transition-all duration-1000">
+        <div class="w-64 h-1 bg-gray-900 rounded-full overflow-hidden">
+            <div class="h-full bg-brand animate-[loading_1.5s_ease-in-out_infinite]"></div>
+        </div>
+        <p class="mt-4 text-xs tracking-[0.5em] text-gray-500 animate-pulse">SYSTEM BOOT...</p>
     </div>
 
-    <nav class="fixed w-full z-50 top-0 p-6 fade-in" style="animation-delay: 0.2s;">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <img src="https://yubvsehgmnudhcqwajae.supabase.co/storage/v1/object/public/Ivanova%20logo/20260203_204854.png" class="w-10 h-10 object-contain opacity-80">
-                <span class="font-[Rajdhani] font-bold text-2xl tracking-[0.2em] text-white">IVANOVA</span>
+    <nav class="fixed w-full z-40 top-0 p-8 flex justify-between items-center mix-blend-difference text-white fade-up" style="animation-delay: 0.2s;">
+        <div class="flex flex-col">
+            <span class="text-xs tracking-[0.3em] text-gray-400">EST. 2026</span>
+            <span class="text-xl font-bold tracking-widest">IVANOVA</span>
+        </div>
+        
+        <div class="flex items-center gap-6 text-right">
+            <div class="hidden md:block">
+                <div id="username-display" class="font-bold text-sm tracking-widest">GHOST</div>
+                <div class="text-[10px] text-brand uppercase tracking-[0.2em]">OPERATIVE ID</div>
             </div>
-
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden md:block">
-                    <div id="username-display" class="text-white font-bold text-sm font-mono dir-ltr tracking-wider">LOADING...</div>
-                    <div class="text-gray-500 text-[10px] font-mono tracking-widest uppercase">Citizen ID</div>
-                </div>
-                <div id="user-avatar-initial" class="w-12 h-12 rounded-full bg-gradient-to-tr from-brandDark to-brand flex items-center justify-center text-black font-bold font-[Rajdhani] text-xl shadow-lg shadow-brand/20 cursor-pointer hover:scale-105 transition">
-                    ?
-                </div>
-                 <button onclick="app.logout()" class="hidden md:block ml-4 text-red-500 hover:text-red-400 text-xs font-mono uppercase tracking-wider">
-                    <i class="fas fa-power-off ml-1"></i> Logout
-                </button>
-            </div>
+            <button onclick="app.logout()" class="hover-target w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-500">
+                <i class="fas fa-power-off"></i>
+            </button>
         </div>
     </nav>
 
-    <main class="relative z-10 flex-1 flex flex-col justify-center items-center max-w-7xl mx-auto w-full px-6 pt-24 pb-12">
+    <main class="relative z-10 flex-1 flex flex-col justify-center items-center w-full px-6 py-20">
 
-        <section class="text-center mb-20 fade-in" style="animation-delay: 0.4s;">
-            <h6 class="text-brand font-mono text-xs tracking-[0.3em] uppercase mb-4">System Sovereignty V1.0</h6>
-            <h1 class="text-6xl md:text-8xl font-bold text-white font-[Rajdhani] tracking-wide mb-6">
-                IVANOVA <br class="md:hidden"> WORLD
-            </h1>
-            <div class="h-1 w-24 bg-brand mx-auto mb-6 opacity-50"></div>
-            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light">
-                النظام البيئي الرقمي المتكامل. بوابتك نحو السيادة، التواصل المشفر، والموارد اللامركزية.
-            </p>
-        </section>
+        <div class="text-center mb-24 relative fade-up" style="animation-delay: 0.4s;">
+            <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand/5 blur-[120px] rounded-full pointer-events-none"></div>
+            <h1 class="mega-text font-[Rajdhani] font-bold tracking-tighter">IVANOVA</h1>
+            <p class="text-gray-400 text-sm md:text-lg tracking-[0.5em] uppercase mt-4">The Digital Sovereignty Ecosystem</p>
+        </div>
 
-        <section class="grid md:grid-cols-2 gap-8 w-full fade-in" style="animation-delay: 0.6s;">
+        <div class="grid md:grid-cols-2 gap-8 w-full max-w-6xl px-4 fade-up" style="animation-delay: 0.6s;">
             
-            <div class="dark-panel p-10 rounded-xl relative group overflow-hidden">
-                <div class="absolute right-0 bottom-0 opacity-5 transform translate-x-1/4 translate-y-1/4 group-hover:scale-110 transition-transform duration-700">
-                    <i class="fas fa-cube text-[15rem] text-white"></i>
+            <div class="card-glass hover-target p-12 rounded-2xl relative overflow-hidden group min-h-[350px] flex flex-col justify-between" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
+                    <i class="fas fa-arrow-up-right-from-square text-3xl text-white"></i>
                 </div>
                 
-                <div class="relative z-10">
-                    <i class="fas fa-rocket text-4xl text-brand mb-6"></i>
-                    <h2 class="text-3xl font-bold text-white font-[Rajdhani] mb-2 tracking-wider">IVANOVA SPACE</h2>
-                    <p class="text-gray-400 mb-8 text-sm leading-relaxed h-20">
-                        المستودع الرقمي الآمن. قم بتخزين ملفاتك، وإدارة تطبيقاتك في بيئة سحابية خاصة مشفرة.
-                    </p>
-                    
-                    <a href="space.html" class="btn-premium inline-flex items-center gap-3 px-8 py-4 bg-transparent text-white font-bold rounded-lg text-sm tracking-widest uppercase font-mono group-hover:text-brand transition-colors">
-                        <span>Enter Space</span>
-                        <i class="fas fa-arrow-left text-xs group-hover:-translate-x-2 transition-transform"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="dark-panel p-10 rounded-xl relative group overflow-hidden">
-                <div class="absolute right-0 bottom-0 opacity-5 transform translate-x-1/4 translate-y-1/4 group-hover:scale-110 transition-transform duration-700">
-                    <i class="fas fa-network-wired text-[15rem] text-white"></i>
+                <div>
+                    <span class="text-xs font-bold text-brand tracking-[0.2em] border border-brand/30 px-3 py-1 rounded-full">01 / STORAGE</span>
+                    <h2 class="text-5xl font-bold text-white mt-6 mb-2 font-[Rajdhani]">SPACE</h2>
                 </div>
 
                 <div class="relative z-10">
-                    <i class="fas fa-users-rays text-4xl text-blue-400 mb-6"></i>
-                    <h2 class="text-3xl font-bold text-white font-[Rajdhani] mb-2 tracking-wider">COMIO PLATFORM</h2>
-                    <p class="text-gray-400 mb-8 text-sm leading-relaxed h-20">
-                        الجيل القادم من التواصل الاجتماعي. منصة مشفرة للنشر، التفاعل، وبناء المجتمعات الرقمية.
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mb-8 border-l border-gray-700 pl-4">
+                        الجيل الجديد من التخزين السحابي. بياناتك مشفرة، لا مركزية، وتحت سيطرتك الكاملة.
                     </p>
-                    
-                    <a href="comio.html" class="btn-premium inline-flex items-center gap-3 px-8 py-4 bg-transparent text-white font-bold rounded-lg text-sm tracking-widest uppercase font-mono hover:text-blue-400 hover:border-blue-400/50 hover:bg-blue-400/10 transition-colors">
-                         <span>Launch Comio</span>
-                        <i class="fas fa-arrow-left text-xs group-hover:-translate-x-2 transition-transform"></i>
-                    </a>
+                    <button onclick="window.location.href='space.html'" class="text-white border-b border-white pb-1 hover:text-brand hover:border-brand transition-colors text-sm tracking-widest uppercase">
+                        Access Terminal
+                    </button>
                 </div>
+                
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000 -z-10">
             </div>
 
-        </section>
+            <div class="card-glass hover-target p-12 rounded-2xl relative overflow-hidden group min-h-[350px] flex flex-col justify-between" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
+                    <i class="fas fa-arrow-up-right-from-square text-3xl text-white"></i>
+                </div>
+                
+                <div>
+                    <span class="text-xs font-bold text-blue-400 tracking-[0.2em] border border-blue-400/30 px-3 py-1 rounded-full">02 / SOCIAL</span>
+                    <h2 class="text-5xl font-bold text-white mt-6 mb-2 font-[Rajdhani]">COMIO</h2>
+                </div>
 
+                <div class="relative z-10">
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mb-8 border-l border-gray-700 pl-4">
+                        بروتوكول التواصل الاجتماعي. انشر أفكارك، ابنِ مجتمعك، وتفاعل بحرية مطلقة.
+                    </p>
+                    <button onclick="window.location.href='comio.html'" class="text-white border-b border-white pb-1 hover:text-blue-400 hover:border-blue-400 transition-colors text-sm tracking-widest uppercase">
+                        Initialize Feed
+                    </button>
+                </div>
+
+                <img src="https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000 -z-10">
+            </div>
+
+        </div>
     </main>
 
-    <footer class="text-center py-8 text-gray-600 text-[10px] tracking-[0.3em] uppercase font-mono fade-in" style="animation-delay: 0.8s;">
-        © 2026 Ivanova Strategic Systems. The World is Yours.
+    <footer class="text-center py-6 text-gray-700 text-[9px] tracking-[0.4em] uppercase font-mono fade-up" style="animation-delay: 0.8s;">
+        System Integrity Verified • 2026
     </footer>
 
     <script>
+        // 1. تحريك المؤشر المخصص
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        
+        document.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            
+            // النقطة تتحرك فوراً
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            
+            // الدائرة تتحرك بتأخير بسيط (Smooth)
+            cursorCircle.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // تكبير المؤشر عند المرور على العناصر القابلة للنقر
+        document.querySelectorAll('.hover-target, button, a').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        // 2. منطق النظام (Supabase)
         const app = {
             supabase: null,
-            currentUser: null,
-
             init: async () => {
-                console.log("World Initializing...");
                 app.supabase = supabase.createClient(
                     'https://yubvsehgmnudhcqwajae.supabase.co',
                     'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
                 );
 
-                // 1. التحقق من الجلسة
-                const { data: { session } } = await app.supabase.auth.getSession();
+                // فحص الجلسة (مع منطق الاستقبال من جوجل)
+                const isRedirect = window.location.hash && window.location.hash.includes('access_token');
                 
-                if (!session) {
-                    // إذا لم يكن مسجلاً، اطرده لصفحة الدخول
-                    console.log("Unauthorized. Redirecting to gateway.");
-                    window.location.href = 'login.html';
-                    return;
+                if (isRedirect) {
+                    console.log("Processing Token...");
+                } else {
+                    const { data: { session } } = await app.supabase.auth.getSession();
+                    if (!session) {
+                        window.location.href = 'login.html';
+                        return;
+                    } else {
+                        app.updateUI(session.user);
+                        app.hideLoader();
+                    }
                 }
 
-                // 2. جلب بيانات المستخدم وتحديث الواجهة
-                await app.handleLogin(session.user);
-                app.hideLoader();
-
-                // 3. الاستماع للتغييرات (للحماية الإضافية)
                 app.supabase.auth.onAuthStateChange((event, session) => {
-                    if (!session && window.location.pathname.includes('index.html')) {
-                         window.location.href = 'login.html';
+                    if (session) {
+                        app.updateUI(session.user);
+                        app.hideLoader();
                     }
                 });
             },
             
-            hideLoader: () => {
-                const loader = document.getElementById('loader-screen');
-                if(loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.classList.add('hidden-view'), 700);
-                }
+            updateUI: (user) => {
+                const name = user.user_metadata.full_name || 'Operative';
+                document.getElementById('username-display').innerText = name.toUpperCase();
             },
 
-            handleLogin: async (user) => {
-                let username = user.user_metadata.full_name || 'Operative';
-                let initial = username.charAt(0).toUpperCase();
-
-                // تحديث الاسم في الأعلى
-                document.getElementById('username-display').innerText = username;
-                // تحديث الحرف الأول في الدائرة
-                document.getElementById('user-avatar-initial').innerText = initial;
+            hideLoader: () => {
+                const loader = document.getElementById('loader-screen');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 1000);
             },
 
             logout: async () => {
@@ -215,7 +251,19 @@
             }
         };
 
+        // تفعيل الميلان ثلاثي الأبعاد
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+        });
+
         window.onload = app.init;
     </script>
+    
+    <style>
+        @keyframes loading { 0% { width: 0; margin-left: 0; } 50% { width: 100%; margin-left: 0; } 100% { width: 0; margin-left: 100%; } }
+    </style>
 </body>
 </html>
