@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMIO | The Social Grid</title>
+    <title>COMIO | The Sovereign Grid</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,12 +37,13 @@
 
         .glass-panel { background: rgba(15, 17, 21, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .post-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s ease; }
-        .post-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.04); border-color: rgba(102, 252, 241, 0.3); }
-
+        
+        .profile-cover { height: 200px; background: linear-gradient(45deg, #1f2833, #0b0c10); border-radius: 32px 32px 0 0; position: relative; overflow: hidden; }
+        
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="flex flex-col relative">
@@ -54,39 +55,39 @@
     <div id="loader-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
         <div class="text-center">
             <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mx-auto mb-4"></div>
-            <p class="font-mono text-brand text-[10px] tracking-[0.5em] animate-pulse uppercase">Syncing with Grid...</p>
+            <p class="font-mono text-brand text-[10px] tracking-[0.5em] animate-pulse uppercase">Syncing Grid Content...</p>
         </div>
     </div>
 
-    <div class="flex h-screen w-full p-3 gap-3 fade-in">
+    <div class="flex h-screen w-full p-3 gap-3">
         
         <aside class="hidden lg:flex w-72 glass-panel rounded-[32px] flex-col py-8 px-6 shrink-0">
-            <div class="flex items-center gap-4 mb-10 hover-target cursor-pointer" onclick="window.location.href='ivanovaworld.html'">
+            <div class="flex items-center gap-4 mb-10 hover-target cursor-pointer" onclick="window.location.href='comio.html'">
                 <i class="fas fa-satellite text-brand text-2xl"></i>
-                <span class="font-[Rajdhani] font-bold text-2xl tracking-widest uppercase">Comio</span>
+                <span class="font-[Rajdhani] font-bold text-2xl tracking-widest uppercase text-white">Comio</span>
             </div>
 
             <nav class="space-y-4 flex-1">
-                <button class="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand/10 text-brand border border-brand/20">
+                <button onclick="window.location.href='comio.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand/10 text-brand border border-brand/20 transition hover-target">
                     <i class="fas fa-home-alt"></i> <span class="text-sm font-bold">Global Feed</span>
+                </button>
+                <button onclick="app.navigateToOwnProfile()" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
+                    <i class="fas fa-user"></i> <span class="text-sm font-bold">My Profile</span>
                 </button>
                 <button onclick="window.location.href='mcomio.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
                     <i class="fas fa-comment-alt-lines"></i> <span class="text-sm font-bold">Messages</span>
                 </button>
-                <button class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
-                    <i class="fas fa-fire"></i> <span class="text-sm font-bold">Trending</span>
-                </button>
                 <button onclick="window.location.href='ivavers.html'" class="w-full flex items-center gap-4 p-4 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 transition hover-target">
-                    <i class="fas fa-user-shield"></i> <span class="text-sm font-bold">Identity Hub</span>
+                    <i class="fas fa-cog"></i> <span class="text-sm font-bold">Settings</span>
                 </button>
             </nav>
 
             <div class="pt-6 border-t border-white/5">
-                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 cursor-pointer hover-target" onclick="app.navigateToOwnProfile()">
                     <img id="user-avatar" src="" class="w-10 h-10 rounded-full border border-brand/20">
                     <div class="truncate">
-                        <div id="username-display" class="text-xs font-bold truncate">...</div>
-                        <div class="text-[9px] text-brand font-mono">NODE ONLINE</div>
+                        <div id="username-display" class="text-xs font-bold truncate text-white">...</div>
+                        <div id="iduser-display" class="text-[9px] text-brand font-mono">ID: 14085...</div>
                     </div>
                 </div>
             </div>
@@ -94,67 +95,73 @@
 
         <main class="flex-1 flex flex-col gap-4 overflow-hidden relative">
             
-            <div class="glass-panel rounded-[32px] p-6 shrink-0">
-                <div class="flex gap-4">
-                    <img id="post-avatar" src="" class="w-12 h-12 rounded-full border border-white/5 grayscale">
-                    <div class="flex-1">
-                        <textarea placeholder="What's happening in your sector?" class="w-full bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 resize-none text-lg h-14 hover-target"></textarea>
-                        <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
-                            <div class="flex gap-6 text-gray-500">
-                                <i class="far fa-image cursor-pointer hover:text-brand transition hover-target"></i>
-                                <i class="far fa-smile cursor-pointer hover:text-brand transition hover-target"></i>
+            <div id="feed-view" class="flex-1 flex flex-col gap-4 overflow-hidden">
+                <div class="glass-panel rounded-[32px] p-6 shrink-0">
+                    <div class="flex gap-4">
+                        <img id="post-avatar" src="" class="w-12 h-12 rounded-full border border-white/5">
+                        <div class="flex-1">
+                            <textarea id="post-input" placeholder="What's happening in your sector?" class="w-full bg-transparent border-none text-white placeholder-gray-600 focus:ring-0 resize-none text-lg h-14 hover-target"></textarea>
+                            <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                                <div class="flex gap-6 text-gray-500">
+                                    <i onclick="alert('Image upload coming soon to R2')" class="far fa-image cursor-pointer hover:text-brand transition hover-target"></i>
+                                    <i onclick="alert('Video upload coming soon to R2')" class="far fa-play-circle cursor-pointer hover:text-brand transition hover-target"></i>
+                                    <i onclick="alert('Article editor opening...')" class="far fa-newspaper cursor-pointer hover:text-brand transition hover-target"></i>
+                                </div>
+                                <button onclick="app.transmitPost()" class="px-8 py-2 bg-brand text-black font-bold rounded-xl hover:bg-white transition uppercase text-[10px] tracking-widest shadow-lg shadow-brand/10 hover-target">Transmit</button>
                             </div>
-                            <button class="px-8 py-2 bg-brand text-black font-bold rounded-xl hover:bg-white transition uppercase text-[10px] tracking-widest shadow-lg shadow-brand/10 hover-target">Transmit</button>
                         </div>
                     </div>
                 </div>
+
+                <div id="feed-container" class="flex-1 overflow-y-auto space-y-4 pr-2 pb-24">
+                    </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto space-y-4 pr-2 pb-24">
-                
-                <article class="post-card p-6 cursor-pointer hover-target">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex gap-4">
-                            <img src="https://ui-avatars.com/api/?name=Ivanova+Core&background=66FCF1&color=000" class="w-11 h-11 rounded-full">
-                            <div>
-                                <div class="font-bold text-sm">Ivanova Central</div>
-                                <div class="text-[10px] text-gray-500">@core_node • Just now</div>
+            <div id="profile-view" class="hidden flex-1 overflow-y-auto pr-2 pb-24 space-y-6">
+                <div class="glass-panel rounded-[32px] overflow-hidden">
+                    <div class="profile-cover">
+                        <img id="p-cover-img" src="" class="w-full h-full object-cover opacity-50">
+                        <button onclick="alert('Change Cover')" class="absolute top-4 right-4 bg-black/50 p-2 rounded-full hover-target"><i class="fas fa-camera text-xs"></i></button>
+                    </div>
+                    <div class="px-8 pb-8 relative">
+                        <div class="flex justify-between items-end -mt-12 mb-6">
+                            <div class="relative group">
+                                <img id="p-avatar-img" src="" class="w-32 h-32 rounded-3xl border-4 border-darkSurface object-cover">
+                                <button onclick="alert('Change Avatar')" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-3xl hover-target"><i class="fas fa-sync"></i></button>
+                            </div>
+                            <div class="flex gap-3 mb-2">
+                                <button onclick="window.location.href='mcomio.html'" class="px-6 py-2 bg-white/5 rounded-xl border border-white/10 text-xs font-bold hover:bg-brand hover:text-black transition hover-target">Message</button>
+                                <button class="px-6 py-2 bg-brand text-black rounded-xl text-xs font-bold hover:shadow-[0_0_15px_#66FCF1] transition hover-target">Follow</button>
                             </div>
                         </div>
+                        <h2 id="p-name" class="text-3xl font-bold font-[Rajdhani] tracking-wide">...</h2>
+                        <p id="p-iduser" class="text-brand font-mono text-sm">ID: 14085...</p>
+                        <p id="p-bio" class="text-gray-400 mt-4 text-sm max-w-xl">No bio available in this sector.</p>
                     </div>
-                    <p class="text-sm text-gray-300 leading-relaxed">
-                        Welcome to the new <span class="text-brand">COMIO FEED</span>. 
-                        Your personal messages have been moved to M-COMIO for better organization. Enjoy the grid.
-                    </p>
-                </article>
+                </div>
 
-                <article class="post-card p-6 cursor-pointer hover-target">
-                    <div class="flex gap-4 mb-4">
-                        <img src="https://ui-avatars.com/api/?name=Operative+X&background=333&color=fff" class="w-11 h-11 rounded-full grayscale">
-                        <div>
-                            <span class="font-bold text-sm">Operative 404</span>
-                            <div class="text-[10px] text-gray-500">@op_404 • 2h ago</div>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-300 mb-4">Testing the new encrypted uplink. Connection is solid. 🛰️</p>
-                    <div class="rounded-2xl overflow-hidden border border-white/10">
-                        <img src="https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop" class="w-full h-48 object-cover opacity-60">
-                    </div>
-                </article>
+                <div class="flex gap-6 border-b border-white/5 pb-2 px-4">
+                    <button class="text-brand border-b-2 border-brand pb-2 text-sm font-bold">Posts</button>
+                    <button class="text-gray-500 hover:text-white transition text-sm font-bold">Articles</button>
+                    <button class="text-gray-500 hover:text-white transition text-sm font-bold">Media</button>
+                </div>
 
+                <div id="profile-posts" class="space-y-4">
+                    </div>
             </div>
+
         </main>
 
         <aside class="hidden xl:flex w-80 glass-panel rounded-[32px] flex-col p-8 shrink-0">
+            <div class="relative mb-8">
+                <input id="search-input" type="text" placeholder="Search the topic..." class="w-full bg-black/40 border border-white/10 rounded-2xl py-3 pr-10 text-xs focus:border-brand outline-none transition hover-target">
+                <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            </div>
             <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Trending Topics</h3>
             <div class="space-y-6">
-                <div class="group cursor-pointer hover-target">
+                <div class="cursor-pointer group hover-target" onclick="window.location.href='comio.html/search?=IVANOVA_OS_V2/'">
                     <div class="text-brand font-mono text-[9px]">#IVANOVA_OS_V2</div>
-                    <div class="text-sm font-bold mt-1">System Update Incoming</div>
-                </div>
-                <div class="group cursor-pointer hover-target">
-                    <div class="text-brand font-mono text-[9px]">#SPACE_DRIVE</div>
-                    <div class="text-sm font-bold mt-1">Cloud Synchronization</div>
+                    <div class="text-sm font-bold mt-1 group-hover:text-white">System Evolution</div>
                 </div>
             </div>
         </aside>
@@ -170,60 +177,133 @@
     </div>
 
     <script>
-        // إصلاح منطق المؤشر
+        const app = {
+            supabase: null,
+            currentUser: null,
+            init: async () => {
+                app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
+                const { data: { session } } = await app.supabase.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // جلب بيانات البروفايل الحقيقية للمستخدم الحالي (النواة)
+                const { data: profile } = await app.supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                app.currentUser = profile;
+                app.loadSidebarData();
+                app.handleRouting();
+                setTimeout(() => {
+                    document.getElementById('loader-screen').style.opacity = '0';
+                    setTimeout(() => document.getElementById('loader-screen').style.display = 'none', 700);
+                }, 1000);
+            },
+
+            loadSidebarData: () => {
+                document.getElementById('username-display').innerText = app.currentUser.username;
+                document.getElementById('iduser-display').innerText = `ID: ${app.currentUser.iduser}`;
+                document.getElementById('user-avatar').src = app.currentUser.avatar_url;
+                document.getElementById('post-avatar').src = app.currentUser.avatar_url;
+            },
+
+            handleRouting: () => {
+                const url = window.location.href;
+                if (url.includes('profile?=')) {
+                    const idUser = url.split('profile?=')[1].replace('/', '');
+                    app.showProfile(idUser);
+                } else {
+                    app.showGlobalFeed();
+                }
+            },
+
+            showGlobalFeed: async () => {
+                document.getElementById('feed-view').classList.remove('hidden');
+                document.getElementById('profile-view').classList.add('hidden');
+                
+                const { data: posts } = await app.supabase
+                    .from('posts')
+                    .select('*, profiles(username, avatar_url, iduser)')
+                    .order('created_at', { ascending: false });
+
+                const container = document.getElementById('feed-container');
+                container.innerHTML = posts.map(p => app.renderPostTemplate(p)).join('');
+            },
+
+            showProfile: async (idUser) => {
+                document.getElementById('feed-view').classList.add('hidden');
+                document.getElementById('profile-view').classList.remove('hidden');
+
+                const { data: profile } = await app.supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('iduser', idUser)
+                    .single();
+
+                if (profile) {
+                    document.getElementById('p-name').innerText = profile.username;
+                    document.getElementById('p-iduser').innerText = `ID: ${profile.iduser}`;
+                    document.getElementById('p-avatar-img').src = profile.avatar_url;
+                    document.getElementById('p-cover-img').src = profile.cover_url || '';
+                    document.getElementById('p-bio').innerText = profile.bio || 'No bio available.';
+
+                    const { data: posts } = await app.supabase
+                        .from('posts')
+                        .select('*, profiles(username, avatar_url, iduser)')
+                        .eq('author_id', profile.id)
+                        .order('created_at', { ascending: false });
+
+                    document.getElementById('profile-posts').innerHTML = posts.map(p => app.renderPostTemplate(p)).join('');
+                }
+            },
+
+            renderPostTemplate: (post) => `
+                <article class="post-card p-6 fade-in">
+                    <div class="flex gap-4 mb-4">
+                        <img src="${post.profiles.avatar_url}" class="w-11 h-11 rounded-full cursor-pointer hover-target" onclick="window.location.href='comio.html/profile?=${post.profiles.iduser}/'">
+                        <div>
+                            <span class="font-bold text-sm text-white">${post.profiles.username}</span>
+                            <div class="text-[10px] text-gray-500 font-mono">@${post.profiles.iduser}</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">${post.content}</p>
+                    <div class="flex gap-6 mt-6 text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                        <span class="hover:text-brand transition cursor-pointer"><i class="far fa-heart mr-1"></i> Like</span>
+                        <span class="hover:text-brand transition cursor-pointer"><i class="far fa-comment mr-1"></i> Comment</span>
+                        <span class="hover:text-brand transition cursor-pointer"><i class="fas fa-share mr-1"></i> Transmit</span>
+                    </div>
+                </article>
+            `,
+
+            transmitPost: async () => {
+                const content = document.getElementById('post-input').value;
+                if (!content) return;
+
+                await app.supabase.from('posts').insert([
+                    { author_id: app.currentUser.id, content: content, type: 'post' }
+                ]);
+
+                document.getElementById('post-input').value = '';
+                app.showGlobalFeed();
+            },
+
+            navigateToOwnProfile: () => {
+                window.location.href = `comio.html/profile?=${app.currentUser.iduser}/`;
+            }
+        };
+
+        // الماوس
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
         document.addEventListener('mousemove', (e) => {
             cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
             cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
         });
-        document.querySelectorAll('.hover-target, button, textarea').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-        });
-
-        // منطق التطبيق مع إصلاح "شاشة التحميل اللانهائية"
-        const app = {
-            supabase: null,
-            init: async () => {
-                try {
-                    app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
-                    
-                    const { data: { session }, error } = await app.supabase.auth.getSession();
-                    
-                    if (error || !session) {
-                        window.location.href = 'login.html';
-                        return;
-                    }
-
-                    app.loadUserData(session.user);
-                } catch (err) {
-                    console.error("Critical Boot Error:", err);
-                } finally {
-                    // إخفاء اللودر مهما حدث بعد 1.5 ثانية كأمان
-                    setTimeout(app.hideLoader, 1000);
-                }
-            },
-
-            loadUserData: (user) => {
-                const name = user.user_metadata.full_name || 'Operative';
-                const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
-                
-                const userDisplay = document.getElementById('username-display');
-                if (userDisplay) userDisplay.innerText = name.toUpperCase();
-                
-                if (document.getElementById('user-avatar')) document.getElementById('user-avatar').src = avatar;
-                if (document.getElementById('post-avatar')) document.getElementById('post-avatar').src = avatar;
-            },
-
-            hideLoader: () => {
-                const loader = document.getElementById('loader-screen');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.style.display = 'none', 700);
-                }
-            }
-        };
 
         window.onload = app.init;
     </script>
