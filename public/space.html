@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVANOVA SPACE | Secure Cloud</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#66FCF1',
+                        brandDim: 'rgba(102, 252, 241, 0.1)',
+                        darkBase: '#0b0c10',
+                        darkSurface: '#1f2833'
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* توحيد النمط مع باقي النظام */
+        body { cursor: none; background-color: #050505; color: #fff; overflow: hidden; }
+        
+        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.05; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+        
+        .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+        .cursor-dot { width: 8px; height: 8px; background: white; }
+        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
+        body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
+
+        .glass-panel {
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: border-color 0.3s;
+        }
+        
+        /* تأثير خاص لملفات Space */
+        .file-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .file-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 252, 241, 0.5);
+        }
+        .file-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: #66FCF1; transform: scaleX(0); transition: 0.3s; transform-origin: left;
+        }
+        .file-card:hover::after { transform: scaleX(1); }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col relative bg-[url('https://images.unsplash.com/photo-1545529468-42764ef8c85f?q=80&w=2073&auto=format&fit=crop')] bg-cover bg-center">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+    <div class="noise-overlay"></div>
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm z-0"></div>
+
+    <div id="loader" class="fixed inset-0 z-[100] bg-black flex items-center justify-center transition-opacity duration-700">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand mb-4 mx-auto"></div>
+            <p class="font-mono text-brand text-xs tracking-[0.3em]">MOUNTING DRIVES...</p>
+        </div>
+    </div>
+
+    <div class="relative z-10 flex h-full w-full p-4 gap-4 fade-in" style="animation-delay: 0.2s;">
+        
+        <aside class="w-16 md:w-64 glass-panel rounded-2xl flex flex-col py-6 px-3 border-r border-white/5">
+            <div class="flex items-center gap-3 mb-10 px-2 justify-center md:justify-start cursor-pointer hover-target" onclick="window.location.href='ivanovaworld.html'">
+                <i class="fas fa-arrow-right text-gray-500 hover:text-white transition"></i>
+                <span class="hidden md:block font-[Rajdhani] font-bold text-xl tracking-widest text-white">SPACE</span>
+            </div>
+
+            <nav class="space-y-2 flex-1">
+                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg bg-brand/10 text-brand border border-brand/20">
+                    <i class="fas fa-cloud text-lg w-6 text-center"></i>
+                    <span class="hidden md:block text-sm font-bold">My Cloud</span>
+                </button>
+                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
+                    <i class="fas fa-user-friends text-lg w-6 text-center"></i>
+                    <span class="hidden md:block text-sm font-bold">Shared</span>
+                </button>
+                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
+                    <i class="fas fa-clock text-lg w-6 text-center"></i>
+                    <span class="hidden md:block text-sm font-bold">Recent</span>
+                </button>
+                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition">
+                    <i class="fas fa-star text-lg w-6 text-center"></i>
+                    <span class="hidden md:block text-sm font-bold">Starred</span>
+                </button>
+                <div class="h-[1px] bg-white/10 my-2"></div>
+                <button class="hover-target w-full flex items-center gap-4 p-3 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition">
+                    <i class="fas fa-trash text-lg w-6 text-center"></i>
+                    <span class="hidden md:block text-sm font-bold">Trash</span>
+                </button>
+            </nav>
+
+            <div class="hidden md:block glass-panel p-4 rounded-xl mt-4">
+                <div class="flex justify-between text-xs mb-2">
+                    <span class="text-gray-400">Storage</span>
+                    <span class="text-brand">45%</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden mb-2">
+                    <div class="h-full bg-brand w-[45%] shadow-[0_0_10px_#66FCF1]"></div>
+                </div>
+                <div class="text-[10px] text-gray-500 text-center">12.4 GB used of 30 GB</div>
+                <button class="hover-target w-full mt-3 py-1.5 text-[10px] border border-white/10 rounded hover:bg-white/5 transition">Upgrade Plan</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col gap-4 overflow-hidden">
+            
+            <header class="glass-panel rounded-2xl p-4 flex justify-between items-center">
+                <div class="flex-1 max-w-lg relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" placeholder="Search files in Ivanova..." class="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white focus:border-brand focus:outline-none transition hover-target">
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="app.uploadFile()" class="hover-target hidden md:flex items-center gap-2 px-6 py-2 bg-brand text-black font-bold rounded-xl hover:bg-white transition shadow-[0_0_15px_rgba(102,252,241,0.3)]">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                    <button onclick="app.uploadFile()" class="md:hidden w-10 h-10 bg-brand text-black rounded-xl flex items-center justify-center font-bold"><i class="fas fa-plus"></i></button>
+                    
+                    <div class="w-10 h-10 rounded-full border border-white/20 overflow-hidden">
+                        <img id="user-avatar" src="" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </header>
+
+            <div class="glass-panel rounded-2xl flex-1 p-6 overflow-y-auto">
+                
+                <div class="flex items-center gap-2 text-sm text-gray-400 mb-8 font-mono">
+                    <span class="hover:text-white cursor-pointer hover-target">Home</span>
+                    <i class="fas fa-chevron-right text-[10px]"></i>
+                    <span class="text-brand">My Cloud</span>
+                </div>
+
+                <h3 class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-4">Folders</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+                    <div class="file-card glass-panel p-4 rounded-xl cursor-pointer hover-target group">
+                        <div class="flex justify-between items-start mb-3">
+                            <i class="fas fa-folder text-3xl text-yellow-500 group-hover:text-yellow-400 transition"></i>
+                            <i class="fas fa-ellipsis-v text-gray-600 hover:text-white p-1"></i>
+                        </div>
+                        <div class="text-sm font-bold text-gray-200 truncate">Project Alpha</div>
+                        <div class="text-[10px] text-gray-500">12 items • 24MB</div>
+                    </div>
+                    <div class="file-card glass-panel p-4 rounded-xl cursor-pointer hover-target group">
+                        <div class="flex justify-between items-start mb-3">
+                            <i class="fas fa-folder text-3xl text-blue-500 group-hover:text-blue-400 transition"></i>
+                            <i class="fas fa-ellipsis-v text-gray-600 hover:text-white p-1"></i>
+                        </div>
+                        <div class="text-sm font-bold text-gray-200 truncate">Designs 2026</div>
+                        <div class="text-[10px] text-gray-500">140 items • 1.2GB</div>
+                    </div>
+                     <div class="glass-panel border-dashed border-2 border-white/10 p-4 rounded-xl cursor-pointer hover:border-brand/50 hover:bg-brand/5 transition flex flex-col items-center justify-center h-full hover-target" onclick="alert('Create Folder')">
+                        <i class="fas fa-plus text-2xl text-gray-600 mb-2"></i>
+                        <span class="text-xs text-gray-500">New Folder</span>
+                    </div>
+                </div>
+
+                <h3 class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-4">Recent Files</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <div class="file-card glass-panel p-3 rounded-xl flex items-center gap-4 cursor-pointer hover-target">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-bold text-gray-200 truncate">Dashboard_Mockup.png</div>
+                            <div class="text-[10px] text-gray-500">Image • 2.4 MB</div>
+                        </div>
+                    </div>
+
+                    <div class="file-card glass-panel p-3 rounded-xl flex items-center gap-4 cursor-pointer hover-target">
+                        <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-bold text-gray-200 truncate">Brief_Report_v2.pdf</div>
+                            <div class="text-[10px] text-gray-500">PDF • 450 KB</div>
+                        </div>
+                    </div>
+
+                    <div class="file-card glass-panel p-3 rounded-xl flex items-center gap-4 cursor-pointer hover-target">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-bold text-gray-200 truncate">server_config.json</div>
+                            <div class="text-[10px] text-gray-500">JSON • 2 KB</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 1. المؤشر
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        });
+        document.querySelectorAll('.hover-target, button, a, .file-card').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        const app = {
+            supabase: null,
+            init: async () => {
+                app.supabase = supabase.createClient(
+                    'https://yubvsehgmnudhcqwajae.supabase.co',
+                    'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC'
+                );
+
+                const { data: { session } } = await app.supabase.auth.getSession();
+                if (!session) {
+                    window.location.href = 'login.html';
+                } else {
+                    app.loadUserData(session.user);
+                    const loader = document.getElementById('loader');
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 700);
+                }
+            },
+
+            loadUserData: (user) => {
+                const name = user.user_metadata.full_name || 'Operative';
+                const avatar = user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=66FCF1&color=000`;
+                document.getElementById('user-avatar').src = avatar;
+            },
+
+            uploadFile: () => {
+                // سنربط هذه الدالة لاحقاً بـ Google Drive API
+                alert("Upload module initialized. Connecting to secure storage...");
+            }
+        };
+
+        window.onload = app.init;
+    </script>
+</body>
+</html>
