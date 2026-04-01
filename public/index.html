@@ -1,210 +1,87 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <link rel="icon" href="ivanova-favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVANOVA | The Sovereign Core</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>IVANOVA OS | Desktop</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="os-core.css"> 
+    <link rel="icon" href="ivanova-favicon.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#66FCF1',
-                        brandDim: 'rgba(102, 252, 241, 0.1)',
-                        darkBase: '#0b0c10',
-                        darkSurface: '#1f2833'
-                    },
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                        mono: ['Rajdhani', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body { cursor: none; background-color: #050505; color: #fff; overflow-x: hidden; }
-        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; opacity: 0.07; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
-        .cursor-dot, .cursor-circle { position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
-        .cursor-dot { width: 8px; height: 8px; background: white; }
-        .cursor-circle { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.5); transition: width 0.3s, height 0.3s, background-color 0.3s; }
-        body.hovering .cursor-circle { width: 80px; height: 80px; background-color: rgba(255,255,255,0.1); border-color: transparent; }
-
-        .card-glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-        .card-glass:hover { border-color: rgba(102, 252, 241, 0.3); background: rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .mega-text { font-size: clamp(4rem, 15vw, 12rem); line-height: 0.8; background: linear-gradient(to bottom, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .fade-up { animation: fadeUp 1s ease-out forwards; opacity: 0; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* زر الدخول للعالم (جديد) */
-        .btn-world {
-            position: relative;
-            background: transparent;
-            color: #66FCF1;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 0.3em;
-            padding: 1.5rem 4rem;
-            border: 1px solid rgba(102, 252, 241, 0.3);
-            text-transform: uppercase;
-            overflow: hidden;
-            transition: 0.5s;
-            z-index: 1;
-        }
-        .btn-world::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: rgba(102, 252, 241, 0.1);
-            transition: 0.5s;
-            z-index: -1;
-        }
-        .btn-world:hover::before { left: 0; }
-        .btn-world:hover {
-            box-shadow: 0 0 30px rgba(102, 252, 241, 0.4);
-            border-color: #66FCF1;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(102, 252, 241, 0.8);
-        }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col font-mono selection:bg-brand selection:text-black">
-
-    <div class="cursor-dot"></div>
-    <div class="cursor-circle"></div>
-    <div class="noise-overlay"></div>
-
-    <div id="loader-screen" class="fixed inset-0 z-[100] bg-[#000] flex flex-col items-center justify-center transition-all duration-1000">
-        <div class="w-64 h-1 bg-gray-900 rounded-full overflow-hidden">
-            <div class="h-full bg-brand animate-[loading_1.5s_ease-in-out_infinite]"></div>
-        </div>
-        <p class="mt-4 text-xs tracking-[0.5em] text-gray-500 animate-pulse">SYSTEM BOOT...</p>
+<body onclick="requestFullScreen()"> <div class="desktop-bg">
+        <div class="glow-sphere"></div>
     </div>
 
-    <nav class="fixed w-full z-40 top-0 p-8 flex justify-between items-center mix-blend-difference text-white fade-up" style="animation-delay: 0.2s;">
-        <div class="flex flex-col">
-            <span class="text-xs tracking-[0.3em] text-gray-400">EST. 2026</span>
-            <span class="text-xl font-bold tracking-widest">IVANOVA</span>
+    <nav class="status-bar">
+        <div class="system-info">
+            <span class="brand">IVANOVA <span class="os-version">v1.0.4</span></span>
         </div>
-        <div class="flex items-center gap-6 text-right">
-            <div class="hidden md:block">
-                <div id="username-display" class="font-bold text-sm tracking-widest">GHOST</div>
-                <div class="text-[10px] text-brand uppercase tracking-[0.2em]">OPERATIVE ID</div>
-            </div>
-            <button onclick="app.logout()" class="hover-target w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-500">
-                <i class="fas fa-power-off"></i>
-            </button>
+        <div class="time-module" id="clock">00:00:00</div>
+        <div class="controls">
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+            <span class="user-tag">OPERATIVE</span>
         </div>
     </nav>
 
-    <main class="relative z-10 flex-1 flex flex-col justify-center items-center w-full px-6 py-20">
-
-        <div class="text-center mb-16 relative fade-up" style="animation-delay: 0.4s;">
-            <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand/5 blur-[120px] rounded-full pointer-events-none"></div>
-            <h1 class="mega-text font-[Rajdhani] font-bold tracking-tighter">IVANOVA</h1>
-            <p class="text-gray-400 text-sm md:text-lg tracking-[0.5em] uppercase mt-4 mb-12">The Digital Sovereignty Ecosystem</p>
+    <main class="desktop-area">
+        <div class="icon-grid">
             
-            <a href="ivanovaworld.html" class="hover-target btn-world inline-block">
-                ENTER IVANOVA WORLD
-            </a>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8 w-full max-w-6xl px-4 fade-up" style="animation-delay: 0.6s;">
-            
-            <div class="card-glass hover-target p-12 rounded-2xl relative overflow-hidden group min-h-[350px] flex flex-col justify-between" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-                    <i class="fas fa-arrow-up-right-from-square text-3xl text-white"></i>
+            <div class="app-icon" onclick="window.location.href='/grosmen.html'">
+                <div class="icon-wrapper glass">
+                    <i class="fas fa-tv"></i>
                 </div>
-                <div>
-                    <span class="text-xs font-bold text-brand tracking-[0.2em] border border-brand/30 px-3 py-1 rounded-full">01 / STORAGE</span>
-                    <h2 class="text-5xl font-bold text-white mt-6 mb-2 font-[Rajdhani]">SPACE</h2>
-                </div>
-                <div class="relative z-10">
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mb-8 border-l border-gray-700 pl-4">
-                        الجيل الجديد من التخزين السحابي. بياناتك مشفرة، لا مركزية، وتحت سيطرتك الكاملة.
-                    </p>
-                    <button onclick="window.location.href='space.html'" class="text-white border-b border-white pb-1 hover:text-brand hover:border-brand transition-colors text-sm tracking-widest uppercase">
-                        Access Terminal
-                    </button>
-                </div>
-                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000 -z-10">
+                <span class="app-name">Grosmen</span>
             </div>
 
-            <div class="card-glass hover-target p-12 rounded-2xl relative overflow-hidden group min-h-[350px] flex flex-col justify-between" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-                    <i class="fas fa-arrow-up-right-from-square text-3xl text-white"></i>
+            <div class="app-icon" onclick="window.location.href='/blackwons.html'">
+                <div class="icon-wrapper glass">
+                    <i class="fas fa-box-archive"></i>
                 </div>
-                <div>
-                    <span class="text-xs font-bold text-blue-400 tracking-[0.2em] border border-blue-400/30 px-3 py-1 rounded-full">02 / SOCIAL</span>
-                    <h2 class="text-5xl font-bold text-white mt-6 mb-2 font-[Rajdhani]">COMIO</h2>
+                <span class="app-name">Blackwons</span>
+            </div>
+
+            <div class="app-icon" onclick="window.location.href='/bacmaroc.html'">
+                <div class="icon-wrapper glass">
+                    <i class="fas fa-graduation-cap"></i>
                 </div>
-                <div class="relative z-10">
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm mb-8 border-l border-gray-700 pl-4">
-                        بروتوكول التواصل الاجتماعي. انشر أفكارك، ابنِ مجتمعك، وتفاعل بحرية مطلقة.
-                    </p>
-                    <button onclick="window.location.href='comio.html'" class="text-white border-b border-white pb-1 hover:text-blue-400 hover:border-blue-400 transition-colors text-sm tracking-widest uppercase">
-                        Initialize Feed
-                    </button>
-                </div>
-                <img src="https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-10 grayscale group-hover:scale-110 transition-transform duration-1000 -z-10">
+                <span class="app-name">BacMaroc</span>
             </div>
 
         </div>
     </main>
 
-    <footer class="text-center py-6 text-gray-700 text-[9px] tracking-[0.4em] uppercase font-mono fade-up" style="animation-delay: 0.8s;">
-        System Integrity Verified • 2026
-    </footer>
+    <footer class="taskbar glass">
+        <div class="start-btn">
+            <div class="logo-mini"></div>
+        </div>
+        <div class="active-apps">
+            <div class="app-dot active"></div>
+        </div>
+    </footer >
 
     <script>
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorCircle = document.querySelector('.cursor-circle');
-        document.addEventListener('mousemove', (e) => {
-            cursorDot.style.left = `${e.clientX}px`;
-            cursorDot.style.top = `${e.clientY}px`;
-            cursorCircle.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
-        });
-        document.querySelectorAll('.hover-target, button, a').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-        });
+        // دالة ملء الشاشة التلقائية عند التفاعل
+        function requestFullScreen() {
+            const doc = document.documentElement;
+            if (doc.requestFullscreen) doc.requestFullscreen();
+            else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
+            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+            else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
+            
+            // إزالة الحدث بعد أول تفعيل لعدم الإزعاج
+            document.body.removeAttribute('onclick');
+        }
 
-        const app = {
-            supabase: null,
-            init: async () => {
-                app.supabase = supabase.createClient('https://yubvsehgmnudhcqwajae.supabase.co', 'sb_publishable_jx6I4sjazjPPYFYldG_ZtA_MQc172DC');
-                const isRedirect = window.location.hash && window.location.hash.includes('access_token');
-                if (!isRedirect) {
-                    const { data: { session } } = await app.supabase.auth.getSession();
-                    if (!session) window.location.href = 'login.html';
-                    else { app.updateUI(session.user); app.hideLoader(); }
-                }
-                app.supabase.auth.onAuthStateChange((event, session) => {
-                    if (session) { app.updateUI(session.user); app.hideLoader(); }
-                });
-            },
-            updateUI: (user) => document.getElementById('username-display').innerText = (user.user_metadata.full_name || 'Operative').toUpperCase(),
-            hideLoader: () => {
-                const loader = document.getElementById('loader-screen');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 1000);
-            },
-            logout: async () => { await app.supabase.auth.signOut(); window.location.href = 'login.html'; }
-        };
-        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 5, speed: 400, glare: true, "max-glare": 0.2 });
-        window.onload = app.init;
+        // تحديث الساعة الحقيقية
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
-    <style> @keyframes loading { 0% { width: 0; margin-left: 0; } 50% { width: 100%; margin-left: 0; } 100% { width: 0; margin-left: 100%; } } </style>
 </body>
 </html>
