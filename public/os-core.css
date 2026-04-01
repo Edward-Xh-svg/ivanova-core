@@ -1,0 +1,120 @@
+:root {
+    --brand: #66FCF1;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: default; }
+
+body {
+    background-color: #050505;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* الخلفية الجمالية */
+.desktop-bg {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at bottom right, #0b0c10 0%, #050505 100%);
+    z-index: -1;
+}
+
+.glow-sphere {
+    position: absolute;
+    bottom: -10%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(102, 252, 241, 0.05) 0%, transparent 70%);
+    filter: blur(80px);
+}
+
+/* شريط الحالة العلوي */
+.status-bar {
+    height: 30px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.brand { font-weight: bold; color: var(--brand); }
+.os-version { color: #444; margin-left: 5px; font-weight: normal; }
+
+/* منطقة الأيقونات */
+.desktop-area {
+    padding: 60px 40px;
+}
+
+.icon-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex-wrap: wrap;
+    max-height: 80vh;
+}
+
+.app-icon {
+    width: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.app-icon:hover .icon-wrapper {
+    background: rgba(102, 252, 241, 0.1);
+    border-color: var(--brand);
+    transform: translateY(-5px);
+}
+
+.icon-wrapper {
+    width: 65px; height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border-radius: 15px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: #eee;
+    transition: 0.3s;
+}
+
+.app-name {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* شريط المهام السفلي */
+.taskbar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 400px;
+    height: 50px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background: rgba(11, 12, 16, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+}
+
+.start-btn {
+    width: 30px; height: 30px;
+    background: var(--brand);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--brand);
+}
