@@ -1,87 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="icon" href="ivanova-favicon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVANOVA OS | Desktop</title>
-    <link rel="stylesheet" href="style.css"> 
-    <link rel="stylesheet" href="os-core.css"> 
-    <link rel="icon" href="ivanova-favicon.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body onclick="requestFullScreen()"> <div class="desktop-bg">
-        <div class="glow-sphere"></div>
-    </div>
+/* IVANOVA SOVEREIGN CORE OS - RED EDITION */
+:root {
+    --brand: #FF1744; /* الأحمر القرمزي النيوني */
+    --brand-dim: rgba(255, 23, 68, 0.15);
+    --dark: #020202; /* أسود أعمق */
+    --glass: rgba(20, 0, 0, 0.6);
+    --glass-border: rgba(255, 23, 68, 0.2);
+}
 
-    <nav class="status-bar">
-        <div class="system-info">
-            <span class="brand">IVANOVA <span class="os-version">v1.0.4</span></span>
-        </div>
-        <div class="time-module" id="clock">00:00:00</div>
-        <div class="controls">
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-full"></i>
-            <span class="user-tag">OPERATIVE</span>
-        </div>
-    </nav>
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; } /* مؤشر فني */
 
-    <main class="desktop-area">
-        <div class="icon-grid">
-            
-            <div class="app-icon" onclick="window.location.href='/grosmen.html'">
-                <div class="icon-wrapper glass">
-                    <i class="fas fa-tv"></i>
-                </div>
-                <span class="app-name">Grosmen</span>
-            </div>
+body {
+    background-color: var(--dark);
+    color: white;
+    font-family: 'Rajdhani', sans-serif; /* خط تقني */
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
 
-            <div class="app-icon" onclick="window.location.href='/blackwons.html'">
-                <div class="icon-wrapper glass">
-                    <i class="fas fa-box-archive"></i>
-                </div>
-                <span class="app-name">Blackwons</span>
-            </div>
+/* الخلفية الديناميكية - الشبكة البرمجية (Matrix Grid) */
+.matrix-bg {
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(0deg, transparent 24%, var(--brand-dim) 25%, var(--brand-dim) 26%, transparent 27%, transparent 74%, var(--brand-dim) 75%, var(--brand-dim) 76%, transparent 77%, transparent), 
+                      linear-gradient(90deg, transparent 24%, var(--brand-dim) 25%, var(--brand-dim) 26%, transparent 27%, transparent 74%, var(--brand-dim) 75%, var(--brand-dim) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+    z-index: -2;
+    opacity: 0.3;
+}
 
-            <div class="app-icon" onclick="window.location.href='/bacmaroc.html'">
-                <div class="icon-wrapper glass">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <span class="app-name">BacMaroc</span>
-            </div>
+.overlay-gradient {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at bottom right, rgba(20, 0, 0, 0.5) 0%, var(--dark) 100%);
+    z-index: -1;
+}
 
-        </div>
-    </main>
+/* شريط الحالة العلوي */
+.status-bar {
+    height: 35px;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 0 15px rgba(255, 23, 68, 0.2);
+}
 
-    <footer class="taskbar glass">
-        <div class="start-btn">
-            <div class="logo-mini"></div>
-        </div>
-        <div class="active-apps">
-            <div class="app-dot active"></div>
-        </div>
-    </footer >
+.brand { font-weight: bold; color: var(--brand); text-shadow: 0 0 10px var(--brand); }
+.core-status { color: #555; margin-right: 10px; font-weight: normal; }
+.time-module { color: #fff; font-size: 14px; font-weight: bold; }
+.security-level { background-color: var(--brand); color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
 
-    <script>
-        // دالة ملء الشاشة التلقائية عند التفاعل
-        function requestFullScreen() {
-            const doc = document.documentElement;
-            if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
-            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-            else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
-            
-            // إزالة الحدث بعد أول تفعيل لعدم الإزعاج
-            document.body.removeAttribute('onclick');
-        }
+/* منطقة الأيقونات على سطح المكتب */
+.desktop-area {
+    padding: 80px 50px;
+}
 
-        // تحديث الساعة الحقيقية
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB', { hour12: false });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
-</body>
-</html>
+.icon-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    flex-wrap: wrap;
+    max-height: 80vh;
+}
+
+.app-icon {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+.app-icon:hover { transform: translateY(-5px); }
+
+/* الأيقونات النيونية الحمراء */
+.neon-red {
+    box-shadow: 0 0 20px var(--brand-dim), inset 0 0 10px var(--brand-dim);
+    transition: 0.4s;
+}
+
+.app-icon:hover .icon-wrapper.neon-red {
+    background: rgba(255, 23, 68, 0.2);
+    border-color: var(--brand);
+    color: white;
+    text-shadow: 0 0 15px var(--brand);
+    box-shadow: 0 0 40px var(--brand-dim), inset 0 0 15px var(--brand-dim);
+}
+
+.icon-wrapper {
+    width: 70px; height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border-radius: 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--brand);
+    transition: 0.4s;
+}
+
+.app-name {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    color: #aaa;
+}
+
+/* شريط المهام السفلي النيوني */
+.taskbar {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 450px;
+    height: 60px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    background: rgba(10, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 30px rgba(255, 23, 68, 0.3);
+}
+
+.start-btn {
+    width: 35px; height: 35px;
+    background: var(--brand);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--brand);
+    animation: breathing 3s infinite ease-in-out;
+}
+
+/* حركة التنفس للنظام الحقيقي */
+@keyframes breathing {
+    0%, 100% { opacity: 0.5; box-shadow: 0 0 10px var(--brand); }
+    50% { opacity: 1; box-shadow: 0 0 25px var(--brand); }
+}
