@@ -3,41 +3,44 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// إعداد المجلد العام - ملفات CSS/JS/Images ستكون في مجلد public
+// إعداد المجلد العام
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 // =================================================================
-// 🚦 خريطة الطرق المحدثة (Clean URLs Protocol)
+// 🚦 خريطة الطرق (Routing Map) المحدثة
 // =================================================================
 
-// 1. البوابة الرئيسية (تفتح Login تلقائياً)
+// 1. البوابات الأساسية
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 
-// 2. نظام القائمة الجديد (الذي طلبته)
-app.get('/menu', (req, res) => res.sendFile(path.join(__dirname, 'public', 'menu.html')));
+// 2. نظام التشغيل المركزي - Ivanova World
+app.get('/ivanovaworld.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivanovaworld.html')));
 
-// 3. روابط نظيفة للمشاريع القديمة (بدون .html)
-app.get('/world', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivanovaworld.html')));
-app.get('/space', (req, res) => res.sendFile(path.join(__dirname, 'public', 'space.html')));
-app.get('/ivavers', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivavers.html')));
+// 3. المستودع السحابي - Space
+app.get('/space.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'space.html')));
 
-// 4. ✅ دعم Comio و M-Comio بروابط نظيفة وديناميكية
-app.get('/comio*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'comio.html')));
-app.get('/mcomio*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'mcomio.html')));
+// 4. ✅ دعم الروابط الديناميكية لـ Comio (Profiles / Search)
+app.get('/comio.html*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'comio.html'));
+});
 
-// 5. روابط الطوارئ (لدعم الملفات القديمة إذا طلبها المتصفح بـ .html)
-app.get('/login.html', (req, res) => res.redirect('/'));
-app.get('/menu.html', (req, res) => res.redirect('/menu'));
+// 5. ✅ دعم الروابط الديناميكية لـ M-Comio (Private/Group Messages)
+app.get('/mcomio.html*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'mcomio.html'));
+});
+
+// 6. مركز الخدمات والهوية - Ivavers
+app.get('/ivavers.html', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ivavers.html')));
 
 // =================================================================
 
-// أي رابط غير معروف -> إعادة توجيه للبوابة الرئيسية (Security Layer)
+// أي رابط غير معروف -> ارسله للدخول (للحماية)
 app.get('*', (req, res) => {
-    res.redirect('/');
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 app.listen(PORT, () => {
-    console.log(`--- IVANOVA SYSTEM ONLINE ---`);
-    console.log(`Core: http://localhost:${PORT}`);
-    console.log(`Status: Stable & Sovereign`);
+    console.log(`System Online: http://localhost:${PORT}`);
 });
