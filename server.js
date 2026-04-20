@@ -9,6 +9,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+app.use('/mathPDF', express.static(path.join(__dirname, 'public/mathPDF')));
+app.use('/physicPDF', express.static(path.join(__dirname, 'public/physicPDF')));
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
