@@ -1,6 +1,7 @@
 {
-  "name": "ivanova-system",
+  "name": "ivanova-core",
   "version": "1.0.0",
+  "description": "BacMaroc Simulation Environment",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
