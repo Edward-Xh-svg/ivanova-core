@@ -3,202 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVANOVA - BAC MODE EXTREME</title>
+    <title>الفيزياء - BacMaroc</title>
     <link rel="icon" href="ivanova-favicon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --accent-pc: #ff4d4d; --bg-dark: #050505; }
-        body { background-color: var(--bg-dark); color: white; overflow-x: hidden; transition: 0.5s; }
+        #reader-view { display: none; width: 100%; }
         
-        /* تصميم العداد الفخم */
-        .timer-section {
-            background: linear-gradient(180deg, #111, #000);
-            padding: 15px;
-            border-bottom: 1px solid #333;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        #timer-display {
-            font-family: 'Orbitron', sans-serif; /* تأكد من استدعاء الخط أو سيعمل كـ Sans-serif */
-            font-size: 3rem;
-            color: var(--accent-pc);
-            letter-spacing: 5px;
-            text-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
-        }
-        .start-btn {
-            background: none;
-            color: white;
-            border: 1px solid var(--accent-pc);
-            padding: 8px 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.4s;
-            margin-top: 10px;
-        }
-        .start-btn:hover { background: var(--accent-pc); box-shadow: 0 0 15px var(--accent-pc); }
-
-        /* شاشة الغش */
-        #cheat-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--accent-pc);
-        }
-
         #pdf-render-container {
             width: 100%;
             height: 75vh;
             overflow-y: auto;
-            background: #000;
-            margin-top: 20px;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
         }
-        canvas { width: 100%; max-width: 900px; display: block; margin: 0 auto 15px; }
 
-        .ad-banner {
-            width: 100%; height: 60px;
-            background: #0a0a0a;
-            border-top: 1px solid #222;
-            position: fixed; bottom: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; color: #444;
+        canvas {
+            display: block;
+            margin: 0 auto 15px auto;
+            width: 100%; 
+            max-width: 800px;
+            border-radius: 4px;
+        }
+
+        .back-btn {
+            background: #1a1a1a;
+            color: #ff4d4d; /* لون أحمر إشعاعي لتمييز الفيزياء */
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-block;
+            border: 1px solid #333;
+        }
+
+        .loading-overlay {
+            color: #ff4d4d;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ad-spot {
+            width: 100%;
+            height: 90px;
+            background: rgba(255,255,255,0.03);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #444;
+            color: #555;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-    <div id="cheat-overlay">
-        <i class="fa-solid fa-triangle-exclamation" style="font-size: 5rem; margin-bottom: 20px;"></i>
-        <h1>لقد غششت!</h1>
-        <p>تم إيقاف المحاكاة لخروجك من وضع ملء الشاشة.</p>
-        <button onclick="location.reload()" class="start-btn">إعادة المحاولة</button>
-    </div>
-
-    <div class="timer-section">
-        <div id="status-text" style="color: #666; font-size: 0.8rem; text-transform: uppercase;">System Integrity Active</div>
-        <div id="timer-display">03:00:00</div>
-        <button id="start-master-btn" class="start-btn" onclick="startSimulation()">
-            <i class="fa-solid fa-shield-halved"></i> بدء المحاكاة الرسمية
-        </button>
-    </div>
-
-    <div class="container">
-        <div id="selection-grid">
-            <h2 style="text-align: center; margin: 40px 0;">قسم الفيزياء - اختر الدورة الوطنية</h2>
-            <div id="exam-list" class="grid"></div>
+    <div class="container" id="main-container">
+        <div id="grid-view">
+            <h1>إمتحانات الفيزياء والكيمياء (2016 - 2025)</h1>
+            <p style="margin-bottom: 30px; opacity: 0.7;">اختر الدورة لبدء المراجعة المركزة</p>
+            <div id="pdf-list" class="grid"></div>
         </div>
 
-        <div id="reader-area" style="display: none;">
-            <div id="pdf-render-container"></div>
-        </div>
+        <div id="reader-view">
+            <div class="back-btn" onclick="closeReader()">
+                <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الفيزياء
+            </div>
+            
+            <h2 id="current-exam-title" style="margin-bottom: 10px; font-size: 1.1rem; color: #eee;"></h2>
 
-        <div id="break-screen" style="display: none; text-align: center; padding: 100px 20px;">
-            <i class="fa-solid fa-hourglass-end" style="font-size: 3rem; color: #00d4ff;"></i>
-            <h1 style="margin-top: 20px;">استراحة محارب</h1>
-            <p>ارتح قليلاً، لا تغلق الصفحة بعد قليل سيتم عرض تصحيح الامتحان.</p>
-            <div id="break-timer-display" style="font-size: 3rem; color: #00d4ff;">15:00</div>
+            <div class="ad-spot">إعلان ممول - مساحة لدعم المنصة</div>
+
+            <div id="pdf-render-container">
+                </div>
+
+            <div class="ad-spot">إعلان ممول - مساحة لدعم المنصة</div>
+
+            <div style="margin-top: 30px; padding-bottom: 50px;">
+                <a href="bacmode-PC.html" class="card" style="border: 2px solid #ff4d4d; padding: 15px; max-width: 300px; margin: 0 auto;">
+                    <i class="fa-solid fa-radiation"></i>
+                    <span>BAC MODE PHYSIC</span>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="ad-banner">IVANOVA ADVERTISING SYSTEM - SECURE SESSION</div>
+    <footer class="footer">
+        <p>© 2026 Ivanova Core - قسم الفيزياء والكيمياء</p>
+    </footer>
 
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        let timerInterval;
-        let selectedYear = "";
-        let isSimulationRunning = false;
+        const gridView = document.getElementById('grid-view');
+        const readerView = document.getElementById('reader-view');
+        const pdfList = document.getElementById('pdf-list');
+        const container = document.getElementById('pdf-render-container');
+        const currentTitle = document.getElementById('current-exam-title');
 
-        // توليد القائمة
-        const listDiv = document.getElementById('exam-list');
+        // توليد الـ 10 ملفات من 2016 إلى 2025
         for (let year = 2016; year <= 2025; year++) {
+            const fileName = `Examen national de physique chimie ${year} - SPCF-sujet`;
+            const fullPath = `physicPDF/${fileName}.pdf`;
+
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `<i class="fa-solid fa-file-invoice"></i><span>امتحان ${year}</span>`;
-            card.onclick = () => {
-                selectedYear = year;
-                document.querySelectorAll('.card').forEach(c => c.style.borderColor = '#222');
-                card.style.borderColor = 'var(--accent-pc)';
-            };
-            listDiv.appendChild(card);
+            card.innerHTML = `
+                <i class="fa-solid fa-atom" style="color: #ff4d4d;"></i>
+                <span>${year} - الفيزياء</span>
+            `;
+
+            card.onclick = () => openReader(fullPath, fileName);
+            pdfList.appendChild(card);
         }
 
-        // كاشف تغيير ملء الشاشة
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement && isSimulationRunning) {
-                triggerCheat();
+        async function openReader(url, title) {
+            gridView.style.display = 'none';
+            readerView.style.display = 'block';
+            currentTitle.innerText = title.replace(/-/g, ' ');
+            container.innerHTML = '<div class="loading-overlay">جاري استدعاء بيانات الفيزياء من المفاعل...</div>';
+
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                container.innerHTML = ''; 
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    
+                    await page.render(renderContext).promise;
+                    container.appendChild(canvas);
+                }
+            } catch (error) {
+                container.innerHTML = '<div style="color:#ff4d4d; padding:20px;">خطأ: لم يتم العثور على ملف السنة المطلوبة في مجلد physicPDF.</div>';
+                console.error(error);
             }
-        });
-
-        function triggerCheat() {
-            clearInterval(timerInterval);
-            document.getElementById('cheat-overlay').style.display = 'flex';
-            isSimulationRunning = false;
+            window.scrollTo(0, 0);
         }
 
-        async function startSimulation() {
-            if (!selectedYear) return alert("اختر السنة أولاً");
-
-            const elem = document.documentElement;
-            if (elem.requestFullscreen) await elem.requestFullscreen();
-            
-            document.getElementById('selection-grid').style.display = 'none';
-            document.getElementById('start-master-btn').style.display = 'none';
-            document.getElementById('reader-area').style.display = 'block';
-            
-            isSimulationRunning = true;
-            startTimer(3 * 60 * 60, "timer-display", endExam);
-            renderPDF(`physicPDF/Examen national de physique chimie ${selectedYear} - SPCF-sujet.pdf`);
-        }
-
-        function startTimer(duration, displayId, callback) {
-            let timer = duration;
-            timerInterval = setInterval(() => {
-                let h = parseInt(timer / 3600, 10);
-                let m = parseInt((timer % 3600) / 60, 10);
-                let s = parseInt(timer % 60, 10);
-                document.getElementById(displayId).textContent = 
-                    (h<10?"0"+h:h)+":"+(m<10?"0"+m:m)+":"+(s<10?"0"+s:s);
-                if (--timer < 0) { clearInterval(timerInterval); callback(); }
-            }, 1000);
-        }
-
-        function endExam() {
-            isSimulationRunning = false; // لإيقاف كاشف الغش عند انتهاء الوقت طبيعياً
-            if (document.exitFullscreen) document.exitFullscreen();
-            document.getElementById('reader-area').style.display = 'none';
-            document.getElementById('break-screen').style.display = 'block';
-            startTimer(15 * 60, "break-timer-display", showCorrection);
-        }
-
-        function showCorrection() {
-            document.getElementById('break-screen').style.display = 'none';
-            document.getElementById('reader-area').style.display = 'block';
-            renderPDF(`physicSPDF/Examen national de physique chimie corrige ${selectedYear} - SPCF-sujet.pdf`);
-        }
-
-        async function renderPDF(url) {
-            const container = document.getElementById('pdf-render-container');
-            container.innerHTML = '';
-            const pdf = await pdfjsLib.getDocument(url).promise;
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 1.5 });
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
-                container.appendChild(canvas);
-            }
+        function closeReader() {
+            readerView.style.display = 'none';
+            gridView.style.display = 'block';
+            container.innerHTML = ''; 
         }
     </script>
 </body>
