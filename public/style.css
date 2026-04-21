@@ -88,3 +88,53 @@ h1 {
     border-color: var(--accent-color);
     transform: scale(1.05);
 }
+/* تنسيق الشعار */
+.logo-container {
+    margin-bottom: 20px;
+    animation: pulse 3s infinite;
+}
+
+.main-logo {
+    width: 100px;
+    height: 100px;
+    filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+}
+
+/* تنسيق النصوص والمزايا */
+.mission-statement {
+    max-width: 700px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px dashed #333;
+}
+
+.lead-text {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.features-list {
+    text-align: right;
+    display: inline-block;
+}
+
+.feature-item {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feature-item i {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
