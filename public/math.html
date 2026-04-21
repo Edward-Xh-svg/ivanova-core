@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +7,101 @@
     <link rel="icon" href="ivanova-favicon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* تنسيق إضافي لبيئة العرض */
+        #reader-view { display: none; width: 100%; }
+        .pdf-frame {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #333;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            background: #222;
+            color: #ccc;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .back-btn:hover { background: #333; color: white; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>إمتحانات الرياضيات</h1>
-        
-        <div id="pdf-list" class="grid">
-            </div>
 
-        <div style="margin-top: 50px;">
-            <a href="bacmode-MT.html" class="card" style="border: 2px solid var(--accent-color); padding: 15px;">
-                <i class="fa-solid fa-bolt"></i>
-                <span>BAC MODE MATH</span>
-            </a>
+    <div class="container" id="main-container">
+        <div id="grid-view">
+            <h1>إمتحانات الرياضيات (2010 - 2025)</h1>
+            <p style="margin-bottom: 30px; opacity: 0.7;">اختر السنة لبدء المحاكاة</p>
+            <div id="pdf-list" class="grid">
+                </div>
+        </div>
+
+        <div id="reader-view">
+            <div class="back-btn" onclick="closeReader()">
+                <i class="fa-solid fa-arrow-right"></i> العودة للقائمة
+            </div>
+            <h2 id="current-exam-title" style="margin-bottom: 20px;"></h2>
+            
+            <iframe id="pdf-iframe" class="pdf-frame" src=""></iframe>
+
+            <div style="margin-top: 30px; padding-bottom: 50px;">
+                <a href="bacmode-MT.html" class="card" style="border: 2px solid var(--accent-color); padding: 15px; max-width: 300px; margin: 0 auto;">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>BAC MODE MATH</span>
+                </a>
+            </div>
         </div>
     </div>
 
     <footer class="footer">
-        <p>© 2026 Ivanova Core</p>
+        <p>© 2026 Ivanova Core - منظومة الامتحانات الوطنية</p>
     </footer>
+
+    <script>
+        const gridView = document.getElementById('grid-view');
+        const readerView = document.getElementById('reader-view');
+        const pdfList = document.getElementById('pdf-list');
+        const pdfIframe = document.getElementById('pdf-iframe');
+        const currentTitle = document.getElementById('current-exam-title');
+
+        // توليد الـ 15 ملف تلقائياً من 2010 إلى 2025
+        for (let year = 2010; year <= 2025; year++) {
+            const fileName = `Examen national de mathématiques ${year} - SPCF`;
+            const fullPath = `mathPDF/${fileName}.pdf`;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.cursor = 'pointer';
+            card.innerHTML = `
+                <i class="fa-solid fa-file-pdf" style="color: #ff4444;"></i>
+                <span>${fileName}</span>
+            `;
+
+            // عند الضغط على الزر (إنشاء التوكن)
+            card.onclick = () => {
+                openReader(fullPath, fileName);
+            };
+
+            pdfList.appendChild(card);
+        }
+
+        function openReader(path, title) {
+            gridView.style.display = 'none';
+            readerView.style.display = 'block';
+            currentTitle.innerText = title;
+            // العرض بدون تحميل (Preview Mode)
+            pdfIframe.src = path + "#toolbar=0&navpanes=0"; 
+            window.scrollTo(0, 0);
+        }
+
+        function closeReader() {
+            readerView.style.display = 'none';
+            gridView.style.display = 'block';
+            pdfIframe.src = ""; // تفريغ الإطار لتوفير الذاكرة
+        }
+    </script>
 </body>
 </html>
