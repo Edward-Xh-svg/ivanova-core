@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAC MODE - الفيزياء | Ivanova</title>
+    <link rel="icon" href="ivanova-favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        :root { --timer-color: #ff4d4d; }
+        body { background-color: #050505; overflow-x: hidden; }
+        
+        /* تصميم العداد الجذاب */
+        .timer-section {
+            background: linear-gradient(145deg, #111, #000);
+            padding: 20px;
+            border-bottom: 2px solid var(--timer-color);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(255, 77, 77, 0.2);
+        }
+        #timer-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--timer-color);
+            text-shadow: 0 0 15px var(--timer-color);
+            margin: 10px 0;
+        }
+        .start-btn {
+            background: var(--timer-color);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .start-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--timer-color); }
+
+        /* منطقة العرض */
+        #reader-area { display: none; margin-top: 20px; }
+        #pdf-render-container {
+            width: 100%;
+            height: 70vh;
+            overflow-y: auto;
+            background: #000;
+            border-radius: 10px;
+        }
+        canvas { width: 100%; max-width: 900px; display: block; margin: 0 auto 10px; }
+
+        /* رسالة الاستراحة */
+        #break-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .break-timer { font-size: 4rem; color: #00d4ff; }
+
+        .ad-banner {
+            width: 100%;
+            height: 90px;
+            background: #111;
+            border: 1px dashed #333;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="timer-section">
+        <div id="status-text" style="color: #888;">وضعية المحاكاة القصوى: الفيزياء</div>
+        <div id="timer-display">03:00:00</div>
+        <button id="start-master-btn" class="start-btn" onclick="startSimulation()">إطلاق المفاعل 🚀</button>
+    </div>
+
+    <div class="container">
+        <div id="selection-grid">
+            <h2 style="margin: 30px 0;">اختر امتحان الفيزياء لبدء التحدي:</h2>
+            <div id="exam-list" class="grid"></div>
+        </div>
+
+        <div id="reader-area">
+            <div id="pdf-render-container"></div>
+        </div>
+
+        <div id="break-screen">
+            <i class="fa-solid fa-mug-hot" style="font-size: 4rem; color: #00d4ff;"></i>
+            <h1 style="color: #fff; margin-top: 20px;">ارتح قليلاً...</h1>
+            <p style="color: #888;">لا تغلق الصفحة، يتم الآن تحضير تصحيح الامتحان بدقة.</p>
+            <div id="break-timer-display" class="break-timer">15:00</div>
+        </div>
+
+        <div class="ad-banner">مساحة إعلانية لدعم المفاعل (Ivanova Ads)</div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        let timerInterval;
+        let selectedYear = "";
+        let isSimulationRunning = false;
+
+        // توليد قائمة الفيزياء 2016-2025
+        const listDiv = document.getElementById('exam-list');
+        for (let year = 2016; year <= 2025; year++) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<i class="fa-solid fa-radiation"></i><span>امتحان ${year}</span>`;
+            card.onclick = () => {
+                selectedYear = year;
+                document.querySelectorAll('.card').forEach(c => c.style.borderColor = '#333');
+                card.style.borderColor = '#ff4d4d';
+                window.scrollTo(0,0);
+            };
+            listDiv.appendChild(card);
+        }
+
+        async function startSimulation() {
+            if (!selectedYear) {
+                alert("برجاء اختيار سنة الامتحان أولاً!");
+                return;
+            }
+
+            // طلب ملء الشاشة
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+
+            document.getElementById('selection-grid').style.display = 'none';
+            document.getElementById('start-master-btn').style.display = 'none';
+            document.getElementById('reader-area').style.display = 'block';
+            
+            isSimulationRunning = true;
+            startTimer(3 * 60 * 60, "timer-display", endExam);
+            
+            const path = `physicPDF/Examen national de physique chimie ${selectedYear} - SPCF-sujet.pdf`;
+            renderPDF(path);
+        }
+
+        function startTimer(duration, displayId, callback) {
+            let timer = duration, hours, minutes, seconds;
+            timerInterval = setInterval(() => {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                document.getElementById(displayId).textContent = hours + ":" + minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    callback();
+                }
+            }, 1000);
+        }
+
+        function endExam() {
+            document.getElementById('reader-area').style.display = 'none';
+            document.getElementById('break-screen').style.display = 'block';
+            document.getElementById('status-text').textContent = "انتهى الوقت - وضع الاستراحة";
+            
+            startTimer(15 * 60, "break-timer-display", showCorrection);
+        }
+
+        function showCorrection() {
+            document.getElementById('break-screen').style.display = 'none';
+            document.getElementById('reader-area').style.display = 'block';
+            document.getElementById('status-text').textContent = "عرض التصحيح النموذجي";
+            document.getElementById('timer-display').textContent = "تم التصحيح";
+            
+            const corrPath = `physicSPDF/Examen national de physique chimie corrige ${selectedYear} - SPCF-sujet.pdf`;
+            renderPDF(corrPath);
+        }
+
+        async function renderPDF(url) {
+            const container = document.getElementById('pdf-render-container');
+            container.innerHTML = '';
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    container.appendChild(canvas);
+                }
+            } catch (e) {
+                container.innerHTML = "<p style='color:red'>خطأ في استدعاء الملف. تأكد من المسار.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
