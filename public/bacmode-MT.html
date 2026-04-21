@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVANOVA - BAC MODE MATH</title>
+    <link rel="icon" href="ivanova-favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        :root { --accent-mt: #00d4ff; --bg-dark: #050505; }
+        body { background-color: var(--bg-dark); color: white; overflow-x: hidden; }
+        
+        .timer-section {
+            background: linear-gradient(180deg, #111, #000);
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        #timer-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--accent-mt);
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        .start-btn {
+            background: none;
+            color: white;
+            border: 1px solid var(--accent-mt);
+            padding: 8px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.4s;
+            margin-top: 10px;
+        }
+        .start-btn:hover { background: var(--accent-mt); color: black; box-shadow: 0 0 15px var(--accent-mt); }
+
+        #cheat-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ff4444;
+        }
+
+        #pdf-render-container {
+            width: 100%;
+            height: 75vh;
+            overflow-y: auto;
+            background: #000;
+            margin-top: 20px;
+        }
+        canvas { width: 100%; max-width: 900px; display: block; margin: 0 auto 15px; border-radius: 5px; }
+
+        .ad-banner {
+            width: 100%; height: 60px;
+            background: #0a0a0a;
+            border-top: 1px solid #222;
+            position: fixed; bottom: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cheat-overlay">
+        <i class="fa-solid fa-user-slash" style="font-size: 5rem; margin-bottom: 20px;"></i>
+        <h1>محاولة غش مكتشفة!</h1>
+        <p>وضعية BAC MODE تتطلب الالتزام بملء الشاشة.</p>
+        <button onclick="location.reload()" class="start-btn" style="border-color:#ff4444; color:#ff4444;">إعادة الضبط</button>
+    </div>
+
+    <div class="timer-section">
+        <div id="status-text" style="color: #666; font-size: 0.8rem;">MATHEMATICS SIMULATION CORE</div>
+        <div id="timer-display">03:00:00</div>
+        <button id="start-master-btn" class="start-btn" onclick="startSimulation()">
+            <i class="fa-solid fa-brain"></i> دخول منطقة التركيز
+        </button>
+    </div>
+
+    <div class="container">
+        <div id="selection-grid">
+            <h2 style="text-align: center; margin: 40px 0;">امتحانات الرياضيات (2010 - 2025)</h2>
+            <div id="exam-list" class="grid"></div>
+        </div>
+
+        <div id="reader-area" style="display: none;">
+            <div id="pdf-render-container"></div>
+        </div>
+
+        <div id="break-screen" style="display: none; text-align: center; padding: 100px 20px;">
+            <i class="fa-solid fa-battery-half" style="font-size: 3rem; color: var(--accent-mt);"></i>
+            <h1 style="margin-top: 20px;">انتهى وقت الامتحان</h1>
+            <p>ارتح قليلاً، سنقوم بعرض التصحيح النموذجي بعد 15 دقيقة.</p>
+            <div id="break-timer-display" style="font-size: 3rem; color: var(--accent-mt);">15:00</div>
+        </div>
+    </div>
+
+    <div class="ad-banner">IVANOVA WORLD - ADVERTISING UNIT</div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        let timerInterval;
+        let selectedYear = "";
+        let isSimulationRunning = false;
+
+        // توليد قائمة الـ 15 سنة للرياضيات
+        const listDiv = document.getElementById('exam-list');
+        for (let year = 2010; year <= 2025; year++) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<i class="fa-solid fa-calculator"></i><span>دورة ${year}</span>`;
+            card.onclick = () => {
+                selectedYear = year;
+                document.querySelectorAll('.card').forEach(c => c.style.borderColor = '#222');
+                card.style.borderColor = 'var(--accent-mt)';
+            };
+            listDiv.appendChild(card);
+        }
+
+        // مراقبة الخروج من ملء الشاشة
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && isSimulationRunning) {
+                triggerCheat();
+            }
+        });
+
+        function triggerCheat() {
+            clearInterval(timerInterval);
+            document.getElementById('cheat-overlay').style.display = 'flex';
+            isSimulationRunning = false;
+        }
+
+        async function startSimulation() {
+            if (!selectedYear) return alert("اختر السنة أولاً");
+
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) await elem.requestFullscreen();
+            
+            document.getElementById('selection-grid').style.display = 'none';
+            document.getElementById('start-master-btn').style.display = 'none';
+            document.getElementById('reader-area').style.display = 'block';
+            
+            isSimulationRunning = true;
+            startTimer(3 * 60 * 60, "timer-display", endExam);
+            renderPDF(`mathPDF/Examen national de mathématiques ${selectedYear} - SPCF.pdf`);
+        }
+
+        function startTimer(duration, displayId, callback) {
+            let timer = duration;
+            timerInterval = setInterval(() => {
+                let h = parseInt(timer / 3600, 10);
+                let m = parseInt((timer % 3600) / 60, 10);
+                let s = parseInt(timer % 60, 10);
+                document.getElementById(displayId).textContent = 
+                    (h<10?"0"+h:h)+":"+(m<10?"0"+m:m)+":"+(s<10?"0"+s:s);
+                if (--timer < 0) { clearInterval(timerInterval); callback(); }
+            }, 1000);
+        }
+
+        function endExam() {
+            isSimulationRunning = false;
+            if (document.exitFullscreen) document.exitFullscreen();
+            document.getElementById('reader-area').style.display = 'none';
+            document.getElementById('break-screen').style.display = 'block';
+            startTimer(15 * 60, "break-timer-display", showCorrection);
+        }
+
+        function showCorrection() {
+            document.getElementById('break-screen').style.display = 'none';
+            document.getElementById('reader-area').style.display = 'block';
+            renderPDF(`mathSPDF/Examen national de mathématiques corrige ${selectedYear} - SPCF.pdf`);
+        }
+
+        async function renderPDF(url) {
+            const container = document.getElementById('pdf-render-container');
+            container.innerHTML = '';
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    container.appendChild(canvas);
+                }
+            } catch(e) {
+                container.innerHTML = "<p style='color:red; padding:20px;'>خطأ: تأكد من رفع ملف التصحيح في مجلد mathSPDF بالاسم الصحيح.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
