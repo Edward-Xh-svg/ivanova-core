@@ -203,5 +203,36 @@
             }
         }
     </script>
+
+<div id="monetag-footer-ad" class="footer-ad-fixed">
+    </div>
+
+<style>
+    .footer-ad-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        min-height: 50px;
+        background: rgba(0, 0, 0, 0.9);
+        border-top: 1px solid #333;
+        z-index: 99999; /* أعلى من كل شيء حتى الـ Fullscreen */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    
+    /* دفع المحتوى للأعلى لكي لا يغطيه الإعلان */
+    body {
+        padding-bottom: 60px;
+    }
+
+    /* إخفاء الإعلان في وضع الغش لزيادة الرعب */
+    #cheat-overlay[style*="display: flex"] ~ #monetag-footer-ad {
+        display: none;
+    }
+</style>
+
 </body>
 </html>
