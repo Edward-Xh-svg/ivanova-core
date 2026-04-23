@@ -15,11 +15,7 @@
             <i class="fa-solid fa-bars"></i>
         </div>
         <div class="logo-area">
-            <img src="grosmen-fivcon.png" alt="Grosmen Logo">
-            <div class="logo-text">
-                <span class="brand-name">Grosmen©</span>
-                <span class="sub-brand">..Ivanova/bacmaroc</span>
-            </div>
+            <img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo">
         </div>
     </header>
 
@@ -76,7 +72,6 @@
             sidebar.classList.toggle('active');
         }
 
-        // إغلاق الإعلان مؤقتاً لمدة 5 ثوان عند الضغط على X
         document.getElementById('aads-toggle').addEventListener('change', function() {
             if (this.checked) {
                 setTimeout(() => { 
@@ -85,7 +80,6 @@
             }
         });
 
-        // إغلاق القائمة الجانبية عند الضغط خارجها (تحسين UX)
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const menuIcon = document.querySelector('.menu-icon');
