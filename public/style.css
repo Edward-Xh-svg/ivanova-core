@@ -1,215 +1,255 @@
 :root {
-    --bg-color: #0a0a0a; /* خلفية داكنة جداً كما في الصورة */
-    --card-bg: #151515;
-    --accent-color: #ffffff; /* الاعتماد على الأبيض والرمادي للفخامة */
-    --text-color: #e0e0e0;
-    --secondary-text: #b3b3b3;
-    --sidebar-bg: #111111;
+    --bg-color: #050505; /* أسود عميق جداً */
+    --card-bg: #111111;
+    --card-hover: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #999999;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --accent-color: #e0e0e0;
 }
 
 body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    font-family: 'Cairo', sans-serif; /* الخط الجديد يضيف فخامة */
     direction: rtl;
     overflow-x: hidden;
+    padding-bottom: 80px; /* مساحة للإعلان */
 }
 
-/* --- الهيدر (Main Header) --- */
+/* تأثير الزجاج (Glassmorphism) */
+.glass-effect {
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Header */
 .main-header {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    background-color: #000;
-    border-bottom: 1px solid #222;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .menu-icon {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     cursor: pointer;
     margin-left: 20px;
-    color: var(--text-color);
+    color: var(--text-secondary);
     transition: 0.3s;
 }
 
-.menu-icon:hover {
-    opacity: 0.7;
-}
-
-.logo-area {
-    display: flex;
-    align-items: center;
-}
+.menu-icon:hover { color: var(--text-primary); }
 
 .header-logo {
-    height: 40px; /* حجم الشعار في الهيدر */
+    height: 38px;
     width: auto;
-    object-fit: contain;
+    display: block;
 }
 
-/* --- القائمة الجانبية (Sidebar) --- */
+/* Sidebar */
 .sidebar {
     position: fixed;
     top: 0;
-    right: -280px; /* مخفية جهة اليمين */
+    right: -300px;
     width: 280px;
     height: 100%;
-    background-color: var(--sidebar-bg);
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #0a0a0a;
+    border-left: 1px solid var(--border-color);
+    transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 2000;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-.sidebar.active {
-    right: 0;
-}
+.sidebar.active { right: 0; }
 
 .sidebar-header {
-    padding: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-bottom: 1px solid #222;
-    margin-bottom: 10px;
+    padding: 30px 25px 20px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1;
 }
 
 .sidebar ul li a {
     display: flex;
     align-items: center;
-    padding: 15px 25px;
-    color: var(--text-color);
+    padding: 18px 25px;
+    color: var(--text-secondary);
     text-decoration: none;
+    font-weight: 600;
     transition: 0.3s;
     gap: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
 }
 
+.sidebar ul li a i { font-size: 1.1rem; width: 20px; text-align: center; }
 .sidebar ul li a:hover {
-    background-color: #1a1a1a;
+    background-color: rgba(255,255,255,0.03);
+    color: var(--text-primary);
     padding-right: 35px;
 }
 
-/* --- المحتوى الرئيسي --- */
+.sidebar-footer {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: #111;
+    transition: 0.3s;
+}
+.sidebar-footer:hover { background: #1a1a1a; color: #fff; }
+
+/* Main Content & Typography */
 .main-content {
-    max-width: 900px;
-    margin: 40px auto;
+    max-width: 850px;
+    margin: 50px auto;
     padding: 0 20px;
     text-align: center;
 }
 
-.welcome-section h2 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: #fff;
+.gradient-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.welcome-section p {
-    color: var(--secondary-text);
-    line-height: 1.7;
-    font-size: 1.05rem;
+.sub-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 25px;
 }
+
+.feature-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 25px;
+    border-radius: 50px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+}
+.feature-badge i { color: #fff; margin-left: 8px; }
+.feature-badge strong { color: #fff; }
 
 .support-text {
-    margin-top: 25px;
-    padding: 15px;
-    border-top: 1px solid #222;
     font-size: 0.9rem;
-    color: var(--secondary-text);
+    color: #666;
+    margin-top: 20px;
+}
+.support-text span {
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
-.support-text strong {
-    color: #fff;
-}
-
-/* --- شبكة المواد (Subject Cards) --- */
+/* Cards Grid */
 .subjects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    margin-top: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    margin-top: 50px;
 }
 
 .subject-card {
     background-color: var(--card-bg);
-    border: 1px solid #222;
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
     padding: 40px 20px;
     text-decoration: none;
-    color: #fff;
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
 }
 
-.subject-card i {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: #fff;
+.subject-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    opacity: 0; transition: 0.4s;
 }
 
-.subject-card span {
-    font-size: 1.1rem;
+.card-icon {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    color: rgba(255,255,255,0.9);
 }
+
+.subject-card span { font-size: 1.2rem; font-weight: 600; }
 
 .subject-card:hover {
-    background-color: #1a1a1a;
-    border-color: #444;
-    transform: translateY(-5px);
+    background-color: var(--card-hover);
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
 }
+.subject-card:hover::before { opacity: 1; }
 
-/* --- الإعلانات المثبتة --- */
+/* --- تصميم الإعلان المصغر --- */
 .ad-container-fixed {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     z-index: 500;
     display: flex;
     justify-content: center;
+    border-top: 1px solid var(--border-color);
 }
 
 .ad-wrapper {
     position: relative;
-    background: rgba(0,0,0,0.9);
-    padding: 5px;
-    border-radius: 8px 8px 0 0;
+    /* تصغير الإعلان بنسبة 20% ليكون أقل تشتيتاً */
+    transform: scale(0.8); 
+    transform-origin: bottom center;
+    transition: opacity 0.3s;
 }
 
 .close-ad {
     position: absolute;
-    top: -25px;
-    left: 10px;
-    background: #eee;
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
+    top: -15px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+    padding: 5px 15px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.05);
     z-index: 600;
+    transition: 0.3s;
+}
+.close-ad:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+#aads-toggle:checked + .ad-wrapper {
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* تحسينات للشاشات الصغيرة */
-@media (max-width: 600px) {
-    .subjects-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .welcome-section h2 {
-        font-size: 1.5rem;
-    }
-
-    .header-logo {
-        height: 35px;
-    }
+/* متجاوب مع الهواتف (تصغير الإعلان أكثر في الهواتف) */
+@media (max-width: 768px) {
+    .gradient-text { font-size: 1.8rem; }
+    .ad-wrapper { transform: scale(0.65); } /* أصغر في الهاتف */
 }
