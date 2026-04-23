@@ -3,106 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ivanova - BacMaroc | منصة محاكاة الامتحانات</title>
-    <link rel="icon" href="ivanova-favicon.png" type="image/png">
+    <title>Grosmen - Ivanova | BacMaroc</title>
+    <link rel="icon" href="grosmen-fivcon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 </head>
-<body>
+<body class="dark-theme">
 
-    <div class="container">
-        <div class="logo-container">
-            <img src="ivanova-favicon.png" alt="Ivanova Logo" class="main-logo">
+    <header class="main-header">
+        <div class="menu-icon" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
         </div>
-
-        <h1>مرحباً بك في البيئة الحية لمحاكاة امتحانات الباكالوريا</h1>
-        
-        <div class="mission-statement">
-            <p class="lead-text">ابدأ الآن تجربتك التعليمية مع منصة <strong>BacMaroc</strong> المتطور.</p>
-            <div class="features-list">
-                <div class="feature-item">
-                    <i class="fa-solid fa-check-double"></i>
-                    <span>نماذج امتحانات وطنية وحلولها في مادتي الرياضيات والفيزياء والكمياء</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fa-solid fa-lightbulb"></i>
-                    <span>حلول مفصلة تم إعدادها وتدقيقها من طرف أساتذة مختصين.</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fa-solid fa-gauge-high"></i>
-                    <span>بيئة محاكاة (BAC MODE) لتعويد الطالب على إدارة الوقت وضغط الامتحان.</span>
-                </div>
+        <div class="logo-area">
+            <img src="grosmen-fivcon.png" alt="Grosmen Logo">
+            <div class="logo-text">
+                <span class="brand-name">Grosmen©</span>
+                <span class="sub-brand">..Ivanova/bacmaroc</span>
             </div>
         </div>
+    </header>
 
-        <div class="grid">
-            <a href="math.html" class="card">
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">القائمة</div>
+        <ul>
+            <li><a href="math.html"><i class="fa-solid fa-calculator"></i> مادة الرياضيات</a></li>
+            <li><a href="physic.html"><i class="fa-solid fa-atom"></i> مادة الفيزياء</a></li>
+            <li><a href="mailto:support@ivanova.sbs"><i class="fa-solid fa-envelope"></i> بريد الدعم</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <section class="welcome-section">
+            <h2>مرحباً بك في منصة BAC Maroc</h2>
+            <p>نقدم لك مجموعة من نماذج الامتحانات الوطنية في مختلف الشعب في الوقت الحالي والمستقبل القريب.</p>
+            <p>يمكنك استخدام ميزة BAC MODE لمحاكاة بيئة الامتحان الوطني مع ميزة مكافحة الغش.</p>
+            <p class="support-text">في حالة وجود أي مشكلة يمكنك التواصل على البريد الإلكتروني <br> <strong>support@ivanova.sbs</strong></p>
+        </section>
+
+        <div class="subjects-grid">
+            <a href="math.html" class="subject-card">
                 <i class="fa-solid fa-calculator"></i>
                 <span>مادة الرياضيات</span>
             </a>
-
-            <a href="physic.html" class="card">
+            <a href="physic.html" class="subject-card">
                 <i class="fa-solid fa-atom"></i>
                 <span>مادة الفيزياء</span>
             </a>
         </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2026 جميع الحقوق محفوظة لـ Ivanova World - منصة BacMaroc</p>
-        <p style="font-size: 0.7rem; margin-top: 5px; opacity: 0.6;">إصدار النظام: Core v1.0.2</p>
-    </footer>
-
-<div id="monetag-footer-ad" class="footer-ad-fixed">
-    </div>
-
-<div style="position: absolute; z-index: 99999">
-    <input autocomplete="off" type="checkbox" id="aadsstickymo9fvw1m" hidden />
-    <div style="padding-top: 0; padding-bottom: 90px;">
-        <div style="width:970px;height:90px;position:fixed;text-align:center;font-size:0;bottom:0;left:0;right:0;margin:auto">
-            <label for="aadsstickymo9fvw1m" style="top: -24px; right: 0; position: absolute; border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px; z-index: 99999; cursor:pointer">
-                <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-                    <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-                </svg>
+    <div class="ad-container-fixed">
+        <input autocomplete="off" type="checkbox" id="aads-toggle" hidden />
+        <div class="ad-wrapper">
+            <label for="aads-toggle" class="close-ad">
+                <i class="fa-solid fa-xmark"></i>
             </label>
-            <div id="frame" style="width: 970px;margin: auto;z-index: 99998;height: auto">
-                <div style="width: 970px;margin:auto;text-align:left;position: absolute;left: 0;right: 0; top:-24px">
-                    <a style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 4px 4px 0 0;"
-                        id="frame-link"
-                        target="_blank"
-                        href="https://aads.com/campaigns/new?source_id=2435246&source_type=ad_unit&partner=2435246">
-                        Advertise here
-                    </a>
+            <div class="ad-content">
+                <div class="ad-label">
+                    <a href="https://aads.com/campaigns/new?source_id=2435246&source_type=ad_unit&partner=2435246" target="_blank">Advertise here</a>
                 </div>
-                <iframe data-aa="2435246" src="//ad.a-ads.com/2435246/?size=970x90" style="border:0; padding:0; width:970px; height:90px; overflow:hidden; margin: auto"></iframe>
+                <iframe data-aa="2435246" src="//ad.a-ads.com/2435246/?size=970x90" style="border:0; padding:0; width:970px; height:90px; overflow:hidden;"></iframe>
             </div>
         </div>
-        <style>
-            #aadsstickymo9fvw1m:checked + div {
-                display: none;
-            }
-        </style>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const adCheckbox = document.getElementById('aadsstickymo9fvw1m');
-        
-        if (adCheckbox) {
-            adCheckbox.addEventListener('change', function() {
-                
-                if (this.checked) {
-                    
-                    setTimeout(function() {
-                        adCheckbox.checked = false;
-                    }, 5000); 
-                }
-            });
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
         }
-    });
-</script>
 
+        // إغلاق الإعلان مؤقتاً
+        document.getElementById('aads-toggle').addEventListener('change', function() {
+            if (this.checked) {
+                setTimeout(() => { this.checked = false; }, 5000);
+            }
+        });
+    </script>
 </body>
 </html>
