@@ -7,10 +7,11 @@
     <link rel="icon" href="grosmen-inses.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme">
 
-    <header class="main-header">
+    <header class="main-header glass-effect">
         <div class="menu-icon" onclick="toggleSidebar()">
             <i class="fa-solid fa-bars"></i>
         </div>
@@ -20,41 +21,43 @@
     </header>
 
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">القائمة</div>
+        <div class="sidebar-header">القائمة الرئيسية</div>
         <ul>
             <li><a href="math.html"><i class="fa-solid fa-calculator"></i> مادة الرياضيات</a></li>
             <li><a href="physic.html"><i class="fa-solid fa-atom"></i> مادة الفيزياء</a></li>
             <li><a href="mailto:support@ivanova.sbs"><i class="fa-solid fa-envelope"></i> بريد الدعم</a></li>
         </ul>
-        <div class="sidebar-footer" onclick="toggleSidebar()" style="padding: 20px; color: #555; cursor: pointer; text-align: center;">
-            إغلاق القائمة
+        <div class="sidebar-footer" onclick="toggleSidebar()">
+            <i class="fa-solid fa-arrow-right"></i> إغلاق القائمة
         </div>
     </nav>
 
     <div class="main-content">
         <section class="welcome-section">
-            <h2>مرحباً بك في منصة BAC Maroc</h2>
-            <p>نقدم لك مجموعة من نماذج الامتحانات الوطنية في مختلف الشعب في الوقت الحالي والمستقبل القريب.</p>
-            <p>يمكنك استخدام ميزة BAC MODE لمحاكاة بيئة الامتحان الوطني مع ميزة مكافحة الغش.</p>
-            <p class="support-text">في حالة وجود أي مشكلة يمكنك التواصل على البريد الإلكتروني <br> <strong>support@ivanova.sbs</strong></p>
+            <h2 class="gradient-text">مرحباً بك في منصة BAC Maroc</h2>
+            <p class="sub-text">نقدم لك مجموعة من نماذج الامتحانات الوطنية في مختلف الشعب في الوقت الحالي والمستقبل القريب.</p>
+            <div class="feature-badge">
+                <i class="fa-solid fa-shield-halved"></i> يمكنك استخدام ميزة <strong>BAC MODE</strong> لمحاكاة بيئة الامتحان الوطني مع نظام مكافحة الغش.
+            </div>
+            <p class="support-text">لأي مساعدة، تواصل معنا عبر: <br> <span>support@ivanova.sbs</span></p>
         </section>
 
         <div class="subjects-grid">
             <a href="math.html" class="subject-card">
-                <i class="fa-solid fa-calculator"></i>
+                <div class="card-icon"><i class="fa-solid fa-calculator"></i></div>
                 <span>مادة الرياضيات</span>
             </a>
             <a href="physic.html" class="subject-card">
-                <i class="fa-solid fa-atom"></i>
+                <div class="card-icon"><i class="fa-solid fa-atom"></i></div>
                 <span>مادة الفيزياء</span>
             </a>
         </div>
     </div>
 
-    <div class="ad-container-fixed">
+    <div class="ad-container-fixed glass-effect">
         <input autocomplete="off" type="checkbox" id="aads-toggle" hidden />
         <div class="ad-wrapper">
-            <label for="aads-toggle" class="close-ad">
+            <label for="aads-toggle" class="close-ad" title="إغلاق مؤقت">
                 <i class="fa-solid fa-xmark"></i>
             </label>
             <div class="ad-content">
@@ -76,7 +79,7 @@
             if (this.checked) {
                 setTimeout(() => { 
                     this.checked = false; 
-                }, 5000);
+                }, 10000); // جعلت مدة الإخفاء 10 ثوانٍ لراحة أكبر
             }
         });
 
