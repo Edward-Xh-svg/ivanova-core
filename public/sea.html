@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شعبة الآداب | BacMaroc - Ivanova</title>
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #080808;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            /* اللون الأرجواني الأدبي */
+            --accent: #8e44ad; 
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(8, 8, 8, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 30px; }
+
+        .header-logo {
+            height: 80px;
+            width: auto;
+            transition: transform 0.3s;
+        }
+        .header-logo:hover { transform: scale(1.05); }
+
+        .apps-control { position: relative; }
+        .apps-btn {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+            cursor: pointer; padding: 10px; border-radius: 8px; transition: 0.3s;
+        }
+        .apps-btn:hover { background: rgba(255,255,255,0.05); }
+        .dot { width: 5px; height: 5px; background: #fff; border-radius: 50%; }
+
+        .apps-dropdown {
+            position: absolute; top: 70px; right: 0;
+            background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            width: 320px; padding: 20px; display: none;
+            grid-template-columns: repeat(3, 1fr); gap: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: slideDown 0.3s ease;
+        }
+        .apps-dropdown.active { display: grid; }
+        .app-link { text-align: center; text-decoration: none; color: #fff; font-size: 11px; padding: 10px; border-radius: 12px; transition: 0.2s; }
+        .app-link:hover { background: rgba(255,255,255,0.08); }
+        .app-link img { width: 45px; height: 45px; display: block; margin: 0 auto 8px; }
+        .current-site { background: rgba(128, 128, 128, 0.15); border: 1px solid var(--glass-border); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to left, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .back-btn { display: inline-flex; align-items: center; gap: 10px; color: var(--text-dim); text-decoration: none; margin-bottom: 20px; transition: 0.3s; }
+        .back-btn:hover { color: #fff; transform: translateX(5px); }
+
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 40px 30px; text-align: center;
+            text-decoration: none; color: #fff; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card:hover {
+            transform: translateY(-10px); background: rgba(255,255,255,0.05);
+            border-color: var(--accent); box-shadow: 0 15px 35px rgba(142, 68, 173, 0.2);
+        }
+        .card i { font-size: 3rem; margin-bottom: 20px; color: var(--accent); }
+        .card span { display: block; font-size: 1.2rem; font-weight: 700; }
+
+        .bac-mode-card {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.15), rgba(0,0,0,0));
+            border-color: rgba(142, 68, 173, 0.3);
+        }
+        .bac-mode-card i { color: #f1c40f; animation: pulse 2s infinite; }
+
+        footer { margin-top: 100px; background: #050505; padding: 60px 40px; border-top: 1px solid var(--glass-border); }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .footer-section h3 { margin-bottom: 20px; font-weight: 800; color: var(--accent); }
+        .footer-section p { color: var(--text-dim); font-size: 0.95rem; text-align: justify; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-right">
+            <a href="index.html"><img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo"></a>
+            <div class="apps-control">
+                <div class="apps-btn" onclick="toggleApps()">
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                </div>
+                <div class="apps-dropdown" id="appsMenu">
+                    <a href="javascript:location.reload();" class="app-link current-site"><img src="bacmaroc-ovcon.png"><span>Bac Maroc</span></a>
+                    <a href="https://courses.ivanova.sbs" class="app-link"><img src="courses-ovcon.png"><span>Courses</span></a>
+                    <a href="https://wikijobs.ivanova.sbs" class="app-link"><img src="wikijobs-ovcon.png"><span>WikiJobs</span></a>
+                    <a href="https://store.ivanova.sbs" class="app-link"><img src="store-ovcon.png"><span>Store</span></a>
+                    <a href="https://news.ivanova.sbs" class="app-link"><img src="news-ovcon.png"><span>News</span></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</a>
+        <div class="page-title">
+            <h1>شعبة الآداب</h1>
+            <p style="color: var(--text-dim)">حيث تلتقي البلاغة بالفكر، والإبداع بالمعرفة</p>
+        </div>
+
+        <div class="subjects-grid">
+            <a href="sea-ar.html" class="card">
+                <i class="fa-solid fa-book-open"></i>
+                <span>اللغة العربية</span>
+            </a>
+            <a href="sea-ge.html" class="card">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span>الجغرافيا والتاريخ</span>
+            </a>
+            <a href="sea-ph.html" class="card">
+                <i class="fa-solid fa-feather-pointed"></i>
+                <span>الفلسفة</span>
+            </a>
+            <a href="sea-en.html" class="card">
+                <i class="fa-solid fa-language"></i>
+                <span>اللغة الإنجليزية</span>
+            </a>
+            <a href="bacmodeSEA.html" class="card bac-mode-card">
+                <i class="fa-solid fa-bolt"></i>
+                <span>وضع المحاكاة (BAC MODE)</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>حول Bac Maroc</h3>
+                <p>منصة تعليمية متطورة تهدف لتمكين الطالب المغربي من أدوات النجاح عبر محاكاة حقيقية للامتحانات الوطنية وتلخيصات مركزة لأهم الدروس الأدبية والفلسفية.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Grosmen World & Ivanova</h3>
+                <p>مشاريع فردية نابعة من قلب المجتمع، نسعى لتقديم حلول حقيقية ومبتكرة تخدم المستعمل بلمسة احترافية وعالمية.</p>
+                <div style="margin-top: 20px; color: #fff; font-size: 0.9rem;">
+                    support@ivanova.sbs | ceo@ivanova.sbs
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleApps() { document.getElementById('appsMenu').classList.toggle('active'); }
+        window.onclick = function(event) {
+            if (!event.target.matches('.apps-btn') && !event.target.matches('.dot')) {
+                var dropdowns = document.getElementsByClassName("apps-dropdown");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('active')) dropdowns[i].classList.remove('active');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
