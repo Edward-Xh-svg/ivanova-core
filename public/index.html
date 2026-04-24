@@ -10,48 +10,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* التعديلات البصرية الجديدة */
-        .header-logo { width: 160px; height: auto; transition: transform 0.3s; } /* تكبير الشعار 4 أضعاف تقريباً */
-        
+        .header-logo { width: 160px; height: auto; transition: transform 0.3s; }
         .nav-tools { display: flex; align-items: center; gap: 20px; }
         
-        /* مربع الـ 9 نقاط (Ivanova Apps) */
+        /* تحسين مربع الـ 9 نقاط */
         .apps-menu-btn {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
+            gap: 4px; /* زيادة الفراغ قليلاً لوضوح الأيقونة */
             cursor: pointer;
             padding: 10px;
             border-radius: 8px;
             transition: background 0.3s;
         }
         .apps-menu-btn:hover { background: rgba(255,255,255,0.1); }
-        .dot { width: 4px; height: 4px; background: white; border-radius: 50%; }
+        .dot { width: 5px; height: 5px; background: white; border-radius: 50%; } /* تكبير النقاط قليلاً */
 
-        /* نافذة الاختصارات (مثل جوجل) */
+        /* تحسين نافذة الاختصارات المنظمة */
         .apps-dropdown {
             position: absolute;
-            top: 70px;
+            top: 75px;
             left: 20px;
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(15px);
+            background: rgba(15, 15, 15, 0.98);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 25px;
             display: none;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 20px;
             z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
         }
         .apps-dropdown.active { display: grid; animation: fadeIn 0.3s ease; }
-        .app-item { text-align: center; text-decoration: none; color: white; font-size: 12px; padding: 10px; border-radius: 10px; }
-        .app-item:hover { background: rgba(255,255,255,0.05); }
-        .app-item img { width: 40px; margin-bottom: 5px; }
-        .current-app { background: rgba(128, 128, 128, 0.2); border: 1px solid rgba(255,255,255,0.1); }
+        
+        .app-item { 
+            display: flex;
+            flex-direction: column; /* الأيقونة فوق والاسم تحت */
+            align-items: center;
+            text-decoration: none; 
+            color: white; 
+            font-size: 13px; 
+            padding: 15px; 
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .app-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
+        .app-item img { 
+            width: 55px; /* تكبير الأيقونة نسبياً */
+            height: 55px;
+            object-fit: contain;
+            margin-bottom: 10px; /* مسافة بين الأيقونة والاسم */
+        }
+        .current-app { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.15); }
 
         .subjects-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-        
         footer { background: #0a0a0a; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
         .footer-content { max-width: 1200px; margin: 0 auto; line-height: 1.8; color: #888; }
         .footer-emails { color: #fff; margin-bottom: 20px; }
@@ -79,24 +92,24 @@
         </div>
 
         <div class="apps-dropdown" id="appsDropdown">
-            <a href="#" class="app-item current-app">
-                <img src="bacmaroc-ovcon.png" alt="">
+            <a href="javascript:location.reload();" class="app-item current-app">
+                <img src="bacmaroc-ovcon.png" alt="Bac Maroc">
                 <span>Bac Maroc</span>
             </a>
             <a href="https://courses.ivanova.sbs" class="app-item">
-                <img src="courses-ovcon.png" alt="">
+                <img src="courses-ovcon.png" alt="Courses">
                 <span>Courses</span>
             </a>
             <a href="https://wikijobs.ivanova.sbs" class="app-item">
-                <img src="wikijobs-ovcon.png" alt="">
+                <img src="wikijobs-ovcon.png" alt="WikiJobs">
                 <span>WikiJobs</span>
             </a>
             <a href="https://store.ivanova.sbs" class="app-item">
-                <img src="store-ovcon.png" alt="">
+                <img src="store-ovcon.png" alt="Store">
                 <span>Store</span>
             </a>
             <a href="https://news.ivanova.sbs" class="app-item">
-                <img src="news-ovcon.png" alt="">
+                <img src="news-ovcon.png" alt="News">
                 <span>News</span>
             </a>
         </div>
@@ -105,7 +118,7 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">تصفح الشُعب</div>
         <ul>
-            <li><a href="spc.html"><i class="fa-solid fa-flask"></i> العلوم الفيزيائية</a></li>
+            <li><a href="spc.html"><i class="fa-solid fa-flask-vial"></i> العلوم الفيزيائية</a></li>
             <li><a href="ssvt.html"><i class="fa-solid fa-dna"></i> علوم الحياة والأرض</a></li>
             <li><a href="smath.html"><i class="fa-solid fa-square-root-variable"></i> العلوم الرياضية</a></li>
             <li><a href="seco.html"><i class="fa-solid fa-chart-line"></i> الاقتصاد والتدبير</a></li>
@@ -174,7 +187,6 @@
             document.getElementById('appsDropdown').classList.toggle('active');
         }
 
-        // إغلاق القوائم عند النقر في الخارج
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('appsDropdown');
             const appsBtn = document.querySelector('.apps-menu-btn');
