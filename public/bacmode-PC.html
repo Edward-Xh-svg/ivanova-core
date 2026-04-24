@@ -234,23 +234,30 @@
     </div>
 </div>
 
+
+<div class="ad-container-fixed glass-effect">
+    <input autocomplete="off" type="checkbox" id="aads-toggle" hidden />
+    <div class="ad-wrapper">
+        <label for="aads-toggle" class="close-ad" title="إغلاق مؤقت">
+            <i class="fa-solid fa-xmark"></i>
+        </label>
+        <div class="ad-content">
+            <div class="ad-label">
+                <a href="https://aads.com/campaigns/new?source_id=2435246&source_type=ad_unit&partner=2435246" target="_blank">Advertise here</a>
+            </div>
+            <iframe data-aa="2435246" src="//ad.a-ads.com/2435246/?size=970x90" style="border:0; padding:0; width:970px; height:90px; overflow:hidden;"></iframe>
+        </div>
+    </div>
+</div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const adCheckbox = document.getElementById('aadsstickymo9fvw1m');
-        
-        if (adCheckbox) {
-            adCheckbox.addEventListener('change', function() {
-                
-                if (this.checked) {
-                    
-                    setTimeout(function() {
-                        adCheckbox.checked = false;
-                    }, 5000); 
-                }
-            });
+    document.getElementById('aads-toggle')?.addEventListener('change', function() {
+        if (this.checked) {
+            setTimeout(() => { this.checked = false; }, 10000); // يختفي لـ 10 ثوانٍ
         }
     });
 </script>
+
 
 </body>
 </html>
