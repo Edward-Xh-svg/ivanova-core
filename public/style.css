@@ -1,11 +1,18 @@
+/* =========================================
+   متغيرات الألوان (مدمجة لدعم القديم والجديد)
+========================================= */
 :root {
-    --bg-color: #050505; /* أسود عميق جداً */
+    --bg-color: #050505; /* أسود عميق للواجهة الجديدة */
     --card-bg: #111111;
     --card-hover: #1a1a1a;
     --text-primary: #ffffff;
     --text-secondary: #999999;
     --border-color: rgba(255, 255, 255, 0.08);
-    --accent-color: #e0e0e0;
+    
+    /* المتغيرات القديمة للصفحات الداخلية */
+    --accent-color: #00d4ff; 
+    --text-color: #e0e0e0;
+    --metallic-gradient: linear-gradient(145deg, #2a2a2a, #1a1a1a);
 }
 
 body {
@@ -13,13 +20,18 @@ body {
     padding: 0;
     background-color: var(--bg-color);
     color: var(--text-primary);
-    font-family: 'Cairo', sans-serif; /* الخط الجديد يضيف فخامة */
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     direction: rtl;
     overflow-x: hidden;
-    padding-bottom: 80px; /* مساحة للإعلان */
+    padding-bottom: 80px; /* مساحة الإعلان */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* تأثير الزجاج (Glassmorphism) */
+/* =========================================
+   تأثيرات الواجهة الجديدة (Glassmorphism)
+========================================= */
 .glass-effect {
     background: rgba(5, 5, 5, 0.7);
     backdrop-filter: blur(12px);
@@ -114,7 +126,7 @@ body {
 }
 .sidebar-footer:hover { background: #1a1a1a; color: #fff; }
 
-/* Main Content & Typography */
+/* Main Content & Typography (New UI) */
 .main-content {
     max-width: 850px;
     margin: 50px auto;
@@ -162,7 +174,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* Cards Grid */
+/* Cards Grid (New UI) */
 .subjects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -209,7 +221,9 @@ body {
 }
 .subject-card:hover::before { opacity: 1; }
 
-/* --- تصميم الإعلان المصغر --- */
+/* =========================================
+   تصميم الإعلان المصغر
+========================================= */
 .ad-container-fixed {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -221,7 +235,6 @@ body {
 
 .ad-wrapper {
     position: relative;
-    /* تصغير الإعلان بنسبة 20% ليكون أقل تشتيتاً */
     transform: scale(0.8); 
     transform-origin: bottom center;
     transition: opacity 0.3s;
@@ -243,13 +256,134 @@ body {
 }
 .close-ad:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
-#aads-toggle:checked + .ad-wrapper {
-    opacity: 0;
-    pointer-events: none;
+#aads-toggle:checked + .ad-wrapper { opacity: 0; pointer-events: none; }
+
+/* =========================================
+   التنسيقات القديمة (تمت إعادتها لدعم الصفحات الداخلية)
+========================================= */
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
 }
 
-/* متجاوب مع الهواتف (تصغير الإعلان أكثر في الهواتف) */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    background: linear-gradient(to bottom, #fff, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.card {
+    background: var(--metallic-gradient);
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 30px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px var(--accent-color);
+}
+
+.card i { font-size: 3rem; margin-bottom: 15px; }
+
+.footer {
+    padding: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #666;
+    border-top: 1px solid #222;
+}
+
+.pdf-item {
+    background: var(--metallic-gradient);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pdf-item:hover {
+    border-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.logo-container {
+    margin-bottom: 20px;
+    animation: pulse 3s infinite;
+}
+
+.main-logo {
+    width: 100px;
+    height: 100px;
+    filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+}
+
+.mission-statement {
+    max-width: 700px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px dashed #333;
+}
+
+.lead-text {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.features-list {
+    text-align: right;
+    display: inline-block;
+}
+
+.feature-item {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feature-item i {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* =========================================
+   متجاوب مع الهواتف (Media Queries)
+========================================= */
 @media (max-width: 768px) {
     .gradient-text { font-size: 1.8rem; }
-    .ad-wrapper { transform: scale(0.65); } /* أصغر في الهاتف */
+    .ad-wrapper { transform: scale(0.65); }
 }
