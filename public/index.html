@@ -4,99 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grosmen - Ivanova | BacMaroc</title>
-    <link rel="icon" href="grosmen-inses.png" type="image/png">
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
-    <meta property="og:title" content="Grosmen - Ivanova | BacMaroc">
-    <meta property="og:description" content="منصة تعليمية متطورة لنماذج الامتحانات الوطنية المغربية مع خاصية BAC MODE.">
-    <meta property="og:image" content="https://ivanova.sbs/grosmen-fivcon.png">
-    <meta property="og:url" content="https://ivanova.sbs">
-    <meta name="theme-color" content="#050505">
+    
+    <style>
+        /* التعديلات البصرية الجديدة */
+        .header-logo { width: 160px; height: auto; transition: transform 0.3s; } /* تكبير الشعار 4 أضعاف تقريباً */
+        
+        .nav-tools { display: flex; align-items: center; gap: 20px; }
+        
+        /* مربع الـ 9 نقاط (Ivanova Apps) */
+        .apps-menu-btn {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .apps-menu-btn:hover { background: rgba(255,255,255,0.1); }
+        .dot { width: 4px; height: 4px; background: white; border-radius: 50%; }
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4711208753732920"
-     crossorigin="anonymous"></script>
+        /* نافذة الاختصارات (مثل جوجل) */
+        .apps-dropdown {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .apps-dropdown.active { display: grid; animation: fadeIn 0.3s ease; }
+        .app-item { text-align: center; text-decoration: none; color: white; font-size: 12px; padding: 10px; border-radius: 10px; }
+        .app-item:hover { background: rgba(255,255,255,0.05); }
+        .app-item img { width: 40px; margin-bottom: 5px; }
+        .current-app { background: rgba(128, 128, 128, 0.2); border: 1px solid rgba(255,255,255,0.1); }
 
+        .subjects-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        
+        footer { background: #0a0a0a; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; line-height: 1.8; color: #888; }
+        .footer-emails { color: #fff; margin-bottom: 20px; }
+        .article-section { margin-top: 30px; text-align: justify; font-size: 0.95rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body class="dark-theme">
 
     <header class="main-header glass-effect">
-        <div class="menu-icon" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i>
+        <div class="nav-tools">
+            <div class="menu-icon" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+            <div class="apps-menu-btn" onclick="toggleAppsMenu()">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
         </div>
+
         <div class="logo-area">
             <img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo">
+        </div>
+
+        <div class="apps-dropdown" id="appsDropdown">
+            <a href="#" class="app-item current-app">
+                <img src="bacmaroc-ovcon.png" alt="">
+                <span>Bac Maroc</span>
+            </a>
+            <a href="https://courses.ivanova.sbs" class="app-item">
+                <img src="courses-ovcon.png" alt="">
+                <span>Courses</span>
+            </a>
+            <a href="https://wikijobs.ivanova.sbs" class="app-item">
+                <img src="wikijobs-ovcon.png" alt="">
+                <span>WikiJobs</span>
+            </a>
+            <a href="https://store.ivanova.sbs" class="app-item">
+                <img src="store-ovcon.png" alt="">
+                <span>Store</span>
+            </a>
+            <a href="https://news.ivanova.sbs" class="app-item">
+                <img src="news-ovcon.png" alt="">
+                <span>News</span>
+            </a>
         </div>
     </header>
 
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">القائمة الرئيسية</div>
+        <div class="sidebar-header">تصفح الشُعب</div>
         <ul>
-            <li><a href="math.html"><i class="fa-solid fa-calculator"></i> مادة الرياضيات</a></li>
-            <li><a href="physic.html"><i class="fa-solid fa-atom"></i> مادة الفيزياء</a></li>
-            <li><a href="mailto:support@ivanova.sbs"><i class="fa-solid fa-envelope"></i> بريد الدعم</a></li>
+            <li><a href="spc.html"><i class="fa-solid fa-flask"></i> العلوم الفيزيائية</a></li>
+            <li><a href="ssvt.html"><i class="fa-solid fa-dna"></i> علوم الحياة والأرض</a></li>
+            <li><a href="smath.html"><i class="fa-solid fa-square-root-variable"></i> العلوم الرياضية</a></li>
+            <li><a href="seco.html"><i class="fa-solid fa-chart-line"></i> الاقتصاد والتدبير</a></li>
+            <li><a href="ses.html"><i class="fa-solid fa-users"></i> العلوم الإنسانية</a></li>
+            <li><a href="sea.html"><i class="fa-solid fa-book-open"></i> الآداب</a></li>
         </ul>
-        <div class="sidebar-footer" onclick="toggleSidebar()">
-            <i class="fa-solid fa-arrow-right"></i> إغلاق القائمة
-        </div>
     </nav>
 
     <div class="main-content">
         <section class="welcome-section">
-            <h2 class="gradient-text">مرحباً بك في منصة BAC Maroc</h2>
-            <p class="sub-text">نقدم لك مجموعة من نماذج الامتحانات الوطنية في مختلف الشعب في الوقت الحالي والمستقبل القريب.</p>
-            <div class="feature-badge">
-                <i class="fa-solid fa-shield-halved"></i> يمكنك استخدام ميزة <strong>BAC MODE</strong> لمحاكاة بيئة الامتحان الوطني مع نظام مكافحة الغش.
-            </div>
-            <p class="support-text">لأي مساعدة، تواصل معنا عبر: <br> <span>support@ivanova.sbs</span></p>
+            <h2 class="gradient-text">مستقبل البكالوريا يبدأ من هنا</h2>
+            <p class="sub-text">اختر شعبتك وابدأ رحلة التفوق مع Grosmen System.</p>
         </section>
 
         <div class="subjects-grid">
-            <a href="math.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-calculator"></i></div>
-                <span>مادة الرياضيات</span>
+            <a href="spc.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                <span>شعبة العلوم الفيزيائية</span>
             </a>
-            <a href="physic.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-atom"></i></div>
-                <span>مادة الفيزياء</span>
+            <a href="ssvt.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-leaf"></i></div>
+                <span>شعبة علوم الحياة والأرض</span>
+            </a>
+            <a href="smath.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-infinity"></i></div>
+                <span>شعبة العلوم الرياضية</span>
+            </a>
+            <a href="seco.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-coins"></i></div>
+                <span>شعبة الاقتصاد والتدبير</span>
+            </a>
+            <a href="ses.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-earth-africa"></i></div>
+                <span>شعبة العلوم الإنسانية</span>
+            </a>
+            <a href="sea.html" class="subject-card">
+                <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                <span>شعبة الآداب</span>
             </a>
         </div>
+
+        <article class="article-section">
+            <h3 style="color: #fff;">لماذا منصة Bac Maroc؟</h3>
+            <p>تعتبر منصة Bac Maroc حجر الزاوية في مشروع Ivanova التعليمي، حيث توفر للطالب بيئة متكاملة تتجاوز مجرد تخزين الملفات. من خلال خاصية <strong>BAC MODE</strong>، نقدم تجربة محاكاة حقيقية للامتحانات الوطنية مع نظام ذكي لمكافحة الغش، بالإضافة إلى تلخيصات مركزة وتحديات يومية تضمن الاستمرارية والجاهزية القصوى.</p>
+            
+            <h3 style="color: #fff;">حول Grosmen World و Ivanova</h3>
+            <p>مشروع Grosmen World ومنصة Ivanova ليست مجرد كيانات تقنية بيروقراطية منعزلة في زوايا العالم؛ بل هي مشاريع فردية نابعة من قلب المجتمع الذي تخدمه. تم بناؤها وتطويرها من قبل أفراد يعيشون نفس التحديات ويسعون لتقديم حلول حقيقية ومبتكرة تخدم الطالب والمستعمل العربي بلمسة احترافية وعالمية.</p>
+        </article>
     </div>
 
-    <div class="ad-container-fixed glass-effect">
-        <input autocomplete="off" type="checkbox" id="aads-toggle" hidden />
-        <div class="ad-wrapper">
-            <label for="aads-toggle" class="close-ad" title="إغلاق مؤقت">
-                <i class="fa-solid fa-xmark"></i>
-            </label>
-            <div class="ad-content">
-                <div class="ad-label">
-                    <a href="https://aads.com/campaigns/new?source_id=2435246&source_type=ad_unit&partner=2435246" target="_blank">Advertise here</a>
-                </div>
-                <iframe data-aa="2435246" src="//ad.a-ads.com/2435246/?size=970x90" style="border:0; padding:0; width:970px; height:90px; overflow:hidden;"></iframe>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-emails">
+                دعم العملاء: support@ivanova.sbs | الإدارة العامة: ceo@ivanova.sbs
             </div>
+            <p>&copy; 2026 جميع الحقوق محفوظة لـ Grosmen World & Ivanova Platform.</p>
         </div>
-    </div>
+    </footer>
 
     <script>
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
-        document.getElementById('aads-toggle').addEventListener('change', function() {
-            if (this.checked) {
-                setTimeout(() => { 
-                    this.checked = false; 
-                }, 10000); // جعلت مدة الإخفاء 10 ثوانٍ لراحة أكبر
-            }
-        });
+        function toggleAppsMenu() {
+            document.getElementById('appsDropdown').classList.toggle('active');
+        }
 
+        // إغلاق القوائم عند النقر في الخارج
         document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const menuIcon = document.querySelector('.menu-icon');
-            if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
+            const dropdown = document.getElementById('appsDropdown');
+            const appsBtn = document.querySelector('.apps-menu-btn');
+            if (!appsBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
             }
         });
     </script>
