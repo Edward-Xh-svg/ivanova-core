@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    </script>
 
     <style>
         :root {
@@ -70,7 +72,7 @@
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--accent)">جاري تحسين جودة العرض الرقمي...</p>
+            <p style="color: var(--accent)">جاري استحضار الأرشيف الرقمي...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -129,11 +131,14 @@
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
             
+            // الترقيات الخاصة بمعالجة الخطوط
             const loadingTask = pdfjsLib.getDocument({
                 url: url,
-                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+                cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
                 cMapPacked: true,
-                standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/'
+                standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/',
+                fontExtraProperties: true, // مهم جداً للمسافات بين الحروف في الخطوط القديمة
+                disableFontFace: false 
             });
 
             loadingTask.promise.then(pdf => {
@@ -149,7 +154,6 @@
         function renderPage(num) {
             pNum = num;
             pdfDoc.getPage(num).then(page => {
-                // Scale 2.0 لضمان وضوح الرموز الرياضية
                 const viewport = page.getViewport({scale: 2.0});
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
