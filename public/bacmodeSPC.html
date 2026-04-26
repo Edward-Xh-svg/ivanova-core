@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bac Mode | SPC - Simulation</title>
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #3b82f6; /* Blue for SPC */
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; overflow: hidden; }
+
+        /* General Layout */
+        #app { height: 100vh; width: 100vw; display: flex; flex-direction: column; }
+
+        /* Subjects Grid */
+        .grid-container { max-width: 1100px; margin: auto; padding: 20px; text-align: center; }
+        .mode-header { margin-bottom: 40px; }
+        .mode-header h1 { font-size: 3rem; font-weight: 800; background: linear-gradient(to right, #fff, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .subject-card { 
+            background: var(--glass); border: 1px solid var(--border); padding: 40px 20px; border-radius: 24px; 
+            cursor: pointer; transition: 0.3s; 
+        }
+        .subject-card:hover { border-color: var(--accent); transform: scale(1.02); background: rgba(59, 130, 246, 0.05); }
+        .subject-card i { font-size: 2.5rem; color: var(--accent); margin-bottom: 15px; }
+
+        /* Years List */
+        .years-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 30px; }
+        .year-btn { background: var(--glass); border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: #fff; cursor: pointer; transition: 0.2s; }
+        .year-btn:hover { background: var(--accent); }
+
+        /* Simulation Interface */
+        .simulation-view { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; }
+        .sim-header { background: #0a0a0a; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .timer { font-family: monospace; font-size: 1.8rem; font-weight: bold; color: var(--accent); background: #111; padding: 5px 20px; border-radius: 10px; border: 1px solid var(--accent); }
+        
+        .pdf-container { flex-grow: 1; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Cheater Screen */
+        .cheater-screen { 
+            position: fixed; inset: 0; background: #991b1b; z-index: 9999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
+        }
+        .cheater-screen h1 { font-size: 5rem; font-weight: 900; margin-bottom: 20px; }
+        .reset-btn { background: #fff; color: #000; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+
+        /* Transitions */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div v-if="currentView === 'subjects'" class="grid-container">
+        <div class="mode-header">
+            <h1>BAC MODE</h1>
+            <p style="color: #707070;">بيئة محاكاة الامتحانات الوطنية - مسلك العلوم الفيزيائية</p>
+        </div>
+        <div class="subjects-grid">
+            <div v-for="sub in subjects" :key="sub.id" class="subject-card" @click="selectSubject(sub)">
+                <i :class="sub.icon"></i>
+                <h3>{{ sub.name }}</h3>
+                <span style="color: #555; font-size: 0.8rem;">مدة الإنجاز: {{ sub.hours }} ساعات</span>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="currentView === 'years'" class="grid-container">
+        <button @click="currentView = 'subjects'" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:20px;">
+            <i class="fa-solid fa-arrow-right"></i> العودة للمواد
+        </button>
+        <h2>{{ selectedSubject.name }}</h2>
+        <div class="years-grid">
+            <button v-for="year in availableYears" :key="year" class="year-btn" @click="startSimulation(year)">
+                {{ year }}
+            </button>
+        </div>
+    </div>
+
+    <transition name="fade">
+        <div v-if="currentView === 'simulating'" class="simulation-view">
+            <div class="sim-header">
+                <div>
+                    <span style="font-weight: 800;">{{ selectedSubject.name }} ({{ currentYear }})</span>
+                </div>
+                <div class="timer">{{ formattedTime }}</div>
+                <div style="color: var(--danger); font-size: 0.8rem; font-weight: bold;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> تحذير: لا تغادر وضع ملء الشاشة
+                </div>
+            </div>
+            <div class="pdf-container">
+                <iframe :src="pdfUrl"></iframe>
+            </div>
+        </div>
+    </transition>
+
+    <div v-if="isCheater" class="cheater-screen">
+        <i class="fa-solid fa-skull-crossbones" style="font-size: 6rem; margin-bottom: 20px;"></i>
+        <h1>تم رصد محاولة غش!</h1>
+        <p>لقد قمت بمغادرة وضع محاكاة الاختبار. القوانين صارمة هنا، يجب عليك إعادة الاختبار من الصفر.</p>
+        <button class="reset-btn" @click="resetAll">إعادة المحاولة</button>
+    </div>
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+
+createApp({
+    setup() {
+        const currentView = ref('subjects');
+        const isCheater = ref(false);
+        const selectedSubject = ref(null);
+        const currentYear = ref(null);
+        const timeLeft = ref(0);
+        const timerInterval = ref(null);
+
+        const subjects = [
+            { id: 'pc', name: 'الفيزياء والكيمياء', icon: 'fa-solid fa-atom', prefix: 'spcexpc-', hours: 3 },
+            { id: 'math', name: 'الرياضيات', icon: 'fa-solid fa-calculator', prefix: 'spcexma-', hours: 3 },
+            { id: 'svt', name: 'علوم الحياة والأرض', icon: 'fa-solid fa-dna', prefix: 'spcexsv-', hours: 3 },
+            { id: 'ph', name: 'الفلسفة', icon: 'fa-solid fa-brain', prefix: 'spcexph-', hours: 2 },
+            { id: 'en', name: 'الإنجليزية', icon: 'fa-solid fa-language', prefix: 'secoexen-', hours: 2 }
+        ];
+
+        const availableYears = [2026, 2025, 2024, 2023, 2022, 2021, 2020];
+
+        const selectSubject = (sub) => {
+            selectedSubject.ref = sub; // Direct ref update might need .value
+            selectedSubject.value = sub;
+            currentView.value = 'years';
+        };
+
+        const startSimulation = (year) => {
+            currentYear.value = year;
+            timeLeft.value = selectedSubject.value.hours * 3600;
+            currentView.value = 'simulating';
+            
+            // Trigger Fullscreen
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            }
+
+            // Start Timer
+            timerInterval.value = setInterval(() => {
+                if (timeLeft.value > 0) {
+                    timeLeft.value--;
+                } else {
+                    stopSimulation();
+                }
+            }, 1000);
+        };
+
+        const stopSimulation = () => {
+            clearInterval(timerInterval.value);
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        };
+
+        const resetAll = () => {
+            isCheater.value = false;
+            currentView.value = 'subjects';
+            timeLeft.value = 0;
+            clearInterval(timerInterval.value);
+        };
+
+        // Handle Anti-Cheat (Fullscreen detection)
+        const handleFullscreenChange = () => {
+            if (currentView.value === 'simulating' && !document.fullscreenElement) {
+                isCheater.value = true;
+                currentView.value = 'idle';
+                stopSimulation();
+            }
+        };
+
+        onMounted(() => {
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+        });
+
+        onUnmounted(() => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        });
+
+        const formattedTime = computed(() => {
+            const h = Math.floor(timeLeft.value / 3600);
+            const m = Math.floor((timeLeft.value % 3600) / 60);
+            const s = timeLeft.value % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        });
+
+        const pdfUrl = computed(() => {
+            if (!selectedSubject.value || !currentYear.value) return '';
+            const rawUrl = `${window.location.origin}/ex/${selectedSubject.value.prefix}${currentYear.value}.pdf`;
+            return `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+        });
+
+        return {
+            currentView, subjects, selectSubject, selectedSubject, availableYears,
+            startSimulation, isCheater, currentYear, formattedTime, pdfUrl, resetAll
+        };
+    }
+}).mount('#app');
+</script>
+
+</body>
+</html>
