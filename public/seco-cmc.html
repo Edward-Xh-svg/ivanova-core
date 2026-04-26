@@ -35,7 +35,7 @@
         .exams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .exam-card { 
             background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; 
-            text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .exam-card:hover { transform: translateY(-10px); border-color: var(--accent); background: rgba(255,255,255,0.06); box-shadow: 0 15px 30px rgba(63, 81, 181, 0.2); }
         .exam-card i { font-size: 2.5rem; color: #e74c3c; margin-bottom: 15px; }
@@ -71,7 +71,7 @@
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--accent)">جاري استحضار الأرشيف الرقمي...</p>
+            <p style="color: var(--accent)">جاري استحضار الأرشيف الرقمي وتحسين جودة النص...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -124,18 +124,27 @@
 
         let pdfDoc = null, pNum = 1, canvas = document.getElementById('pdfCanvas'), ctx = canvas.getContext('2d');
 
+        // الإصلاح الجوهري هنا: إضافة معايير معالجة الأحرف العربية
         function openExam(year, url) {
             window.history.pushState(null, '', `?exams=${year}`);
             document.getElementById('viewerContainer').style.display = 'flex';
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
             
-            pdfjsLib.getDocument(url).promise.then(pdf => {
+            const loadingTask = pdfjsLib.getDocument({
+                url: url,
+                // روابط الـ CMaps ضرورية جداً للخطوط العربية
+                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+                cMapPacked: true,
+                standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/'
+            });
+
+            loadingTask.promise.then(pdf => {
                 pdfDoc = pdf;
                 document.getElementById('pageCount').textContent = pdf.numPages;
                 renderPage(1);
             }).catch(err => {
-                alert("هذا الامتحان قيد التحديث حالياً.");
+                alert("تعذر معالجة نصوص الملف. قد يكون الملف تالفاً أو غير موجود.");
                 closeViewer();
             });
         }
@@ -143,13 +152,23 @@
         function renderPage(num) {
             pNum = num;
             pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({scale: 1.5});
+                // رفع الـ Scale إلى 2.0 لتحسين وضوح الحروف الصغيرة في المحاسبة
+                const viewport = page.getViewport({scale: 2.0});
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
-                page.render({canvasContext: ctx, viewport: viewport});
-                document.getElementById('pageNum').textContent = num;
-                document.getElementById('prevPage').disabled = (num <= 1);
-                document.getElementById('nextPage').disabled = (num >= pdfDoc.numPages);
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport,
+                    // تفعيل تحسينات النص داخل الكانفاس
+                    enableWebGL: true 
+                };
+
+                page.render(renderContext).promise.then(() => {
+                    document.getElementById('pageNum').textContent = num;
+                    document.getElementById('prevPage').disabled = (num <= 1);
+                    document.getElementById('nextPage').disabled = (num >= pdfDoc.numPages);
+                });
             });
         }
 
