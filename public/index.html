@@ -10,11 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- تنسيق الإعلان الجديد --- */
+        /* --- الإعلان العلوي --- */
         .announcement-banner {
-            background: rgba(0, 0, 0, 0.7); /* أسود شفاف */
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 0, 0, 0.4); /* حواف حمراء شفافة */
+            border: 1px solid rgba(255, 0, 0, 0.4);
             color: #fff;
             padding: 12px 20px;
             text-align: center;
@@ -26,38 +26,26 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.15);
             animation: slideDown 0.5s ease;
         }
-
         .announcement-banner i.fa-circle-exclamation {
             color: #ff4d4d;
             animation: pulseRed 2s infinite;
         }
-
         .close-announcement {
             position: absolute;
             left: 20px;
             cursor: pointer;
             opacity: 0.6;
             transition: 0.3s;
-            font-size: 1.2rem;
         }
-
         .close-announcement:hover { opacity: 1; color: #ff4d4d; }
 
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        @keyframes pulseRed { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
-        @keyframes pulseRed {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* --- بقية التنسيقات السابقة --- */
+        /* --- تنسيقات الصفحة --- */
         .header-logo { width: 160px; height: auto; transition: transform 0.3s; }
         .nav-tools { display: flex; align-items: center; gap: 20px; }
         
@@ -102,18 +90,15 @@
             transition: 0.2s;
         }
         .app-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
-        .app-item img { 
-            width: 55px;
-            height: 55px;
-            object-fit: contain;
-            margin-bottom: 10px;
-        }
+        .app-item img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 10px; }
         .current-app { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.15); }
 
-        .subjects-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .article-section { margin-top: 50px; text-align: justify; font-size: 1rem; color: #ccc; line-height: 1.8; }
+        .article-section h3 { color: #fff; margin-bottom: 15px; font-weight: 800; border-right: 4px solid var(--accent); padding-right: 15px; }
+        
         footer { background: #0a0a0a; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
-        .footer-content { max-width: 1200px; margin: 0 auto; line-height: 1.8; color: #888; }
-        .article-section { margin-top: 30px; text-align: justify; font-size: 0.95rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; color: #888; text-align: center; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -128,41 +113,20 @@
 
     <header class="main-header glass-effect">
         <div class="nav-tools">
-            <div class="menu-icon" onclick="toggleSidebar()">
-                <i class="fa-solid fa-bars"></i>
-            </div>
+            <div class="menu-icon" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
             <div class="apps-menu-btn" onclick="toggleAppsMenu()">
                 <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                 <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                 <div class="dot"></div><div class="dot"></div><div class="dot"></div>
             </div>
         </div>
-
-        <div class="logo-area">
-            <img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo">
-        </div>
-
+        <div class="logo-area"><img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo"></div>
         <div class="apps-dropdown" id="appsDropdown">
-            <a href="javascript:location.reload();" class="app-item current-app">
-                <img src="bacmaroc-ovcon.png" alt="Bac Maroc">
-                <span>Bac Maroc</span>
-            </a>
-            <a href="https://courses.ivanova.sbs" class="app-item">
-                <img src="courses-ovcon.png" alt="Courses">
-                <span>Courses</span>
-            </a>
-            <a href="https://wikijobs.ivanova.sbs" class="app-item">
-                <img src="wikijobs-ovcon.png" alt="WikiJobs">
-                <span>WikiJobs</span>
-            </a>
-            <a href="https://store.ivanova.sbs" class="app-item">
-                <img src="store-ovcon.png" alt="Store">
-                <span>Store</span>
-            </a>
-            <a href="https://news.ivanova.sbs" class="app-item">
-                <img src="news-ovcon.png" alt="News">
-                <span>News</span>
-            </a>
+            <a href="javascript:location.reload();" class="app-item current-app"><img src="bacmaroc-ovcon.png"><span>Bac Maroc</span></a>
+            <a href="https://courses.ivanova.sbs" class="app-item"><img src="courses-ovcon.png"><span>Courses</span></a>
+            <a href="https://wikijobs.ivanova.sbs" class="app-item"><img src="wikijobs-ovcon.png"><span>WikiJobs</span></a>
+            <a href="https://store.ivanova.sbs" class="app-item"><img src="store-ovcon.png"><span>Store</span></a>
+            <a href="https://news.ivanova.sbs" class="app-item"><img src="news-ovcon.png"><span>News</span></a>
         </div>
     </header>
 
@@ -185,66 +149,42 @@
         </section>
 
         <div class="subjects-grid">
-            <a href="spc.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-flask-vial"></i></div>
-                <span>شعبة العلوم الفيزيائية</span>
-            </a>
-            <a href="ssvt.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-leaf"></i></div>
-                <span>شعبة علوم الحياة والأرض</span>
-            </a>
-            <a href="smath.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-infinity"></i></div>
-                <span>شعبة العلوم الرياضية</span>
-            </a>
-            <a href="seco.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-coins"></i></div>
-                <span>شعبة الاقتصاد والتدبير</span>
-            </a>
-            <a href="ses.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-earth-africa"></i></div>
-                <span>شعبة العلوم الإنسانية</span>
-            </a>
-            <a href="sea.html" class="subject-card">
-                <div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                <span>شعبة الآداب</span>
-            </a>
+            <a href="spc.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-flask-vial"></i></div><span>شعبة العلوم الفيزيائية</span></a>
+            <a href="ssvt.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-leaf"></i></div><span>شعبة علوم الحياة والأرض</span></a>
+            <a href="smath.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-infinity"></i></div><span>شعبة العلوم الرياضية</span></a>
+            <a href="seco.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-coins"></i></div><span>شعبة الاقتصاد والتدبير</span></a>
+            <a href="ses.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-earth-africa"></i></div><span>شعبة العلوم الإنسانية</span></a>
+            <a href="sea.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div><span>شعبة الآداب</span></a>
         </div>
-        </div>
+
+        <article class="article-section">
+            <h3>لماذا منصة Bac Maroc؟</h3>
+            <p>تعتبر منصة Bac Maroc حجر الزاوية في مشروع Ivanova التعليمي، حيث توفر للطالب بيئة متكاملة تتجاوز مجرد تخزين الملفات. من خلال خاصية <strong>BAC MODE</strong>، نقدم تجربة محاكاة حقيقية للامتحانات الوطنية مع نظام ذكي لمكافحة الغش، بالإضافة إلى تلخيصات مركزة وتحديات يومية تضمن الاستمرارية والجاهزية القصوى.</p>
+            
+            <h3 style="margin-top: 30px;">حول Grosmen World و Ivanova</h3>
+            <p>مشروع Grosmen World ومنصة Ivanova ليست مجرد كيانات تقنية بيروقراطية منعزلة في زوايا العالم؛ بل هي مشاريع فردية نابعة من قلب المجتمع الذي تخدمه. تم بناؤها وتطويرها من قبل أفراد يعيشون نفس التحديات ويسعون لتقديم حلول حقيقية ومبتكرة تخدم الطالب والمستعمل العربي بلمسة احترافية وعالمية.</p>
+        </article>
+    </div>
 
     <footer>
         <div class="footer-content">
-            <div class="footer-emails">
-                دعم العملاء: support@ivanova.sbs | الإدارة العامة: ceo@ivanova.sbs
-            </div>
+            <div style="margin-bottom: 15px; color: #fff;">دعم العملاء: support@ivanova.sbs | الإدارة العامة: ceo@ivanova.sbs</div>
             <p>&copy; 2026 جميع الحقوق محفوظة لـ Grosmen World & Ivanova Platform.</p>
         </div>
     </footer>
 
     <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
-
-        function toggleAppsMenu() {
-            document.getElementById('appsDropdown').classList.toggle('active');
-        }
-
-        // دالة إغلاق الإعلان
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleAppsMenu() { document.getElementById('appsDropdown').classList.toggle('active'); }
         function closeBanner() {
             const banner = document.getElementById('topBanner');
-            banner.style.transition = "0.4s";
-            banner.style.opacity = "0";
-            banner.style.marginTop = "-50px";
+            banner.style.transition = "0.4s"; banner.style.opacity = "0"; banner.style.marginTop = "-60px";
             setTimeout(() => { banner.remove(); }, 400);
         }
-
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('appsDropdown');
             const appsBtn = document.querySelector('.apps-menu-btn');
-            if (!appsBtn.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
+            if (!appsBtn.contains(event.target) && !dropdown.contains(event.target)) { dropdown.classList.remove('active'); }
         });
     </script>
 </body>
