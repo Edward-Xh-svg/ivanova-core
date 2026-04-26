@@ -130,7 +130,8 @@
 </div>
 
 <script>
-const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+
+     const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
 createApp({
     setup() {
@@ -143,15 +144,15 @@ createApp({
         const timeLeft = ref(0);
         const timerInterval = ref(null);
 
+        // تم تحديث البريفكسات بناءً على طلبك لضمان مطابقة الملفات في مجلد /ex/
         const subjects = [
             { id: 'pc', name: 'الفيزياء والكيمياء', icon: 'fa-solid fa-flask-vial', prefix: 'spcexpc-', hours: 3 },
-            { id: 'math', name: 'الرياضيات', icon: 'fa-solid fa-square-root-variable', prefix: 'spcexma-', hours: 3 },
-            { id: 'svt', name: 'علوم الحياة والأرض', icon: 'fa-solid fa-microscope', prefix: 'spcexsv-', hours: 3 },
+            { id: 'math', name: 'الرياضيات', icon: 'fa-solid fa-square-root-variable', prefix: 'spcexmath-', hours: 3 },
+            { id: 'svt', name: 'علوم الحياة والأرض', icon: 'fa-solid fa-microscope', prefix: 'spcexsvt-', hours: 3 },
             { id: 'ph', name: 'الفلسفة', icon: 'fa-solid fa-quote-right', prefix: 'spcexph-', hours: 2 },
             { id: 'en', name: 'الإنجليزية', icon: 'fa-solid fa-language', prefix: 'secoexen-', hours: 2 }
         ];
 
-        // قائمة السنوات القصوى التي سنفحصها
         const yearsToTest = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
         const selectSubject = async (sub) => {
@@ -160,7 +161,7 @@ createApp({
             isLoadingYears.value = true;
             verifiedYears.value = [];
 
-            // فحص وجود الملفات بشكل متوازي لتحسين السرعة
+            // فحص المسارات الجديدة
             const checks = yearsToTest.map(async (year) => {
                 const url = `${window.location.origin}/ex/${sub.prefix}${year}.pdf`;
                 try {
@@ -224,6 +225,7 @@ createApp({
 
         const pdfUrl = computed(() => {
             if (!selectedSubject.value || !currentYear.value) return '';
+            // المسار النهائي المعتمد
             const rawUrl = `${window.location.origin}/ex/${selectedSubject.value.prefix}${currentYear.value}.pdf`;
             return `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
         });
@@ -234,6 +236,7 @@ createApp({
         };
     }
 }).mount('#app');
+
 </script>
 
 </body>
