@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحاسبة والرياضيات المالية | BacMaroc - Ivanova</title>
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <style>
+        :root {
+            --bg-dark: #080808;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #3f51b5; /* Business Blue */
+            --accent-hover: #5c6bc0;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Cairo', sans-serif; overflow-x: hidden; line-height: 1.6; }
+
+        /* Header (Same as previously established) */
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; }
+        .header-right { display: flex; align-items: center; gap: 30px; }
+        .header-logo { height: 60px; width: auto; transition: transform 0.3s; }
+        .header-logo:hover { transform: scale(1.05); }
+        .back-to-branch { color: var(--text-dim); text-decoration: none; font-size: 1.1rem; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-to-branch:hover { color: #fff; transform: translateX(5px); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to left, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Scanner Loader */
+        .scanner-container { text-align: center; padding: 50px; }
+        .radar { width: 60px; height: 60px; border: 3px solid var(--glass-border); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        .scanner-text { color: var(--accent); font-weight: 600; font-size: 1.2rem; animation: pulseText 1.5s infinite; }
+
+        /* Grid */
+        .exams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; display: none; }
+        .exam-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .exam-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transition: 0.5s; }
+        .exam-card:hover::before { left: 100%; }
+        .exam-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 25px rgba(63, 81, 181, 0.2); }
+        .exam-card i { font-size: 2.5rem; color: #e74c3c; margin-bottom: 15px; } /* Red for PDF */
+        .exam-year { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .exam-badge { font-size: 0.8rem; background: rgba(63, 81, 181, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 20px; }
+
+        /* PDF Viewer */
+        .pdf-viewer-section { display: none; flex-direction: column; background: #111; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+        .pdf-toolbar { background: #1a1a1a; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .pdf-toolbar-group { display: flex; align-items: center; gap: 15px; }
+        .pdf-btn { background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; font-family: 'Cairo'; }
+        .pdf-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+        .pdf-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-info { color: #fff; font-weight: 600; font-size: 1.1rem; }
+        .pdf-canvas-container { padding: 20px; text-align: center; background: #0c0c0c; height: 75vh; overflow-y: auto; }
+        canvas { max-width: 100%; height: auto; box-shadow: 0 0 20px rgba(0,0,0,0.5); border-radius: 4px; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-right">
+            <a href="seco.html" class="back-to-branch" id="backToBranchBtn"><i class="fa-solid fa-arrow-right"></i> شعبة الاقتصاد</a>
+        </div>
+        <img src="grosmen-fivcon.png" alt="Grosmen Logo" class="header-logo">
+    </header>
+
+    <div class="container" id="mainContainer">
+        
+        <div id="gridSection">
+            <div class="page-title">
+                <h1>المحاسبة والرياضيات المالية</h1>
+                <p style="color: var(--text-dim)">الأرشيف الوطني للامتحانات (محرك بحث تلقائي)</p>
+            </div>
+
+            <div class="scanner-container" id="scanner">
+                <div class="radar"></div>
+                <div class="scanner-text" id="scannerText">جاري فحص أرشيف Ivanova واستخراج الملفات...</div>
+            </div>
+
+            <div class="exams-grid" id="examsGrid"></div>
+        </div>
+
+        <div class="pdf-viewer-section" id="pdfViewerSection">
+            <div class="pdf-toolbar">
+                <div class="pdf-toolbar-group">
+                    <button class="pdf-btn" onclick="closeExam()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+                    <button class="pdf-btn" id="downloadBtn"><i class="fa-solid fa-download"></i> تحميل</button>
+                </div>
+                <div class="pdf-toolbar-group">
+                    <button class="pdf-btn" id="zoomOut"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <span class="page-info" id="zoomLevel">100%</span>
+                    <button class="pdf-btn" id="zoomIn"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                </div>
+                <div class="pdf-toolbar-group">
+                    <button class="pdf-btn" id="nextPage"><i class="fa-solid fa-chevron-right"></i></button>
+                    <span class="page-info">صفحة <span id="pageNum">1</span> من <span id="pageCount">?</span></span>
+                    <button class="pdf-btn" id="prevPage"><i class="fa-solid fa-chevron-left"></i></button>
+                </div>
+            </div>
+            <div class="pdf-canvas-container" id="canvasContainer">
+                <canvas id="pdfCanvas"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. System Config ---
+        const startYear = 2025;
+        const endYear = 2016;
+        const filePrefix = 'secoexcmc-';
+        const basePath = 'public/ex/'; // المسار الذي طلبته
+        const availableExams = [];
+
+        // --- 2. Scanner Logic ---
+        async function scanArchive() {
+            const grid = document.getElementById('examsGrid');
+            const scanner = document.getElementById('scanner');
+            const scannerText = document.getElementById('scannerText');
+
+            for (let year = startYear; year >= endYear; year--) {
+                scannerText.innerText = `جاري التحقق من مسار ملف ${year}...`;
+                const url = `${basePath}${filePrefix}${year}.pdf`;
+                
+                try {
+                    // نستخدم HEAD لكي لا نحمل الملف كاملاً، بل نتحقق من وجوده فقط
+                    const response = await fetch(url, { method: 'HEAD' });
+                    if (response.ok) {
+                        availableExams.push({ year: year, url: url });
+                    }
+                } catch (e) {
+                    // في حال حظر الـ CORS محلياً، يمكننا تجاهل الخطأ والمتابعة
+                    console.log(`Error checking year ${year}`);
+                }
+            }
+
+            scanner.style.display = 'none';
+            grid.style.display = 'grid';
+
+            if (availableExams.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#e74c3c; font-size:1.2rem;">لم يتم العثور على ملفات في مسار public/ex/</p>';
+            } else {
+                availableExams.forEach(exam => {
+                    const card = document.createElement('div');
+                    card.className = 'exam-card';
+                    card.onclick = () => openExam(exam.year, exam.url);
+                    card.innerHTML = `
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <div class="exam-year">${exam.year}</div>
+                        <div class="exam-badge">دورة عادية / استدراكية</div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            // Check if URL has query param on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const requestedYear = urlParams.get('exams');
+            if (requestedYear) {
+                const targetExam = availableExams.find(e => e.year == requestedYear);
+                if (targetExam) openExam(targetExam.year, targetExam.url);
+            }
+        }
+
+        // --- 3. UI Flow Control ---
+        const gridSection = document.getElementById('gridSection');
+        const pdfViewerSection = document.getElementById('pdfViewerSection');
+        const backToBranchBtn = document.getElementById('backToBranchBtn');
+        let currentPdfUrl = '';
+
+        function openExam(year, url) {
+            // تحديث رابط المتصفح بشكل وهمي ليدعم المشاركة
+            history.pushState(null, '', `?exams=${year}`);
+            
+            gridSection.style.display = 'none';
+            pdfViewerSection.style.display = 'flex';
+            backToBranchBtn.style.display = 'none'; // إخفاء زر العودة للشعبة أثناء القراءة
+            
+            currentPdfUrl = url;
+            document.getElementById('downloadBtn').onclick = () => { window.open(url, '_blank'); };
+            loadPDF(url);
+        }
+
+        function closeExam() {
+            // مسح التوكن من الرابط
+            history.pushState(null, '', window.location.pathname);
+            pdfViewerSection.style.display = 'none';
+            gridSection.style.display = 'block';
+            backToBranchBtn.style.display = 'flex';
+            
+            // تنظيف الكانفاس لتخفيف استهلاك الذاكرة
+            if(ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        }
+
+        // دعم زر العودة في المتصفح (Back Button)
+        window.onpopstate = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.get('exams')) closeExam();
+        };
+
+        // --- 4. PDF.js Engine ---
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5,
+            canvas = document.getElementById('pdfCanvas'),
+            ctx = canvas.getContext('2d');
+
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({scale: scale});
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+            document.getElementById('pageNum').textContent = num;
+            updateButtons();
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) { pageNumPending = num; } 
+            else { renderPage(num); }
+        }
+
+        function onPrevPage() { if (pageNum <= 1) return; pageNum--; queueRenderPage(pageNum); }
+        function onNextPage() { if (pageNum >= pdfDoc.numPages) return; pageNum++; queueRenderPage(pageNum); }
+
+        document.getElementById('prevPage').addEventListener('click', onPrevPage);
+        document.getElementById('nextPage').addEventListener('click', onNextPage);
+
+        document.getElementById('zoomIn').addEventListener('click', () => { scale += 0.25; updateZoomText(); queueRenderPage(pageNum); });
+        document.getElementById('zoomOut').addEventListener('click', () => { if(scale <= 0.5) return; scale -= 0.25; updateZoomText(); queueRenderPage(pageNum); });
+
+        function updateZoomText() { document.getElementById('zoomLevel').innerText = Math.round(scale * 100) + '%'; }
+        
+        function updateButtons() {
+            document.getElementById('prevPage').disabled = pageNum <= 1;
+            document.getElementById('nextPage').disabled = pageNum >= pdfDoc.numPages;
+        }
+
+        function loadPDF(url) {
+            document.getElementById('pageNum').textContent = '...';
+            document.getElementById('pageCount').textContent = '...';
+            
+            // إذا كان المستخدم يفتح التطبيق من سيرفر محلي بدون Node، قد لا يعمل PDF.js
+            // بسبب قيود CORS، لكن على استضافة Ivanova.sbs سيعمل بشكل مثالي.
+            pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                document.getElementById('pageCount').textContent = pdfDoc.numPages;
+                pageNum = 1;
+                renderPage(pageNum);
+            }).catch(function(error) {
+                console.error("خطأ في تحميل الـ PDF:", error);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.font = "20px Cairo";
+                ctx.fillText("تعذر عرض الملف. قد يكون غير موجود أو هناك مشكلة في الصلاحيات.", 50, 100);
+            });
+        }
+
+        // بدء الفحص عند تحميل الصفحة
+        window.onload = scanArchive;
+
+    </script>
+</body>
+</html>
