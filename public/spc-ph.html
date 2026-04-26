@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفلسفة | المشترك العلمي - BacMaroc</title>
+    <title>الفلسفة | SPC - BacMaroc</title>
     <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
             --bg-dark: #050505;
             --glass: rgba(255, 255, 255, 0.02);
             --glass-border: rgba(255, 255, 255, 0.07);
-            --accent: #9c27b0; /* أرجواني فلسفي */
+            --accent: #9c27b0; /* لون أرجواني فلسفي */
             --text-main: #ffffff;
             --text-dim: #707070;
         }
@@ -67,12 +67,12 @@
     <div class="container" id="gridWrapper">
         <div class="page-title">
             <h1>مادة الفلسفة</h1>
-            <p>الامتحان الوطني الموحد - جميع الشعب العلمية</p>
+            <p>الإمتحان الوطني الموحد - جميع المسالك العلمية</p>
         </div>
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">جاري استحضار المفاهيم...</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">جاري استحضار النصوص الفلسفية...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -80,7 +80,7 @@
 
     <div id="viewerContainer">
         <div class="viewer-header">
-            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> إنهاء المطالعة</button>
             <span id="currentDocTitle" style="font-weight:700; color:var(--text-dim); font-size: 0.8rem;">PHILOSOPHY VIEWER</span>
             <div style="width: 100px;"></div> 
         </div>
@@ -89,7 +89,8 @@
 
     <script>
         const config = {
-            prefix: 'secoexph-', // الامتداد المشترك كما طلبت
+            // ملاحظة: هنا نستخدم بريفكس SECO كما طلبت لأنه موحد
+            prefix: 'secoexph-', 
             path: 'ex/', 
             years: [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010]
         };
@@ -115,7 +116,7 @@
             const card = document.createElement('div');
             card.className = 'exam-card';
             card.onclick = () => openExam(year, url);
-            card.innerHTML = `<i class="fa-solid fa-brain"></i><span class="year">${year}</span><span class="label">تصفح PHILO</span>`;
+            card.innerHTML = `<i class="fa-solid fa-brain"></i><span class="year">${year}</span><span class="label">تصفح الفلسفة</span>`;
             document.getElementById('examsGrid').appendChild(card);
         }
 
@@ -124,7 +125,7 @@
             document.getElementById('viewerContainer').style.display = 'flex';
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
-            document.getElementById('currentDocTitle').innerText = `امتحان الفلسفة - دورة ${year}`;
+            document.getElementById('currentDocTitle').innerText = `امتحان مادة الفلسفة - دورة ${year}`;
 
             const fullFileUrl = window.location.origin + '/' + url;
             const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullFileUrl)}&embedded=true`;
