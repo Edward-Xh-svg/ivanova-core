@@ -65,12 +65,12 @@
     <div class="container" id="gridWrapper">
         <div class="page-title">
             <h1>امتحانات مادة الرياضيات</h1>
-            <p style="color: var(--text-dim)">تصفح آمن وحصري لمحتوى BacMaroc التعليمي</p>
+            <p style="color: var(--text-dim)">تصفح حصري بدقة عالية لنصوص ومعادلات الرياضيات</p>
         </div>
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--accent)">جاري جرد أرشيف الرياضيات...</p>
+            <p style="color: var(--accent)">جاري تحسين جودة العرض الرقمي...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -81,10 +81,11 @@
             <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-chevron-right"></i> إنهاء المطالعة</button>
             <div style="display:flex; gap:15px; align-items:center;">
                 <button class="pdf-btn" id="prevPage"><i class="fa-solid fa-chevron-right"></i></button>
-                <span style="font-weight:700">صفحة <span id="pageNum">1</span> / <span id="pageCount">-</span></span>
+                <span style="font-weight:700">صفحة <span id="pageNum">1</span> من <span id="pageCount">-</span></span>
                 <button class="pdf-btn" id="nextPage"><i class="fa-solid fa-chevron-left"></i></button>
             </div>
-            <div style="width: 110px;"></div> </div>
+            <div style="width: 110px;"></div> 
+        </div>
         <div class="pdf-frame-wrapper">
             <canvas id="pdfCanvas" oncontextmenu="return false;"></canvas>
         </div>
@@ -116,7 +117,7 @@
             const card = document.createElement('div');
             card.className = 'exam-card';
             card.onclick = () => openExam(year, url);
-            card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><span class="year">${year}</span><span class="label" style="font-size:0.8rem; color:var(--text-dim); display:block; margin-top:5px;">امتحان وطني</span>`;
+            card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><span class="year">${year}</span><span class="label" style="font-size:0.8rem; color:var(--text-dim); display:block; margin-top:5px;">عرض الامتحان</span>`;
             document.getElementById('examsGrid').appendChild(card);
         }
 
@@ -128,12 +129,19 @@
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
             
-            pdfjsLib.getDocument(url).promise.then(pdf => {
+            const loadingTask = pdfjsLib.getDocument({
+                url: url,
+                cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+                cMapPacked: true,
+                standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/'
+            });
+
+            loadingTask.promise.then(pdf => {
                 pdfDoc = pdf;
                 document.getElementById('pageCount').textContent = pdf.numPages;
                 renderPage(1);
             }).catch(err => {
-                alert("نعتذر، هذا الملف غير متاح حالياً.");
+                alert("تعذر تحميل ملف الرياضيات بشكل صحيح.");
                 closeViewer();
             });
         }
@@ -141,13 +149,22 @@
         function renderPage(num) {
             pNum = num;
             pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({scale: 1.5});
+                // Scale 2.0 لضمان وضوح الرموز الرياضية
+                const viewport = page.getViewport({scale: 2.0});
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
-                page.render({canvasContext: ctx, viewport: viewport});
-                document.getElementById('pageNum').textContent = num;
-                document.getElementById('prevPage').disabled = (num <= 1);
-                document.getElementById('nextPage').disabled = (num >= pdfDoc.numPages);
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport,
+                    enableWebGL: true 
+                };
+
+                page.render(renderContext).promise.then(() => {
+                    document.getElementById('pageNum').textContent = num;
+                    document.getElementById('prevPage').disabled = (num <= 1);
+                    document.getElementById('nextPage').disabled = (num >= pdfDoc.numPages);
+                });
             });
         }
 
