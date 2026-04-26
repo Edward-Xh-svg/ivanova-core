@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفلسفة | SPC - BacMaroc</title>
+    <title>الفلسفة | المواد المشتركة - BacMaroc</title>
     <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -67,12 +67,12 @@
     <div class="container" id="gridWrapper">
         <div class="page-title">
             <h1>مادة الفلسفة</h1>
-            <p>الإمتحان الوطني الموحد - جميع المسالك العلمية</p>
+            <p>الامتحان الوطني الموحد - المسالك العلمية والتقنية</p>
         </div>
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">جاري استحضار النصوص الفلسفية...</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">جاري جرد مواضيع الفلسفة...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -80,7 +80,7 @@
 
     <div id="viewerContainer">
         <div class="viewer-header">
-            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> إنهاء المطالعة</button>
+            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> إغلاق الموضوع</button>
             <span id="currentDocTitle" style="font-weight:700; color:var(--text-dim); font-size: 0.8rem;">PHILOSOPHY VIEWER</span>
             <div style="width: 100px;"></div> 
         </div>
@@ -89,8 +89,7 @@
 
     <script>
         const config = {
-            // ملاحظة: هنا نستخدم بريفكس SECO كما طلبت لأنه موحد
-            prefix: 'secoexph-', 
+            prefix: 'smathexph-', // استخدام البريفكس الموحد للعلوم الرياضية والفيزيائية
             path: 'ex/', 
             years: [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010]
         };
@@ -116,7 +115,7 @@
             const card = document.createElement('div');
             card.className = 'exam-card';
             card.onclick = () => openExam(year, url);
-            card.innerHTML = `<i class="fa-solid fa-brain"></i><span class="year">${year}</span><span class="label">تصفح الفلسفة</span>`;
+            card.innerHTML = `<i class="fa-solid fa-brain"></i><span class="year">${year}</span><span class="label">امتحان الفلسفة</span>`;
             document.getElementById('examsGrid').appendChild(card);
         }
 
@@ -125,7 +124,7 @@
             document.getElementById('viewerContainer').style.display = 'flex';
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
-            document.getElementById('currentDocTitle').innerText = `امتحان مادة الفلسفة - دورة ${year}`;
+            document.getElementById('currentDocTitle').innerText = `امتحان الفلسفة الموحد - دورة ${year}`;
 
             const fullFileUrl = window.location.origin + '/' + url;
             const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullFileUrl)}&embedded=true`;
