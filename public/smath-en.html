@@ -13,7 +13,7 @@
             --bg-dark: #050505;
             --glass: rgba(255, 255, 255, 0.02);
             --glass-border: rgba(255, 255, 255, 0.07);
-            --accent: #f43f5e; /* وردي إنجليزي حيوي */
+            --accent: #ff2e63; /* لون وردي إنجليزي حيوي */
             --text-main: #ffffff;
             --text-dim: #707070;
         }
@@ -40,7 +40,7 @@
             background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; padding: 35px 20px; 
             text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.2, 1, 0.3, 1);
         }
-        .exam-card:hover { transform: translateY(-8px); border-color: var(--accent); background: rgba(244, 63, 94, 0.05); }
+        .exam-card:hover { transform: translateY(-8px); border-color: var(--accent); background: rgba(255, 46, 99, 0.05); }
         .exam-card i { font-size: 2rem; color: var(--accent); margin-bottom: 15px; display: block; opacity: 0.8; }
         .exam-card .year { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 5px; }
         .exam-card .label { font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; }
@@ -67,12 +67,12 @@
     <div class="container" id="gridWrapper">
         <div class="page-title">
             <h1>اللغة الإنجليزية</h1>
-            <p>الامتحانات الوطنية الموحدة - مسالك العلوم الرياضية</p>
+            <p>امتحانات البكالوريا الموحدة - جميع المسالك العلمية والرياضية</p>
         </div>
 
         <div id="statusMessage" style="text-align: center;">
             <div class="loader"></div>
-            <p style="color: var(--text-dim); font-size: 0.9rem;">Checking English Archive...</p>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">جاري جلب ملفات الإنجليزية...</p>
         </div>
 
         <div class="exams-grid" id="examsGrid"></div>
@@ -80,8 +80,8 @@
 
     <div id="viewerContainer">
         <div class="viewer-header">
-            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> Close</button>
-            <span id="currentDocTitle" style="font-weight:700; color:var(--text-dim); font-size: 0.8rem;">ENGLISH VIEWER (SM)</span>
+            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+            <span id="currentDocTitle" style="font-weight:700; color:var(--text-dim); font-size: 0.8rem;">ENGLISH VIEWER (SM/ECO)</span>
             <div style="width: 100px;"></div> 
         </div>
         <div class="pdf-frame-wrapper" id="pdfWrapper"></div>
@@ -89,7 +89,7 @@
 
     <script>
         const config = {
-            prefix: 'spcexen-', // البريفكس الموحد المختار
+            prefix: 'secoexen-', // الاعتماد على بريفكس الاقتصاد لتوحيد الملفات
             path: 'ex/', 
             years: [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010]
         };
@@ -115,7 +115,7 @@
             const card = document.createElement('div');
             card.className = 'exam-card';
             card.onclick = () => openExam(year, url);
-            card.innerHTML = `<i class="fa-solid fa-earth-americas"></i><span class="year">${year}</span><span class="label">English SM</span>`;
+            card.innerHTML = `<i class="fa-solid fa-language"></i><span class="year">${year}</span><span class="label">English SM</span>`;
             document.getElementById('examsGrid').appendChild(card);
         }
 
@@ -124,7 +124,7 @@
             document.getElementById('viewerContainer').style.display = 'flex';
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
-            document.getElementById('currentDocTitle').innerText = `English Exam - Session ${year}`;
+            document.getElementById('currentDocTitle').innerText = `English National Exam - Session ${year}`;
 
             const fullFileUrl = window.location.origin + '/' + url;
             const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullFileUrl)}&embedded=true`;
