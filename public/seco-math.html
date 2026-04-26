@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مادة الرياضيات | BacMaroc - Ivanova</title>
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+    <style>
+        :root {
+            --bg-dark: #080808;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #3f51b5; 
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; }
+        .back-to-branch { color: var(--text-dim); text-decoration: none; font-size: 1.1rem; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-to-branch:hover { color: #fff; transform: translateX(5px); }
+        .header-logo { height: 60px; width: auto; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to left, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Scanning UI */
+        .scanner-container { text-align: center; padding: 50px; }
+        .radar { width: 60px; height: 60px; border: 3px solid var(--glass-border); border-radius: 50%; border-top-color: var(--accent); animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        .scanner-text { color: var(--accent); font-weight: 600; }
+
+        /* Grid UI */
+        .exams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; display: none; }
+        .exam-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .exam-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 25px rgba(63, 81, 181, 0.2); }
+        .exam-card i { font-size: 2.5rem; color: #e74c3c; margin-bottom: 15px; }
+        .exam-year { font-size: 1.5rem; font-weight: 800; }
+
+        /* Reader UI */
+        .pdf-viewer-section { display: none; flex-direction: column; background: #111; border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; }
+        .pdf-toolbar { background: #1a1a1a; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; flex-wrap: wrap; gap: 10px; }
+        .pdf-btn { background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; }
+        .pdf-btn:hover { background: var(--accent); }
+        .pdf-canvas-container { padding: 20px; text-align: center; background: #0c0c0c; height: 75vh; overflow-y: auto; }
+        canvas { max-width: 100%; height: auto; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="seco.html" class="back-to-branch" id="backBtn"><i class="fa-solid fa-arrow-right"></i> شعبة الاقتصاد</a>
+        <img src="grosmen-fivcon.png" class="header-logo">
+    </header>
+
+    <div class="container">
+        <div id="gridSection">
+            <div class="page-title">
+                <h1>امتحانات مادة الرياضيات</h1>
+                <p style="color: var(--text-dim)">استعراض ذكي لأرشيف الاختبارات الوطنية</p>
+            </div>
+            <div class="scanner-container" id="scanner">
+                <div class="radar"></div>
+                <div class="scanner-text">جاري استدعاء ملفات الرياضيات من أرشيف Ivanova...</div>
+            </div>
+            <div class="exams-grid" id="examsGrid"></div>
+        </div>
+
+        <div class="pdf-viewer-section" id="pdfViewer">
+            <div class="pdf-toolbar">
+                <button class="pdf-btn" onclick="closeExam()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="pdf-btn" id="prevPage"><i class="fa-solid fa-chevron-right"></i></button>
+                    <span>صفحة <span id="pageNum">1</span> / <span id="pageCount">?</span></span>
+                    <button class="pdf-btn" id="nextPage"><i class="fa-solid fa-chevron-left"></i></button>
+                </div>
+                <button class="pdf-btn" id="downloadBtn"><i class="fa-solid fa-download"></i> تحميل</button>
+            </div>
+            <div class="pdf-canvas-container">
+                <canvas id="pdfCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const filePrefix = 'secoexmath-'; // التعديل المطلوب هنا
+        const basePath = 'public/ex/';
+        const availableExams = [];
+
+        async function scanArchive() {
+            const grid = document.getElementById('examsGrid');
+            for (let year = 2025; year >= 2016; year--) {
+                const url = `${basePath}${filePrefix}${year}.pdf`;
+                try {
+                    const response = await fetch(url, { method: 'HEAD' });
+                    if (response.ok) availableExams.push({ year: year, url: url });
+                } catch (e) {}
+            }
+            document.getElementById('scanner').style.display = 'none';
+            grid.style.display = 'grid';
+            availableExams.forEach(exam => {
+                const card = document.createElement('div');
+                card.className = 'exam-card';
+                card.onclick = () => openExam(exam.year, exam.url);
+                card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><div class="exam-year">${exam.year}</div>`;
+                grid.appendChild(card);
+            });
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('exams')) {
+                const e = availableExams.find(ex => ex.year == params.get('exams'));
+                if (e) openExam(e.year, e.url);
+            }
+        }
+
+        let pdfDoc = null, pageNum = 1, canvas = document.getElementById('pdfCanvas'), ctx = canvas.getContext('2d');
+
+        function openExam(year, url) {
+            history.pushState(null, '', `?exams=${year}`);
+            document.getElementById('gridSection').style.display = 'none';
+            document.getElementById('pdfViewer').style.display = 'flex';
+            document.getElementById('backBtn').style.visibility = 'hidden';
+            document.getElementById('downloadBtn').onclick = () => window.open(url, '_blank');
+            loadPDF(url);
+        }
+
+        function closeExam() {
+            history.pushState(null, '', window.location.pathname);
+            document.getElementById('pdfViewer').style.display = 'none';
+            document.getElementById('gridSection').style.display = 'block';
+            document.getElementById('backBtn').style.visibility = 'visible';
+        }
+
+        function loadPDF(url) {
+            pdfjsLib.getDocument(url).promise.then(pdf => {
+                pdfDoc = pdf;
+                document.getElementById('pageCount').textContent = pdf.numPages;
+                renderPage(1);
+            });
+        }
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({scale: 1.5});
+                canvas.height = viewport.height; canvas.width = viewport.width;
+                page.render({canvasContext: ctx, viewport: viewport});
+                document.getElementById('pageNum').textContent = num;
+            });
+        }
+
+        document.getElementById('prevPage').onclick = () => { if(pageNum <= 1) return; pageNum--; renderPage(pageNum); };
+        document.getElementById('nextPage').onclick = () => { if(pageNum >= pdfDoc.numPages) return; pageNum++; renderPage(pageNum); };
+        window.onpopstate = () => { if (!new URLSearchParams(window.location.search).get('exams')) closeExam(); };
+        window.onload = scanArchive;
+    </script>
+</body>
+</html>
