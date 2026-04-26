@@ -10,23 +10,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
+        /* --- تنسيق الإعلان الجديد --- */
+        .announcement-banner {
+            background: rgba(0, 0, 0, 0.7); /* أسود شفاف */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 0, 0.4); /* حواف حمراء شفافة */
+            color: #fff;
+            padding: 12px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 2001;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
+            animation: slideDown 0.5s ease;
+        }
+
+        .announcement-banner i.fa-circle-exclamation {
+            color: #ff4d4d;
+            animation: pulseRed 2s infinite;
+        }
+
+        .close-announcement {
+            position: absolute;
+            left: 20px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .close-announcement:hover { opacity: 1; color: #ff4d4d; }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes pulseRed {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- بقية التنسيقات السابقة --- */
         .header-logo { width: 160px; height: auto; transition: transform 0.3s; }
         .nav-tools { display: flex; align-items: center; gap: 20px; }
         
-        /* تحسين مربع الـ 9 نقاط */
         .apps-menu-btn {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px; /* زيادة الفراغ قليلاً لوضوح الأيقونة */
+            gap: 4px;
             cursor: pointer;
             padding: 10px;
             border-radius: 8px;
             transition: background 0.3s;
         }
         .apps-menu-btn:hover { background: rgba(255,255,255,0.1); }
-        .dot { width: 5px; height: 5px; background: white; border-radius: 50%; } /* تكبير النقاط قليلاً */
+        .dot { width: 5px; height: 5px; background: white; border-radius: 50%; }
 
-        /* تحسين نافذة الاختصارات المنظمة */
         .apps-dropdown {
             position: absolute;
             top: 75px;
@@ -46,7 +92,7 @@
         
         .app-item { 
             display: flex;
-            flex-direction: column; /* الأيقونة فوق والاسم تحت */
+            flex-direction: column;
             align-items: center;
             text-decoration: none; 
             color: white; 
@@ -57,23 +103,28 @@
         }
         .app-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
         .app-item img { 
-            width: 55px; /* تكبير الأيقونة نسبياً */
+            width: 55px;
             height: 55px;
             object-fit: contain;
-            margin-bottom: 10px; /* مسافة بين الأيقونة والاسم */
+            margin-bottom: 10px;
         }
         .current-app { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.15); }
 
         .subjects-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         footer { background: #0a0a0a; padding: 40px 20px; border-top: 1px solid #222; margin-top: 50px; }
         .footer-content { max-width: 1200px; margin: 0 auto; line-height: 1.8; color: #888; }
-        .footer-emails { color: #fff; margin-bottom: 20px; }
         .article-section { margin-top: 30px; text-align: justify; font-size: 0.95rem; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="dark-theme">
+
+    <div class="announcement-banner" id="topBanner">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>حالياً الشُعب غير متاحة، تم الانتهاء من شعبة الاقتصاد والتدبير فقط.</span>
+        <i class="fa-solid fa-xmark close-announcement" onclick="closeBanner()"></i>
+    </div>
 
     <header class="main-header glass-effect">
         <div class="nav-tools">
@@ -159,15 +210,7 @@
                 <span>شعبة الآداب</span>
             </a>
         </div>
-
-        <article class="article-section">
-            <h3 style="color: #fff;">لماذا منصة Bac Maroc؟</h3>
-            <p>تعتبر منصة Bac Maroc حجر الزاوية في مشروع Ivanova التعليمي، حيث توفر للطالب بيئة متكاملة تتجاوز مجرد تخزين الملفات. من خلال خاصية <strong>BAC MODE</strong>، نقدم تجربة محاكاة حقيقية للامتحانات الوطنية مع نظام ذكي لمكافحة الغش، بالإضافة إلى تلخيصات مركزة وتحديات يومية تضمن الاستمرارية والجاهزية القصوى.</p>
-            
-            <h3 style="color: #fff;">حول Grosmen World و Ivanova</h3>
-            <p>مشروع Grosmen World ومنصة Ivanova ليست مجرد كيانات تقنية بيروقراطية منعزلة في زوايا العالم؛ بل هي مشاريع فردية نابعة من قلب المجتمع الذي تخدمه. تم بناؤها وتطويرها من قبل أفراد يعيشون نفس التحديات ويسعون لتقديم حلول حقيقية ومبتكرة تخدم الطالب والمستعمل العربي بلمسة احترافية وعالمية.</p>
-        </article>
-    </div>
+        </div>
 
     <footer>
         <div class="footer-content">
@@ -185,6 +228,15 @@
 
         function toggleAppsMenu() {
             document.getElementById('appsDropdown').classList.toggle('active');
+        }
+
+        // دالة إغلاق الإعلان
+        function closeBanner() {
+            const banner = document.getElementById('topBanner');
+            banner.style.transition = "0.4s";
+            banner.style.opacity = "0";
+            banner.style.marginTop = "-50px";
+            setTimeout(() => { banner.remove(); }, 400);
         }
 
         document.addEventListener('click', function(event) {
