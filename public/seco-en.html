@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اللغة الإنجليزية | BacMaroc</title>
+    <link rel="icon" href="bacmaroc-faivcon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #080808;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #3f51b5;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; }
+        .back-to-branch { color: var(--text-dim); text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .back-to-branch:hover { color: #fff; transform: translateX(5px); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to left, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .exams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .exam-card { 
+            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; 
+            text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .exam-card:hover { transform: translateY(-10px); border-color: var(--accent); background: rgba(255,255,255,0.06); box-shadow: 0 15px 30px rgba(63, 81, 181, 0.2); }
+        .exam-card i { font-size: 2.5rem; color: #e74c3c; margin-bottom: 15px; }
+        .exam-card .year { font-size: 1.6rem; font-weight: 800; display: block; margin-bottom: 5px; }
+        .exam-card .label { font-size: 0.85rem; color: var(--text-dim); font-weight: 600; }
+
+        #viewerContainer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; animation: fadeIn 0.3s ease; }
+        .viewer-header { background: #111; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .pdf-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .pdf-btn:hover { background: var(--accent); border-color: var(--accent); }
+        
+        .pdf-frame-wrapper { flex-grow: 1; background: #0c0c0c; display: flex; justify-content: center; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .loader { width: 40px; height: 40px; border: 3px solid var(--glass-border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="seco.html" class="back-to-branch" id="navBack"><i class="fa-solid fa-arrow-right"></i> العودة للشعبة</a>
+        <img src="grosmen-fivcon.png" style="height: 50px;">
+    </header>
+
+    <div class="container" id="gridWrapper">
+        <div class="page-title">
+            <h1>اللغة الإنجليزية</h1>
+            <p style="color: var(--text-dim)">English National Exams - التدبير المحاسباتي</p>
+        </div>
+
+        <div id="statusMessage" style="text-align: center;">
+            <div class="loader"></div>
+            <p style="color: var(--accent)">جاري تحميل قاعدة بيانات الامتحانات...</p>
+        </div>
+
+        <div class="exams-grid" id="examsGrid"></div>
+    </div>
+
+    <div id="viewerContainer">
+        <div class="viewer-header">
+            <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-chevron-right"></i> إنهاء المطالعة</button>
+            <span style="font-weight:700; color:var(--text-dim)">Reader Mode | وضع القراءة</span>
+            <div style="width: 100px;"></div> 
+        </div>
+        <div class="pdf-frame-wrapper" id="pdfWrapper">
+            </div>
+    </div>
+
+    <script>
+        const config = {
+            prefix: 'secoexen-',
+            path: 'ex/', 
+            years: [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016]
+        };
+
+        async function init() {
+            const grid = document.getElementById('examsGrid');
+            const status = document.getElementById('statusMessage');
+            for (const year of config.years) {
+                const fileUrl = `${config.path}${config.prefix}${year}.pdf`;
+                try {
+                    const res = await fetch(fileUrl, { method: 'HEAD' });
+                    if (res.ok) createCard(year, fileUrl);
+                } catch (e) { }
+            }
+            status.style.display = 'none';
+            const urlYear = new URLSearchParams(window.location.search).get('exams');
+            if (urlYear) openExam(urlYear, `${config.path}${config.prefix}${urlYear}.pdf`);
+        }
+
+        function createCard(year, url) {
+            const card = document.createElement('div');
+            card.className = 'exam-card';
+            card.onclick = () => openExam(year, url);
+            card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><span class="year">${year}</span><span class="label">English Exam</span>`;
+            document.getElementById('examsGrid').appendChild(card);
+        }
+
+        function openExam(year, url) {
+            window.history.pushState(null, '', `?exams=${year}`);
+            document.getElementById('viewerContainer').style.display = 'flex';
+            document.getElementById('navBack').style.visibility = 'hidden';
+            document.body.style.overflow = 'hidden';
+
+            const fullFileUrl = window.location.origin + '/' + url;
+            const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullFileUrl)}&embedded=true`;
+
+            document.getElementById('pdfWrapper').innerHTML = `<iframe src="${googleViewerUrl}"></iframe>`;
+        }
+
+        function closeViewer() {
+            window.history.pushState(null, '', window.location.pathname);
+            document.getElementById('viewerContainer').style.display = 'none';
+            document.getElementById('navBack').style.visibility = 'visible';
+            document.body.style.overflow = 'auto';
+            document.getElementById('pdfWrapper').innerHTML = ''; 
+        }
+
+        window.onpopstate = () => { if (!window.location.search.includes('exams')) closeViewer(); };
+        window.onload = init;
+    </script>
+</body>
+</html>
