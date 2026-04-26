@@ -8,11 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-    </script>
-
     <style>
         :root {
             --bg-dark: #080808;
@@ -23,7 +18,7 @@
             --text-dim: #a0a0a0;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-touch-callout: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(8, 8, 8, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; }
@@ -39,18 +34,18 @@
             background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; 
             text-align: center; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .exam-card:hover { transform: translateY(-10px); border-color: var(--accent); background: rgba(255,255,255,0.06); box-shadow: 0 15px 30px rgba(63, 81, 181, 0.2); }
+        .exam-card:hover { transform: translateY(-10px); border-color: var(--accent); background: rgba(255,255,255,0.06); }
         .exam-card i { font-size: 2.5rem; color: #e74c3c; margin-bottom: 15px; }
         .exam-card .year { font-size: 1.6rem; font-weight: 800; display: block; }
 
+        /* Viewer Layer المطور */
         #viewerContainer { display: none; position: fixed; inset: 0; background: #000; z-index: 2000; flex-direction: column; animation: fadeIn 0.3s ease; }
         .viewer-header { background: #111; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
         .pdf-btn { background: #222; border: 1px solid #444; color: #fff; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Cairo'; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
-        .pdf-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
-        .pdf-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pdf-btn:hover { background: var(--accent); border-color: var(--accent); }
         
-        .pdf-frame-wrapper { flex-grow: 1; overflow-y: auto; background: #0c0c0c; display: flex; justify-content: center; padding: 20px; }
-        canvas { max-width: 100%; height: auto !important; box-shadow: 0 0 50px rgba(0,0,0,0.7); border-radius: 4px; user-select: none; }
+        .pdf-frame-wrapper { flex-grow: 1; background: #0c0c0c; display: flex; justify-content: center; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .loader { width: 40px; height: 40px; border: 3px solid var(--glass-border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
@@ -67,7 +62,7 @@
     <div class="container" id="gridWrapper">
         <div class="page-title">
             <h1>امتحانات مادة الرياضيات</h1>
-            <p style="color: var(--text-dim)">تصفح حصري بدقة عالية لنصوص ومعادلات الرياضيات</p>
+            <p style="color: var(--text-dim)">عرض ذكي ومصحح للأخطاء التقنية</p>
         </div>
 
         <div id="statusMessage" style="text-align: center;">
@@ -81,16 +76,11 @@
     <div id="viewerContainer">
         <div class="viewer-header">
             <button class="pdf-btn" onclick="closeViewer()"><i class="fa-solid fa-chevron-right"></i> إنهاء المطالعة</button>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <button class="pdf-btn" id="prevPage"><i class="fa-solid fa-chevron-right"></i></button>
-                <span style="font-weight:700">صفحة <span id="pageNum">1</span> من <span id="pageCount">-</span></span>
-                <button class="pdf-btn" id="nextPage"><i class="fa-solid fa-chevron-left"></i></button>
-            </div>
+            <span style="font-weight:700; color:var(--text-dim)">وضع القراءة الآمن</span>
             <div style="width: 110px;"></div> 
         </div>
-        <div class="pdf-frame-wrapper">
-            <canvas id="pdfCanvas" oncontextmenu="return false;"></canvas>
-        </div>
+        <div class="pdf-frame-wrapper" id="pdfWrapper">
+            </div>
     </div>
 
     <script>
@@ -119,57 +109,22 @@
             const card = document.createElement('div');
             card.className = 'exam-card';
             card.onclick = () => openExam(year, url);
-            card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><span class="year">${year}</span><span class="label" style="font-size:0.8rem; color:var(--text-dim); display:block; margin-top:5px;">عرض الامتحان</span>`;
+            card.innerHTML = `<i class="fa-solid fa-file-pdf"></i><span class="year">${year}</span><span class="label" style="font-size:0.8rem; color:var(--text-dim); display:block; margin-top:5px;">تصفح مباشر</span>`;
             document.getElementById('examsGrid').appendChild(card);
         }
-
-        let pdfDoc = null, pNum = 1, canvas = document.getElementById('pdfCanvas'), ctx = canvas.getContext('2d');
 
         function openExam(year, url) {
             window.history.pushState(null, '', `?exams=${year}`);
             document.getElementById('viewerContainer').style.display = 'flex';
             document.getElementById('navBack').style.visibility = 'hidden';
             document.body.style.overflow = 'hidden';
-            
-            // الترقيات الخاصة بمعالجة الخطوط
-            const loadingTask = pdfjsLib.getDocument({
-                url: url,
-                cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
-                cMapPacked: true,
-                standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/',
-                fontExtraProperties: true, // مهم جداً للمسافات بين الحروف في الخطوط القديمة
-                disableFontFace: false 
-            });
 
-            loadingTask.promise.then(pdf => {
-                pdfDoc = pdf;
-                document.getElementById('pageCount').textContent = pdf.numPages;
-                renderPage(1);
-            }).catch(err => {
-                alert("تعذر تحميل ملف الرياضيات بشكل صحيح.");
-                closeViewer();
-            });
-        }
+            // بناء الرابط الكامل للملف (ضروري لمحرك جوجل)
+            const fullFileUrl = window.location.origin + '/' + url;
+            // استخدام Google Viewer لحل مشكلة الترميز نهائياً
+            const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullFileUrl)}&embedded=true`;
 
-        function renderPage(num) {
-            pNum = num;
-            pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({scale: 2.0});
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport,
-                    enableWebGL: true 
-                };
-
-                page.render(renderContext).promise.then(() => {
-                    document.getElementById('pageNum').textContent = num;
-                    document.getElementById('prevPage').disabled = (num <= 1);
-                    document.getElementById('nextPage').disabled = (num >= pdfDoc.numPages);
-                });
-            });
+            document.getElementById('pdfWrapper').innerHTML = `<iframe src="${googleViewerUrl}"></iframe>`;
         }
 
         function closeViewer() {
@@ -177,10 +132,9 @@
             document.getElementById('viewerContainer').style.display = 'none';
             document.getElementById('navBack').style.visibility = 'visible';
             document.body.style.overflow = 'auto';
+            document.getElementById('pdfWrapper').innerHTML = ''; // تنظيف الذاكرة
         }
 
-        document.getElementById('nextPage').onclick = () => { if(pNum < pdfDoc.numPages) renderPage(++pNum); };
-        document.getElementById('prevPage').onclick = () => { if(pNum > 1) renderPage(--pNum); };
         window.onpopstate = () => { if (!window.location.search.includes('exams')) closeViewer(); };
         window.onload = init;
     </script>
