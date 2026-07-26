@@ -126,7 +126,77 @@
         .footer-content { max-width: 1200px; margin: 0 auto; color: #888; text-align: center; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- إعلان هوستاكا --- */
+        .hostaka-promo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(236, 72, 153, 0.15));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .hostaka-promo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
+            animation: rotateGlow 10s linear infinite;
+        }
+        @keyframes rotateGlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .hostaka-promo:hover {
+            transform: translateY(-5px);
+            border-color: rgba(124, 58, 237, 0.6);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+        }
+        .hostaka-promo-content { display: flex; align-items: center; gap: 25px; z-index: 1; }
+        .hostaka-promo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+        }
+        .hostaka-promo-text h4 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            background: linear-gradient(90deg, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hostaka-promo-text p {
+            margin: 0;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        .hostaka-promo-arrow {
+            font-size: 1.8rem;
+            color: #a78bfa;
+            z-index: 1;
+            transition: transform 0.3s;
+        }
+        .hostaka-promo:hover .hostaka-promo-arrow { transform: translateX(-10px); }
+        @media (max-width: 600px) {
+            .hostaka-promo { flex-direction: column; text-align: center; gap: 15px; padding: 20px; }
+            .hostaka-promo-content { flex-direction: column; }
+            .hostaka-promo-arrow { display: none; }
+        }
     </style>
+<base target="_blank">
 </head>
 <body class="dark-theme">
 
@@ -152,6 +222,7 @@
             <a href="https://wikijobs.ivanova.sbs" class="app-item"><img src="wikijobs-ovcon.png"><span>WikiJobs</span></a>
             <a href="https://store.ivanova.sbs" class="app-item"><img src="store-ovcon.png"><span>Store</span></a>
             <a href="https://news.ivanova.sbs" class="app-item"><img src="news-ovcon.png"><span>News</span></a>
+            <a href="https://hostaka.ivanova.sbs" class="app-item"><img src="hostaka.png"><span>Hostaka</span></a>
         </div>
     </header>
 
@@ -182,6 +253,18 @@
             <a href="sea.html" class="subject-card"><div class="card-icon"><i class="fa-solid fa-pen-nib"></i></div><span>شعبة الآداب</span></a>
         </div>
 
+
+
+        <a href="https://hostaka.ivanova.sbs" class="hostaka-promo" target="_blank" rel="noopener">
+            <div class="hostaka-promo-content">
+                <img src="hostaka.png" alt="Hostaka Logo">
+                <div class="hostaka-promo-text">
+                    <h4>جرب منصة هوستاكا الاجتماعية</h4>
+                    <p>انضم إلى مجتمع Hostaka – منصة التواصل الاجتماعي الجديدة من Ivanova. تواصل، شارك، واكتشف محتوى جديداً.</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-arrow-left hostaka-promo-arrow"></i>
+        </a>
 
         <article class="article-section">
             <h3>لماذا منصة Bac Maroc؟</h3>
